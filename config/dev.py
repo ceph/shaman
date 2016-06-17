@@ -11,7 +11,7 @@ server = {
 # Pecan Application Configurations
 app = {
     'root': 'shaman.controllers.root.RootController',
-    'modules': ['chacra'],
+    'modules': ['shaman'],
     'default_renderer': 'json',
     'hooks': [
         TransactionHook(
