@@ -1,0 +1,7 @@
+psycopg2
+gunicorn
+pecan
+sqlalchemy
+pecan-notario
+alembic
+ipython
