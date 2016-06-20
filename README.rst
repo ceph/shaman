@@ -49,31 +49,49 @@ GET /repos/(project)/(ref|sha1)/
 This endpoint is used to query for repos by ref or sha1. It will return metadata about
 the latest built repository or repositories that matches your search criteria. 
 
-A GET to ``/repos/ceph/master/?distros=ubuntu/trusty,centos/7,ubuntu/xenial``
-would return the following if a common repo is find matching the critera::
+A GET to ``/repos/ceph/master/`` would return the a list of all repos
+for the ``master`` ref::
 
-    {
-        "ref": "master",
-        "sha1": "8d48f5413564b418a8016b6a344b517282a0f0fa", 
-        "ubuntu": {
-                    "trusty": {
-                        "url": "https://chacra.ceph.com/r/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/"
-                     },
-                     "xenial": {
-                        "url": "https://chacra.ceph.com/r/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/xenial/"
-                     },
-                  },
-        "centos": {
-                    "7": {
-                        "url": "https://chacra.ceph.com/r/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/centos/7/",
-                    },
-                  },
-    }
+   [
+     {
+       "ref": "master",
+       "sha1": "8d48f5413564b418a8016b6a344b517282a0f0fa",
+       "distro": "ubuntu",
+       "distro_version": "trusty",
+       "url": "https://chacra.ceph.com/r/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
+       "arch": "x86_64",
+     },
+     {
+       "ref": "master",
+       "sha1": "8d48f5413564b418a8016b6a344b517282a0f0fa",
+       "distro": "ubuntu",
+       "distro_version": "xenial",
+       "url": "https://chacra.ceph.com/r/ceph/jewel/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/xenial/",
+       "arch": "x86_64",
+     },
+     ...
+   ]
 
-Matching the criteria in this case means that a repo was found available across all the distros given at a common ref and
-sha1 combination.
+The following querystring parameters are supported.
 
-If no repos are found that match the criteria, an empty dictionary will be returned.
+- ``distros``
+  A list of distros in ``distro/distro_version``, ``distro`` format.
+  i.e. ``?distros=ubuntu, centos/7``
+
+- ``distro``
+  Filter by distro. i.e. ``?distro=ubuntu``
+
+- ``distro_version``
+  Filter by distro version. i.e ``?distro_version=trusty``
+
+- ``arch``
+  Filter by architecture. i.e. ``?arch=x86_64``
+
+- ``common_sha1``
+  Requires that the repos return be built for a common sha1
+  across all given distros. If a common built sha1 is not found
+  for distros then no results are returned.
+  i.e. ``?common_sha1=True&distros=centos/7,ubuntu/xenial``
 
 
 GET /nodes/
