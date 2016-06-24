@@ -38,11 +38,6 @@ GET /repos/
 Returns a list of projects that shaman has repo
 information about.
 
-GET /repos/(project)/
----------------------
-
-Returns a list of refs for the given project.
-
 POST /repos/(project)/
 ----------------------
 
@@ -56,37 +51,12 @@ POST a json object with the following data::
         "sha1": "45107e21c568dd033c2f0a3107dec8f0b0e58374",
         "url": "https://chacra.ceph.com/r/ceph/jewel/ubuntu/trusty/",
         "arch": "x86_64",
+        "created": "2016-06-14 14:04:54.671504",
+        "modified" "2016-06-15 14:04:54.671504",
+        "is_queued": False,
+        "is_updating": True,
+        "ready": False
     }
-
-# TODO: figure out how status will work on a repo. created, building, built, failed, succeeded, etc.
-# This might want to be a different endpoint?
-
-GET /repos/(project)/(ref)/
---------------------------
-
-Returns a list of sha1s that have built repos for the given project and ref.
-
-GET /repos/(project)/(ref)/(sha1)/
-----------------------------------
-
-Returns a list of distros that have built repos for the given project, ref and sha1.
-
-GET /repos/(project)/(ref)/(sha1)/(distro)/
--------------------------------------------
-
-Returns a list of distro versions that have built repos for the given project, ref, sha1 and distro.
-
-GET /repos/(project)/(ref)/(sha1)/(distro)/(distro_version)/
-------------------------------------------------------------
-
-Returns a list of architectures that have built repos for the given project, ref, sha1,
-distro and distro_version.
-
-GET /repos/(project)/(ref)/(sha1)/(distro)/(distro_version)/(arch)/
--------------------------------------------------------------------
-
-Returns a list of repo objects that are built for the given project, ref, sha1,
-distro, distro_version and architecture.
 
 GET /search/(project)/(ref|sha1)/
 --------------------------------
@@ -105,6 +75,11 @@ for the ``master`` ref::
        "distro_version": "trusty",
        "url": "https://chacra.ceph.com/r/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
        "arch": "x86_64",
+       "created": "2016-06-14 14:04:54.671504",
+       "modified" "2016-06-15 14:04:54.671504",
+       "is_queued": True,
+       "is_updating": False,
+       "ready": False,
      },
      {
        "ref": "master",
@@ -113,6 +88,11 @@ for the ``master`` ref::
        "distro_version": "xenial",
        "url": "https://chacra.ceph.com/r/ceph/jewel/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/xenial/",
        "arch": "x86_64",
+       "created": "2016-06-14 14:04:54.671504",
+       "modified" "2016-06-15 14:04:54.671504",
+       "is_queued": False,
+       "is_updating": False,
+       "ready": True,
      },
      ...
    ]
@@ -143,6 +123,7 @@ Returns a list of the chacra nodes available in the pool::
 GET /nodes/next/
 ----------------
 
-Returns the url for the next chacra node in the rotation::
+Returns the url for the next chacra node in the rotation,
+in plain text::
 
-    {"url": "https://chacra02.ceph.com"}
+    "https://chacra02.ceph.com"
