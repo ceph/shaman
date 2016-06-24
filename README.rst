@@ -20,16 +20,34 @@ of urls with the ``chacra_nodes`` configuration option::
 API Endpoints
 =============
 
+Shaman has three top level endpoints:
+
+- ``repos``
+  This endpoint is used to view and add/update repositories.
+
+- ``search``
+  This endpoint is used to perform searches against repositories.
+
+- ``nodes``
+  This endpoint is used to list the available chacra nodes as well
+  as retrieve the next chacra node in the rotation.
+
 GET /repos/
 ---------------
 
 Returns a list of projects that shaman has repo
 information about.
 
-POST /repos/(project)/
---------------------
+GET /repos/(project)/
+---------------------
 
-Used to add / update repos for a given project::
+Returns a list of refs for the given project.
+
+POST /repos/(project)/
+----------------------
+
+Used to add / update repos for a given project. You must
+POST a json object with the following data::
 
     {
         "distro": "Ubuntu",
@@ -43,7 +61,34 @@ Used to add / update repos for a given project::
 # TODO: figure out how status will work on a repo. created, building, built, failed, succeeded, etc.
 # This might want to be a different endpoint?
 
-GET /repos/(project)/(ref|sha1)/
+GET /repos/(project)/(ref)/
+--------------------------
+
+Returns a list of sha1s that have built repos for the given project and ref.
+
+GET /repos/(project)/(ref)/(sha1)/
+----------------------------------
+
+Returns a list of distros that have built repos for the given project, ref and sha1.
+
+GET /repos/(project)/(ref)/(sha1)/(distro)/
+-------------------------------------------
+
+Returns a list of distro versions that have built repos for the given project, ref, sha1 and distro.
+
+GET /repos/(project)/(ref)/(sha1)/(distro)/(distro_version)/
+------------------------------------------------------------
+
+Returns a list of architectures that have built repos for the given project, ref, sha1,
+distro and distro_version.
+
+GET /repos/(project)/(ref)/(sha1)/(distro)/(distro_version)/(arch)/
+-------------------------------------------------------------------
+
+Returns a list of repo objects that are built for the given project, ref, sha1,
+distro, distro_version and architecture.
+
+GET /search/(project)/(ref|sha1)/
 --------------------------------
 
 This endpoint is used to query for repos by ref or sha1. It will return metadata about
@@ -75,14 +120,8 @@ for the ``master`` ref::
 The following querystring parameters are supported.
 
 - ``distros``
-  A list of distros in ``distro/distro_version``, ``distro`` format.
-  i.e. ``?distros=ubuntu, centos/7``
-
-- ``distro``
-  Filter by distro. i.e. ``?distro=ubuntu``
-
-- ``distro_version``
-  Filter by distro version. i.e ``?distro_version=trusty``
+  A list of distros in ``distro.distro_version`` or ``distro`` format.
+  i.e. ``?distros=ubuntu, centos.7``
 
 - ``arch``
   Filter by architecture. i.e. ``?arch=x86_64``
