@@ -110,7 +110,7 @@ The following querystring parameters are supported.
   Requires that the repos return be built for a common sha1
   across all given distros. If a common built sha1 is not found
   for distros then no results are returned.
-  i.e. ``?common_sha1=True&distros=centos/7,ubuntu/xenial``
+  i.e. ``?common_sha1=True&distros=centos.7,ubuntu.xenial``
 
 
 GET /nodes/
@@ -119,6 +119,16 @@ GET /nodes/
 Returns a list of the chacra nodes available in the pool::
 
     ["https://chacra01.ceph.com", "https://chacra02.ceph.com"]
+
+POST /nodes/
+-----------
+
+This endpoint is used to add a new chacra node to the pool.
+
+You must POST a json object representing the new chacra node::
+
+    {"url": "http://chacra03.ceph.com"}
+
 
 GET /nodes/next/
 ----------------
