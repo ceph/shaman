@@ -1,0 +1,19 @@
+---
+
+- name: reload systemd
+  sudo: yes
+  sudo: yes
+  command: systemctl daemon-reload
+
+- name: restart app
+  sudo: yes
+  service:
+    name: shaman
+    state: restarted
+    enabled: yes
+
+- name: restart nginx
+  sudo: yes
+  service:
+    name: nginx
+    state: restarted

@@ -1,0 +1,86 @@
+---
+
+- name: "Build hosts file"
+  sudo: yes
+  lineinfile: dest=/etc/hosts regexp=".*{{ fqdn }}$" line="127.0.1.1 {{ fqdn }}" state=present
+
+- name: Set Hostname with hostname command
+  sudo: yes
+  hostname: name="{{ fqdn }}"
+
+- name: "ensure a home for {{ app_name }}"
+  sudo: yes
+  file: path={{ app_home }} owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }} state=directory recurse=yes
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+  sudo: yes
+
+- name: install ssl system requirements
+  sudo: yes
+  apt: name={{ item }} state=present
+  with_items: ssl_requirements
+  when: app_use_ssl
+  tags:
+    - packages
+
+- name: install system packages
+  sudo: yes
+  apt: name={{ item }} state=present
+  with_items: system_packages
+  tags:
+    - packages
+
+- name: Create a virtualenv with latest pip.
+  pip: name=pip virtualenv={{ app_home }} extra_args='--upgrade'
+
+- name: "pip+git install {{ app_name }} into virtualenv."
+  pip: name='git+https://github.com/ceph/shaman@{{ branch }}#egg=shaman' virtualenv={{ app_home }}
+  changed_when: False
+
+- name: create the prod config file
+  template:
+    src: prod.py.j2
+    dest: "{{ app_home }}/src/{{ app_name }}/prod.py"
+
+- name: create the prod api credentials file
+  template:
+    src: prod_api_creds.py.j2
+    dest: "{{ app_home }}/src/{{ app_name }}/prod_api_creds.py"
+  when: api_key is defined and api_user is defined
+
+- name: install python requirements in virtualenv
+  pip:
+    requirements: "{{ app_home }}/src/{{ app_name }}/requirements.txt"
+    state: present
+    virtualenv: "{{ app_home }}"
+  notify:
+    - restart app
+
+- include: postgresql.yml
+  tags:
+    - postgres
+
+- include: systemd.yml
+  tags:
+    - systemd
+
+- include: nginx.yml
+  tags:
+    - nginx
+
+# nginx should be up and running by now, there is a bug with Ubuntu 14.04 and
+# nginx where nginx is using the old init scripts and the 'service' command
+# returns a zero exit code which ansible interprets as all being OK.
+
+- name: ensure nginx is running
+  sudo: true
+  action: service name=nginx state=started
+
+- name: ensure nginx was started and stayed up and running
+  sudo: true
+  action: service name=nginx state=started
+  register: nginx_was_running
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'trusty'
+  failed_when: nginx_was_running.changed
