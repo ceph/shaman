@@ -15,6 +15,8 @@ Configuration
 API Endpoints
 =============
 
+The parent endpoint for any API interaction is ``/api/``.
+
 Shaman has three top level endpoints:
 
 - ``repos``
@@ -27,13 +29,13 @@ Shaman has three top level endpoints:
   This endpoint is used to list the available chacra nodes as well
   as retrieve the next chacra node in the rotation.
 
-GET /repos/
+GET /api/repos/
 ---------------
 
 Returns a list of projects that shaman has repo
 information about.
 
-POST /repos/(project)/
+POST /api/repos/(project)/
 ----------------------
 
 Used to add / update repos for a given project. You must
@@ -53,7 +55,7 @@ POST a json object with the following data::
         "ready": False
     }
 
-GET /search/(project)/(ref|sha1)/
+GET /api/search/(project)/(ref|sha1)/
 --------------------------------
 
 This endpoint is used to query for repos by ref or sha1. It will return metadata about
@@ -110,14 +112,14 @@ The following querystring parameters are supported.
 If you choose to use ``sha1`` instead of ``ref`` at this endoint, the ``common_sha1``
 parameter would not be effective.
 
-GET /nodes/
+GET /api/nodes/
 -----------
 
 Returns a list of the chacra nodes available in the pool::
 
     ["https://chacra01.ceph.com", "https://chacra02.ceph.com"]
 
-POST /nodes/
+POST /api/nodes/
 -----------
 
 This endpoint is used to add a new chacra node to the pool.
@@ -127,7 +129,7 @@ You must POST a json object representing the new chacra node::
     {"url": "http://chacra03.ceph.com"}
 
 
-GET /nodes/next/
+GET /api/nodes/next/
 ----------------
 
 Returns the url for the next chacra node in the rotation,
