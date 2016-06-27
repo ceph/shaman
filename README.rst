@@ -11,11 +11,6 @@ allowing for horizontal scalability.
 Configuration
 =============
 
-To define which chacra nodes should be included in the pool, provide a list
-of urls with the ``chacra_nodes`` configuration option::
-
-    chacra_nodes = ["https://chacra01.ceph.com", "https://chacra02.ceph.com"]
-
 
 API Endpoints
 =============
@@ -112,6 +107,8 @@ The following querystring parameters are supported.
   for distros then no results are returned.
   i.e. ``?common_sha1=True&distros=centos.7,ubuntu.xenial``
 
+If you choose to use ``sha1`` instead of ``ref`` at this endoint, the ``common_sha1``
+parameter would not be effective.
 
 GET /nodes/
 -----------
