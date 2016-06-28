@@ -1,0 +1,22 @@
+---
+
+- name: ensure /etc/default/ dir exists
+  sudo: true
+  file:
+    path: /etc/default
+    state: directory
+
+- name: install the systemd unit file for shaman 
+  template:
+    src: systemd/shaman.service.j2
+    dest: /etc/systemd/system/shaman.service
+  sudo: true
+  notify:
+     - reload systemd
+
+- name: ensure shaman is enabled and running
+  sudo: true
+  service:
+    name: shaman
+    state: running
+    enabled: yes
