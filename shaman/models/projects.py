@@ -19,9 +19,9 @@ class Project(Base):
             return '<Project detached>'
 
     def __json__(self):
-        json_ = {}
-        json_["name"] = self.name
-        return json_
+        return dict(
+            name=self.name,
+        )
 
 
 def get_or_create(name, **kw):
