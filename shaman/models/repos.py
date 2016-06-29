@@ -11,6 +11,7 @@ class Repo(Base):
     __tablename__ = 'repos'
     id = Column(Integer, primary_key=True)
     url = Column(String(256))
+    chacra_url = Column(String(256))
     ref = Column(String(256), index=True)
     sha1 = Column(String(256), index=True)
     distro = Column(String(256), nullable=False, index=True)
@@ -46,6 +47,7 @@ class Repo(Base):
     def __json__(self):
         return dict(
             url=self.url,
+            chacra_url=self.chacra_url,
             ref=self.ref,
             sha1=self.sha1,
             distro=self.distro,
