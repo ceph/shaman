@@ -58,15 +58,6 @@ class Repo(Base):
             status=self.status,
         )
 
-    @property
-    def metric_name(self):
-        return "repos.%s.%s.%s.%s" % (
-            self.project.name,
-            self.ref,
-            self.distro,
-            self.distro_version,
-        )
-
 
 # listen for timestamp modifications
 listen(Repo, 'before_insert', update_timestamp)
