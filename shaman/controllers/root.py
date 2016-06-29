@@ -3,6 +3,12 @@ from pecan import expose
 description = "shaman is the source of truth for the state of repositories on chacra nodes."
 
 
+class APIController(object):
+    @expose('json')
+    def index(self):
+        return dict()
+
+
 class RootController(object):
 
     @expose('json')
@@ -13,3 +19,4 @@ class RootController(object):
             documentation=documentation,
         )
 
+    api = APIController()
