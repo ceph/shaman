@@ -24,7 +24,7 @@ class Project(Base):
         )
 
 
-def get_or_create(name, **kw):
+def get_or_create(name):
     project = Project.filter_by(name=name).first()
     if not project:
         project = Project(name=name)
