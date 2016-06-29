@@ -119,3 +119,7 @@ def clear():
 
 def flush():
     Session.flush()
+
+
+from projects import Project  # noqa
+from repos import Repo  # noqa
