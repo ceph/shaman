@@ -17,8 +17,6 @@ class Repo(Base):
     distro = Column(String(256), nullable=False, index=True)
     distro_version = Column(String(256), nullable=False, index=True)
     modified = Column(DateTime, index=True)
-    signed = Column(Boolean(), default=False)
-    type = Column(String(12))
     status = Column(String(256), index=True)
 
     project_id = Column(Integer, ForeignKey('projects.id'))
@@ -53,8 +51,6 @@ class Repo(Base):
             distro=self.distro,
             distro_version=self.distro_version,
             modified=self.modified,
-            signed=self.signed,
-            type=self.type,
             status=self.status,
         )
 
