@@ -30,10 +30,3 @@ class Project(Base):
     @property
     def sha1s(self):
         return list(set([r.sha1s for r in self.repos.all()]))
-
-
-def get_or_create(name):
-    project = Project.filter_by(name=name).first()
-    if not project:
-        project = Project(name=name)
-    return project
