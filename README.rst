@@ -46,13 +46,10 @@ POST a json object with the following data::
         "distro_version": "Trusty",
         "ref": "jewel",
         "sha1": "45107e21c568dd033c2f0a3107dec8f0b0e58374",
-        "url": "https://chacra.ceph.com/r/ceph/jewel/ubuntu/trusty/",
-        "arch": "x86_64",
-        "created": "2016-06-14 14:04:54.671504",
+        "url": "https://chacra.ceph.com/r/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/trusty/",
+        "chacra_url": "https://chacra.ceph.com/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/trusty/",
         "modified" "2016-06-15 14:04:54.671504",
-        "is_queued": False,
-        "is_updating": True,
-        "ready": False
+        "state": "ready"
     }
 
 GET /api/search/(project)/(ref|sha1)/
@@ -71,25 +68,19 @@ for the ``master`` ref::
        "distro": "ubuntu",
        "distro_version": "trusty",
        "url": "https://chacra.ceph.com/r/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
-       "arch": "x86_64",
-       "created": "2016-06-14 14:04:54.671504",
+       "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
        "modified" "2016-06-15 14:04:54.671504",
-       "is_queued": True,
-       "is_updating": False,
-       "ready": False,
+       "state": "building",
      },
      {
        "ref": "master",
        "sha1": "8d48f5413564b418a8016b6a344b517282a0f0fa",
        "distro": "ubuntu",
        "distro_version": "xenial",
-       "url": "https://chacra.ceph.com/r/ceph/jewel/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/xenial/",
-       "arch": "x86_64",
-       "created": "2016-06-14 14:04:54.671504",
+       "url": "",
+       "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/xenial/"
        "modified" "2016-06-15 14:04:54.671504",
-       "is_queued": False,
-       "is_updating": False,
-       "ready": True,
+       "state": "queued",
      },
      ...
    ]
@@ -99,9 +90,6 @@ The following querystring parameters are supported.
 - ``distros``
   A list of distros in ``distro.distro_version`` or ``distro`` format.
   i.e. ``?distros=ubuntu, centos.7``
-
-- ``arch``
-  Filter by architecture. i.e. ``?arch=x86_64``
 
 - ``common_sha1``
   Requires that the repos return be built for a common sha1
