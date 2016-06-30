@@ -1,4 +1,4 @@
-from shaman.models import Project
+from shaman.models import Project, Repo
 
 
 class TestProjectsController(object):
@@ -34,8 +34,42 @@ class TestProjectsController(object):
 
 class TestProjectController(object):
 
+    def setup(self):
+        self.repo_data = dict(
+            ref="jewel",
+            sha1="45107e21c568dd033c2f0a3107dec8f0b0e58374",
+            distro="ubuntu",
+            distro_version="xenial",
+            chacra_url="chacra.ceph.com/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/xenial/",
+            status="requested",
+        )
+
     def test_get_not_allowed(self, session):
         Project("ceph")
         session.commit()
         result = session.app.get('/api/repos/ceph/', expect_errors=True)
         assert result.status_int == 405
+
+    def test_create_a_repo(self, session):
+        result = session.app.post_json('/api/repos/ceph/', params=self.repo_data)
+        assert result.status_int == 200
+        assert Repo.get(1).ref == "jewel"
+        assert Repo.get(1).project.name == "ceph"
+
+    def test_update_a_repo_status(self, session):
+        result = session.app.post_json('/api/repos/ceph/', params=self.repo_data)
+        assert result.status_int == 200
+        assert Repo.get(1).status == "requested"
+        new_data = self.repo_data.copy()
+        new_data["status"] = "ready"
+        result = session.app.post_json('/api/repos/ceph/', params=new_data)
+        assert Repo.get(1).status == "ready"
+
+    def test_update_a_repo_url(self, session):
+        result = session.app.post_json('/api/repos/ceph/', params=self.repo_data)
+        assert result.status_int == 200
+        assert not Repo.get(1).url
+        new_data = self.repo_data.copy()
+        new_data["url"] = "chacra.ceph.com/r/ceph/jewel/"
+        result = session.app.post_json('/api/repos/ceph/', params=new_data)
+        assert Repo.get(1).url == "chacra.ceph.com/r/ceph/jewel/"
