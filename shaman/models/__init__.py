@@ -10,6 +10,8 @@ class _EntityBase(object):
     A custom declarative base that provides some Elixir-inspired shortcuts.
     """
 
+    allowed_keys = []
+
     @classmethod
     def filter_by(cls, *args, **kwargs):
         return cls.query.filter_by(*args, **kwargs)
@@ -35,6 +37,11 @@ class _EntityBase(object):
         """
         for key in data.keys():
             setattr(self, key, data[key])
+
+    def init_from_kwargs(self, **kwargs):
+        for key in self.allowed_keys:
+            if key in kwargs.keys():
+                setattr(self, key, kwargs[key])
 
 
 Session = scoped_session(sessionmaker())
