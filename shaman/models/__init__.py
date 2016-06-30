@@ -35,13 +35,9 @@ class _EntityBase(object):
         We received a JSON blob with updated metadata information
         that needs to update some fields
         """
-        for key in data.keys():
-            setattr(self, key, data[key])
-
-    def init_from_kwargs(self, **kwargs):
         for key in self.allowed_keys:
-            if key in kwargs.keys():
-                setattr(self, key, kwargs[key])
+            for key in data.keys():
+                setattr(self, key, data[key])
 
 
 Session = scoped_session(sessionmaker())

@@ -35,7 +35,7 @@ class Repo(Base):
     def __init__(self, project, **kwargs):
         self.project = project
         self.modified = datetime.datetime.utcnow()
-        self.init_from_kwargs(**kwargs)
+        self.update_from_json(kwargs)
 
     def __repr__(self):
         try:
