@@ -1,0 +1,36 @@
+---
+
+- hosts: all
+  user: vagrant
+  roles:
+    - postgresql
+  vars:
+     app_name: "shaman"
+     use_ssl: true
+     ansible_ssh_port: 22
+     development_server: true
+     fqdn: "localhost"
+     api_user: "admin"
+     api_key: "secret"
+     # postgres specific
+     postgresql_replication_master_ip: {{ master_ip }}
+     postgresql_cfg_wal_level: 'hot_standby'
+     postgresql_cfg_max_wal_senders: 3
+     postgresql_cfg_archive_mode: 'on'
+     postgresql_cfg_archive_command: 'test ! -f {{ postgresql_archive_dir_path }}/%f && cp %p {{ postgresql_archive_dir_path }}/%f'
+
+     postgresql_users:
+       - user: "{{ app_name }}"
+         connections:
+           - database: "{{ app_name }}"
+             type: local
+             auth: md5
+
+     postgresql_replication_users:
+       - user: "repuser"
+         connections:
+           - database: replication
+             type: host
+             auth: md5
+             # might want to rethink this approach to allow multiple standby # IPs
+             address: {{ standby_ip }}

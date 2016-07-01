@@ -1,0 +1,222 @@
+---
+
+postgresql_version: 9.5
+postgresql_superuser: postgres
+
+postgresql_encoding: UTF-8
+postgresql_locale: en_US.UTF-8
+
+postgresql_extensions: [ ]
+
+postgresql_whitelist_extensions: [ ]
+
+postgresql_ssl: [ ]
+
+postgresql_replication: false
+postgresql_replication_role: master
+#postgresql_replication_master_ip: 10.0.0.1
+postgresql_users_replication: [ ]
+
+postgresql_users_default:
+  - user: "{{ postgresql_superuser }}"
+    connections:
+      - database: all
+        type: local
+        auth: trust
+      - database: all
+        type: host
+        address: 127.0.0.1/32
+        auth: trust
+      - database: all
+        type: host
+        address: ::1/128
+        auth: trust
+
+postgresql_users: [ ]
+
+postgresql_databases: [ ]
+
+postgresql_archive_dir_path: '/opt/postgresql/archivedir'
+
+# postgresql.conf configuration options
+
+#postgresql_cfg_archive_mode:
+#postgresql_cfg_autovacuum_work_mem: -1
+postgresql_cfg_data_directory: '/var/lib/postgresql/{{ postgresql_version }}/{{ postgresql_cluster_name }}'
+postgresql_cfg_datestyle: 'iso, mdy'
+#postgresql_cfg_db_user_namespace: 'off'
+#postgresql_cfg_deadlock_timeout:
+#postgresql_cfg_debug_pretty_print:
+#postgresql_cfg_debug_print_parse:
+#postgresql_cfg_debug_print_plan:
+#postgresql_cfg_debug_print_rewritten:
+#postgresql_cfg_default_statistics_target:
+#postgresql_cfg_default_tablespace:
+postgresql_cfg_default_text_search_config: 'pg_catalog.english'
+#postgresql_cfg_default_transaction_deferrable:
+#postgresql_cfg_default_transaction_isolation:
+#postgresql_cfg_default_transaction_read_only:
+#postgresql_cfg_default_with_oids:
+#postgresql_cfg_dynamic_library_path:
+#postgresql_cfg_dynamic_shared_memory_type: 'posix'
+#postgresql_cfg_effective_cache_size:
+#postgresql_cfg_effective_io_concurrency:
+#postgresql_cfg_enable_bitmapscan:
+#postgresql_cfg_enable_hashagg:
+#postgresql_cfg_enable_hashjoin:
+#postgresql_cfg_enable_indexonlyscan:
+#postgresql_cfg_enable_indexscan:
+#postgresql_cfg_enable_material:
+#postgresql_cfg_enable_mergejoin:
+#postgresql_cfg_enable_nestloop:
+#postgresql_cfg_enable_seqscan:
+#postgresql_cfg_enable_sort:
+#postgresql_cfg_enable_tidscan:
+#postgresql_cfg_escape_string_warning:
+#postgresql_cfg_event_source:
+#postgresql_cfg_exit_on_error:
+postgresql_cfg_external_pid_file: '/var/run/postgresql/{{ postgresql_version }}-{{ postgresql_cluster_name }}.pid'
+#postgresql_cfg_extra_float_digits:
+#postgresql_cfg_from_collapse_limit:
+#postgresql_cfg_fsync:
+#postgresql_cfg_full_page_writes:
+#postgresql_cfg_geqo:
+#postgresql_cfg_geqo_effort:
+#postgresql_cfg_geqo_generations:
+#postgresql_cfg_geqo_pool_size:
+#postgresql_cfg_geqo_seed:
+#postgresql_cfg_geqo_selection_bias:
+#postgresql_cfg_geqo_threshold:
+postgresql_cfg_hba_file: '/etc/postgresql/{{ postgresql_version }}/{{ postgresql_cluster_name }}/pg_hba.conf'
+#postgresql_cfg_hot_standby:
+#postgresql_cfg_hot_standby_feedback:
+#postgresql_cfg_huge_pages: '8MB'
+postgresql_cfg_ident_file: '/etc/postgresql/{{ postgresql_version }}/{{ postgresql_cluster_name }}/pg_ident.conf'
+#postgresql_cfg_include:
+#postgresql_cfg_include_dir:
+#postgresql_cfg_include_if_exists:
+#postgresql_cfg_intervalstyle:
+#postgresql_cfg_join_collapse_limit:
+#postgresql_cfg_krb_caseins_users:
+#postgresql_cfg_krb_server_keyfile:
+#postgresql_cfg_krb_srvname:
+postgresql_cfg_lc_messages: 'en_US.utf8'
+postgresql_cfg_lc_monetary: 'en_US.utf8'
+postgresql_cfg_lc_numeric: 'en_US.utf8'
+postgresql_cfg_lc_time: 'en_US.utf8'
+#postgresql_cfg_listen_addresses: 'localhost,127.0.0.1'
+#postgresql_cfg_lo_compat_privileges:
+#postgresql_cfg_local_preload_libraries:
+#postgresql_cfg_lock_timeout:
+#postgresql_cfg_log_autovacuum_min_duration:
+#postgresql_cfg_log_checkpoints:
+#postgresql_cfg_log_connections:
+#postgresql_cfg_log_destination:
+#postgresql_cfg_log_directory:
+#postgresql_cfg_log_disconnections:
+#postgresql_cfg_log_duration:
+#postgresql_cfg_log_error_verbosity:
+#postgresql_cfg_log_executor_stats:
+#postgresql_cfg_log_file_mode:
+#postgresql_cfg_log_filename:
+#postgresql_cfg_log_hostname:
+postgresql_cfg_log_line_prefix: '%t [%p-%l] %q%u@%d '
+#postgresql_cfg_log_lock_waits:
+#postgresql_cfg_log_min_duration_statement:
+#postgresql_cfg_log_min_error_statement:
+#postgresql_cfg_log_min_messages:
+#postgresql_cfg_log_parser_stats:
+#postgresql_cfg_log_planner_stats:
+#postgresql_cfg_log_rotation_age:
+#postgresql_cfg_log_rotation_size:
+#postgresql_cfg_log_statement:
+#postgresql_cfg_log_statement_stats:
+#postgresql_cfg_log_temp_files:
+postgresql_cfg_log_timezone: 'UTC'
+#postgresql_cfg_log_truncate_on_rotation:
+#postgresql_cfg_logging_collector:
+#postgresql_cfg_maintenance_work_mem: '64MB'
+postgresql_cfg_max_connections: 100
+#postgresql_cfg_max_files_per_process:
+#postgresql_cfg_max_locks_per_transaction:
+#postgresql_cfg_max_pred_locks_per_transaction:
+#postgresql_cfg_max_prepared_transactions:
+#postgresql_cfg_max_replication_slots:
+#postgresql_cfg_max_stack_depth:
+#postgresql_cfg_max_standby_archive_delay:
+#postgresql_cfg_max_standby_streaming_delay:
+#postgresql_cfg_max_wal_senders: 3
+#postgresql_cfg_max_worker_processes:
+#postgresql_cfg_password_encryption: on
+postgresql_cfg_port: 5432
+#postgresql_cfg_quote_all_identifiers:
+#postgresql_cfg_random_page_cost:
+#postgresql_cfg_replication_timeout:
+#postgresql_cfg_restart_after_crash:
+#postgresql_cfg_search_path:
+#postgresql_cfg_seq_page_cost:
+#postgresql_cfg_session_preload_libraries:
+#postgresql_cfg_session_replication_role:
+postgresql_cfg_shared_buffers: 128MB
+#postgresql_cfg_shared_preload_libraries:
+#postgresql_cfg_sql_inheritance:
+postgresql_cfg_ssl: 'true'
+#postgresql_cfg_ssl_ca_file:
+#postgresql_cfg_ssl_cert_file: '/etc/ssl/certs/ssl-cert-snakeoil.pem'
+#postgresql_cfg_ssl_ciphers:
+#postgresql_cfg_ssl_crl_file:
+#postgresql_cfg_ssl_ecdh_curve:
+#postgresql_cfg_ssl_key_file: '/etc/ssl/private/ssl-cert-snakeoil.key'
+#postgresql_cfg_ssl_prefer_server_ciphers:
+#postgresql_cfg_ssl_renegotiation_limit:
+#postgresql_cfg_standard_conforming_strings:
+#postgresql_cfg_statement_timeout:
+postgresql_cfg_stats_temp_directory: '/var/run/postgresql/{{ postgresql_version }}-{{ postgresql_cluster_name }}.pg_stat_tmp'
+#postgresql_cfg_superuser_reserved_connections: 3
+#postgresql_cfg_synchronize_seqscans:
+#postgresql_cfg_synchronous_commit:
+#postgresql_cfg_synchronous_standby_names:
+#postgresql_cfg_syslog_facility:
+#postgresql_cfg_syslog_ident:
+#postgresql_cfg_tcp_keepalives_count:
+#postgresql_cfg_tcp_keepalives_idle:
+#postgresql_cfg_tcp_keepalives_interval:
+#postgresql_cfg_temp_buffers:
+#postgresql_cfg_temp_file_limit:
+#postgresql_cfg_temp_tablespaces:
+postgresql_cfg_timezone: 'UTC'
+#postgresql_cfg_timezone_abbreviations:
+#postgresql_cfg_track_activities:
+#postgresql_cfg_track_activity_query_size:
+#postgresql_cfg_track_counts:
+#postgresql_cfg_track_functions:
+#postgresql_cfg_track_io_timing:
+#postgresql_cfg_transform_null_equals:
+postgresql_cfg_unix_socket_directories: '/var/run/postgresql'
+#postgresql_cfg_unix_socket_directory:
+#postgresql_cfg_unix_socket_group: ''
+#postgresql_cfg_unix_socket_permissions: 0777
+#postgresql_cfg_update_process_title:
+#postgresql_cfg_vacuum_cost_delay:
+#postgresql_cfg_vacuum_cost_limit:
+#postgresql_cfg_vacuum_cost_page_dirty:
+#postgresql_cfg_vacuum_cost_page_hit:
+#postgresql_cfg_vacuum_cost_page_miss:
+#postgresql_cfg_vacuum_defer_cleanup_age:
+#postgresql_cfg_vacuum_freeze_min_age:
+#postgresql_cfg_vacuum_freeze_table_age:
+#postgresql_cfg_vacuum_multixact_freeze_min_age:
+#postgresql_cfg_vacuum_multixact_freeze_table_age:
+#postgresql_cfg_wal_buffers:
+#postgresql_cfg_wal_keep_segments:
+#postgresql_cfg_wal_level:
+#postgresql_cfg_wal_log_hints:
+#postgresql_cfg_wal_receiver_status_interval:
+#postgresql_cfg_wal_receiver_timeout:
+#postgresql_cfg_wal_sender_timeout:
+#postgresql_cfg_wal_sync_method:
+#postgresql_cfg_wal_writer_delay:
+#postgresql_cfg_work_mem: '4MB'
+#postgresql_cfg_xmlbinary:
+#postgresql_cfg_xmloption:
+
