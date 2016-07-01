@@ -24,7 +24,6 @@
   postgresql_user:
     name: "{{ app_name }}"
     password: "{{ postgres_app_user_password }}"
-    db: "{{ app_name }}"
     role_attr_flags: "CREATEDB,LOGIN,NOSUPERUSER"
     login_user: postgres
     state: "present"
