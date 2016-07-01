@@ -21,6 +21,7 @@
   notify: reload postgresql
 
 - name: create the archive dir
+  sudo: yes
   file:
     path: "{{ postgresql_archive_dir_path }}"
     state: directory
