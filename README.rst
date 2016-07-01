@@ -38,8 +38,10 @@ information about.
 POST /api/repos/(project)/
 ----------------------
 
-Used to add / update repos for a given project. You must
-POST a json object with the following data::
+Used to add and update a repo for a given project.
+
+When adding a repo, you must POST a json object with
+the following data::
 
     {
         "distro": "Ubuntu",
@@ -48,8 +50,17 @@ POST a json object with the following data::
         "sha1": "45107e21c568dd033c2f0a3107dec8f0b0e58374",
         "url": "https://chacra.ceph.com/r/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/trusty/",
         "chacra_url": "https://chacra.ceph.com/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/trusty/",
-        "modified" "2016-06-15 14:04:54.671504",
-        "state": "ready"
+        "status": "requested"
+    }
+
+The ``status`` and ``url`` fields are available for updating. You
+need to include the ``chacra_url`` as the unique identifier for the repo
+when updating. For example, to change a repo's ``status`` to "ready" POST
+with the following::
+
+    {
+        "chacra_url": "https://chacra.ceph.com/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/trusty/",
+        "status": "ready"
     }
 
 GET /api/search/(project)/(ref|sha1)/
