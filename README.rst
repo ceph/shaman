@@ -11,6 +11,15 @@ allowing for horizontal scalability.
 Configuration
 =============
 
+credentials
+^^^^^^^^^^^
+The POST and DELETE HTTP methods are protected by default using basic HTTP
+authentication. The credentials must be defined in the configuration file for
+the service as follows::
+
+    api_user = 'username'
+    api_key = 'secret'
+
 
 API Endpoints
 =============
@@ -38,8 +47,10 @@ information about.
 POST /api/repos/(project)/
 ----------------------
 
-Used to add / update repos for a given project. You must
-POST a json object with the following data::
+Used to add and update a repo for a given project.
+
+When adding a repo, you must POST a json object with
+the following data::
 
     {
         "distro": "Ubuntu",
@@ -48,8 +59,17 @@ POST a json object with the following data::
         "sha1": "45107e21c568dd033c2f0a3107dec8f0b0e58374",
         "url": "https://chacra.ceph.com/r/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/trusty/",
         "chacra_url": "https://chacra.ceph.com/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/trusty/",
-        "modified" "2016-06-15 14:04:54.671504",
-        "state": "ready"
+        "status": "requested"
+    }
+
+The ``status`` and ``url`` fields are available for updating. You
+need to include the ``chacra_url`` as the unique identifier for the repo
+when updating. For example, to change a repo's ``status`` to "ready" POST
+with the following::
+
+    {
+        "chacra_url": "https://chacra.ceph.com/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/trusty/",
+        "status": "ready"
     }
 
 GET /api/search/(project)/(ref|sha1)/
@@ -70,7 +90,7 @@ for the ``master`` ref::
        "url": "https://chacra.ceph.com/r/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
        "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
        "modified" "2016-06-15 14:04:54.671504",
-       "state": "building",
+       "status": "building",
      },
      {
        "ref": "master",
@@ -80,7 +100,7 @@ for the ``master`` ref::
        "url": "",
        "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/xenial/"
        "modified" "2016-06-15 14:04:54.671504",
-       "state": "queued",
+       "status": "queued",
      },
      ...
    ]
