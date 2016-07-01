@@ -13,12 +13,12 @@
   when: postgres_app_user_password is not defined
 
 - set_fact:
-  postgres_app_user_password: "{{ generated_app_user_password.stdout }}"
-  when: postgres_app_user_password is not defined
+    postgres_app_user_password: "{{ generated_app_user_password.stdout }}"
+    when: postgres_app_user_password is not defined
 
 - set_fact:
-  postgres_replication_user_password: "{{ generated_replication_user_password.stdout }}"
-  when: postgres_replication_user_password is not defined
+    postgres_replication_user_password: "{{ generated_replication_user_password.stdout }}"
+    when: postgres_replication_user_password is not defined
 
 - name: create user for {{ app_name }} app
   postgresql_user:
