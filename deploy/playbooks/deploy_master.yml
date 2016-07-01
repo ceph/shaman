@@ -13,7 +13,7 @@
      api_user: "admin"
      api_key: "secret"
      # postgres specific
-     postgresql_replication_master_ip: {{ master_ip }}
+     postgresql_replication_master_ip: "{{ master_ip }}"
      postgresql_cfg_wal_level: 'hot_standby'
      postgresql_cfg_max_wal_senders: 3
      postgresql_cfg_archive_mode: 'on'
@@ -33,4 +33,4 @@
              type: host
              auth: md5
              # might want to rethink this approach to allow multiple standby # IPs
-             address: {{ standby_ip }}
+             address: "{{ standby_ip }}"
