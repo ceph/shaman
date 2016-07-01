@@ -1,0 +1,691 @@
+# {{ ansible_managed }}
+# -----------------------------
+# PostgreSQL configuration file
+# -----------------------------
+#
+# This file consists of lines of the form:
+#
+#   name = value
+#
+# (The "=" is optional.)  Whitespace may be used.  Comments are introduced with
+# "#" anywhere on a line.  The complete list of parameter names and allowed
+# values can be found in the PostgreSQL documentation.
+#
+# The commented-out settings shown in this file represent the default values.
+# Re-commenting a setting is NOT sufficient to revert it to the default value;
+# you need to reload the server.
+#
+# This file is read on server startup and when the server receives a SIGHUP
+# signal.  If you edit the file on a running system, you have to SIGHUP the
+# server for the changes to take effect, or use "pg_ctl reload".  Some
+# parameters, which are marked below, require a server shutdown and restart to
+# take effect.
+#
+# Any parameter can also be given as a command-line option to the server, e.g.,
+# "postgres -c log_connections=on".  Some parameters can be changed at run time
+# with the "SET" SQL command.
+#
+# Memory units:  kB = kilobytes        Time units:  ms  = milliseconds
+#                MB = megabytes                     s   = seconds
+#                GB = gigabytes                     min = minutes
+#                TB = terabytes                     h   = hours
+#
+{% if postgresql_cfg_archive_command is defined %}
+archive_command = '{{ postgresql_cfg_archive_command }}'
+{% endif %}
+{% if postgresql_cfg_archive_mode is defined %}
+archive_mode = '{{ postgresql_cfg_archive_mode }}'
+{% endif %}
+{% if postgresql_cfg_archive_timeout is defined %}
+archive_timeout = '{{ postgresql_cfg_archive_timeout }}'
+{% endif %}
+{% if postgresql_cfg_array_nulls is defined %}
+array_nulls = '{{ postgresql_cfg_array_nulls }}'
+{% endif %}
+{% if postgresql_cfg_authentication_timeout is defined %}
+authentication_timeout = '{{ postgresql_cfg_authentication_timeout }}'
+{% endif %}
+{% if postgresql_cfg_autovacuum is defined %}
+autovacuum = '{{ postgresql_cfg_autovacuum }}'
+{% endif %}
+{% if postgresql_cfg_autovacuum_work_mem is defined %}
+autovacuum_work_mem = '{{ postgresql_cfg_autovacuum_work_mem }}'
+{% endif %}
+{% if postgresql_cfg_autovacuum_analyze_scale_factor is defined %}
+autovacuum_analyze_scale_factor = '{{ postgresql_cfg_autovacuum_analyze_scale_factor }}'
+{% endif %}
+{% if postgresql_cfg_autovacuum_analyze_threshold is defined %}
+autovacuum_analyze_threshold = '{{ postgresql_cfg_autovacuum_analyze_threshold }}'
+{% endif %}
+{% if postgresql_cfg_autovacuum_freeze_max_age is defined %}
+autovacuum_freeze_max_age = '{{ postgresql_cfg_autovacuum_freeze_max_age }}'
+{% endif %}
+{% if postgresql_cfg_autovacuum_max_workers is defined %}
+autovacuum_max_workers = '{{ postgresql_cfg_autovacuum_max_workers }}'
+{% endif %}
+{% if postgresql_cfg_autovacuum_multixact_freeze_max_age is defined %}
+autovacuum_multixact_freeze_max_age = '{{ postgresql_cfg_autovacuum_multixact_freeze_max_age }}'
+{% endif %}
+{% if postgresql_cfg_autovacuum_naptime is defined %}
+autovacuum_naptime = '{{ postgresql_cfg_autovacuum_naptime }}'
+{% endif %}
+{% if postgresql_cfg_autovacuum_vacuum_cost_delay is defined %}
+autovacuum_vacuum_cost_delay = '{{ postgresql_cfg_autovacuum_vacuum_cost_delay }}'
+{% endif %}
+{% if postgresql_cfg_autovacuum_vacuum_cost_limit is defined %}
+autovacuum_vacuum_cost_limit = '{{ postgresql_cfg_autovacuum_vacuum_cost_limit }}'
+{% endif %}
+{% if postgresql_cfg_autovacuum_vacuum_scale_factor is defined %}
+autovacuum_vacuum_scale_factor = '{{ postgresql_cfg_autovacuum_vacuum_scale_factor }}'
+{% endif %}
+{% if postgresql_cfg_autovacuum_vacuum_threshold is defined %}
+autovacuum_vacuum_threshold = '{{ postgresql_cfg_autovacuum_vacuum_threshold }}'
+{% endif %}
+{% if postgresql_cfg_autovacuum_work_mem is defined %}
+autovacuum_work_mem = '{{ postgresql_cfg_autovacuum_work_mem }}'
+{% endif %}
+{% if postgresql_cfg_backslash_quote is defined %}
+backslash_quote = '{{ postgresql_cfg_backslash_quote }}'
+{% endif %}
+{% if postgresql_cfg_bgwriter_delay is defined %}
+bgwriter_delay = '{{ postgresql_cfg_bgwriter_delay }}'
+{% endif %}
+{% if postgresql_cfg_bgwriter_lru_maxpages is defined %}
+bgwriter_lru_maxpages = '{{ postgresql_cfg_bgwriter_lru_maxpages }}'
+{% endif %}
+{% if postgresql_cfg_bgwriter_lru_multiplier is defined %}
+bgwriter_lru_multiplier = '{{ postgresql_cfg_bgwriter_lru_multiplier }}'
+{% endif %}
+{% if postgresql_cfg_bonjour is defined %}
+bonjour = '{{ postgresql_cfg_bonjour }}'
+{% endif %}
+{% if postgresql_cfg_bonjour_name is defined %}
+bonjour_name = '{{ postgresql_cfg_bonjour_name }}'
+{% endif %}
+{% if postgresql_cfg_bytea_output is defined %}
+bytea_output = '{{ postgresql_cfg_bytea_output }}'
+{% endif %}
+{% if postgresql_cfg_check_function_bodies is defined %}
+check_function_bodies = '{{ postgresql_cfg_check_function_bodies }}'
+{% endif %}
+{% if postgresql_cfg_checkpoint_completion_target is defined %}
+checkpoint_completion_target = '{{ postgresql_cfg_checkpoint_completion_target }}'
+{% endif %}
+{% if postgresql_cfg_checkpoint_segments is defined %}
+checkpoint_segments = '{{ postgresql_cfg_checkpoint_segments }}'
+{% endif %}
+{% if postgresql_cfg_checkpoint_timeout is defined %}
+checkpoint_timeout = '{{ postgresql_cfg_checkpoint_timeout }}'
+{% endif %}
+{% if postgresql_cfg_checkpoint_warning is defined %}
+checkpoint_warning = '{{ postgresql_cfg_checkpoint_warning }}'
+{% endif %}
+{% if postgresql_cfg_client_encoding is defined %}
+client_encoding = '{{ postgresql_cfg_client_encoding }}'
+{% endif %}
+{% if postgresql_cfg_client_min_messages is defined %}
+client_min_messages = '{{ postgresql_cfg_client_min_messages }}'
+{% endif %}
+{% if postgresql_cfg_commit_delay is defined %}
+commit_delay = '{{ postgresql_cfg_commit_delay }}'
+{% endif %}
+{% if postgresql_cfg_commit_siblings is defined %}
+commit_siblings = '{{ postgresql_cfg_commit_siblings }}'
+{% endif %}
+{% if postgresql_cfg_constraint_exclusion is defined %}
+constraint_exclusion = '{{ postgresql_cfg_constraint_exclusion }}'
+{% endif %}
+{% if postgresql_cfg_cpu_index_tuple_cost is defined %}
+cpu_index_tuple_cost = '{{ postgresql_cfg_cpu_index_tuple_cost }}'
+{% endif %}
+{% if postgresql_cfg_cpu_operator_cost is defined %}
+cpu_operator_cost = '{{ postgresql_cfg_cpu_operator_cost }}'
+{% endif %}
+{% if postgresql_cfg_cpu_tuple_cost is defined %}
+cpu_tuple_cost = '{{ postgresql_cfg_cpu_tuple_cost }}'
+{% endif %}
+{% if postgresql_cfg_cursor_tuple_fraction is defined %}
+cursor_tuple_fraction = '{{ postgresql_cfg_cursor_tuple_fraction }}'
+{% endif %}
+{% if postgresql_cfg_data_directory is defined %}
+data_directory = '{{ postgresql_cfg_data_directory }}'
+{% endif %}
+{% if postgresql_cfg_datestyle is defined %}
+datestyle = '{{ postgresql_cfg_datestyle }}'
+{% endif %}
+{% if postgresql_cfg_db_user_namespace is defined %}
+db_user_namespace = '{{ postgresql_cfg_db_user_namespace }}'
+{% endif %}
+{% if postgresql_cfg_deadlock_timeout is defined %}
+deadlock_timeout = '{{ postgresql_cfg_deadlock_timeout }}'
+{% endif %}
+{% if postgresql_cfg_debug_pretty_print is defined %}
+debug_pretty_print = '{{ postgresql_cfg_debug_pretty_print }}'
+{% endif %}
+{% if postgresql_cfg_debug_print_parse is defined %}
+debug_print_parse = '{{ postgresql_cfg_debug_print_parse }}'
+{% endif %}
+{% if postgresql_cfg_debug_print_plan is defined %}
+debug_print_plan = '{{ postgresql_cfg_debug_print_plan }}'
+{% endif %}
+{% if postgresql_cfg_debug_print_rewritten is defined %}
+debug_print_rewritten = '{{ postgresql_cfg_debug_print_rewritten }}'
+{% endif %}
+{% if postgresql_cfg_default_statistics_target is defined %}
+default_statistics_target = '{{ postgresql_cfg_default_statistics_target }}'
+{% endif %}
+{% if postgresql_cfg_default_tablespace is defined %}
+default_tablespace = '{{ postgresql_cfg_default_tablespace }}'
+{% endif %}
+{% if postgresql_cfg_default_text_search_config is defined %}
+default_text_search_config = '{{ postgresql_cfg_default_text_search_config }}'
+{% endif %}
+{% if postgresql_cfg_default_transaction_deferrable is defined %}
+default_transaction_deferrable = '{{ postgresql_cfg_default_transaction_deferrable }}'
+{% endif %}
+{% if postgresql_cfg_default_transaction_isolation is defined %}
+default_transaction_isolation = '{{ postgresql_cfg_default_transaction_isolation }}'
+{% endif %}
+{% if postgresql_cfg_default_transaction_read_only is defined %}
+default_transaction_read_only = '{{ postgresql_cfg_default_transaction_read_only }}'
+{% endif %}
+{% if postgresql_cfg_default_with_oids is defined %}
+default_with_oids = '{{ postgresql_cfg_default_with_oids }}'
+{% endif %}
+{% if postgresql_cfg_dynamic_library_path is defined %}
+dynamic_library_path = '{{ postgresql_cfg_dynamic_library_path }}'
+{% endif %}
+{% if postgresql_cfg_dynamic_shared_memory_type is defined %}
+dynamic_shared_memory_type = '{{ postgresql_cfg_dynamic_shared_memory_type }}'
+{% endif %}
+{% if postgresql_cfg_effective_cache_size is defined %}
+effective_cache_size = '{{ postgresql_cfg_effective_cache_size }}'
+{% endif %}
+{% if postgresql_cfg_effective_io_concurrency is defined %}
+effective_io_concurrency = '{{ postgresql_cfg_effective_io_concurrency }}'
+{% endif %}
+{% if postgresql_cfg_enable_bitmapscan is defined %}
+enable_bitmapscan = '{{ postgresql_cfg_enable_bitmapscan }}'
+{% endif %}
+{% if postgresql_cfg_enable_hashagg is defined %}
+enable_hashagg = '{{ postgresql_cfg_enable_hashagg }}'
+{% endif %}
+{% if postgresql_cfg_enable_hashjoin is defined %}
+enable_hashjoin = '{{ postgresql_cfg_enable_hashjoin }}'
+{% endif %}
+{% if postgresql_cfg_enable_indexonlyscan is defined %}
+enable_indexonlyscan = '{{ postgresql_cfg_enable_indexonlyscan }}'
+{% endif %}
+{% if postgresql_cfg_enable_indexscan is defined %}
+enable_indexscan = '{{ postgresql_cfg_enable_indexscan }}'
+{% endif %}
+{% if postgresql_cfg_enable_material is defined %}
+enable_material = '{{ postgresql_cfg_enable_material }}'
+{% endif %}
+{% if postgresql_cfg_enable_mergejoin is defined %}
+enable_mergejoin = '{{ postgresql_cfg_enable_mergejoin }}'
+{% endif %}
+{% if postgresql_cfg_enable_nestloop is defined %}
+enable_nestloop = '{{ postgresql_cfg_enable_nestloop }}'
+{% endif %}
+{% if postgresql_cfg_enable_seqscan is defined %}
+enable_seqscan = '{{ postgresql_cfg_enable_seqscan }}'
+{% endif %}
+{% if postgresql_cfg_enable_sort is defined %}
+enable_sort = '{{ postgresql_cfg_enable_sort }}'
+{% endif %}
+{% if postgresql_cfg_enable_tidscan is defined %}
+enable_tidscan = '{{ postgresql_cfg_enable_tidscan }}'
+{% endif %}
+{% if postgresql_cfg_escape_string_warning is defined %}
+escape_string_warning = '{{ postgresql_cfg_escape_string_warning }}'
+{% endif %}
+{% if postgresql_cfg_event_source is defined %}
+event_source = '{{ postgresql_cfg_event_source }}'
+{% endif %}
+{% if postgresql_cfg_exit_on_error is defined %}
+exit_on_error = '{{ postgresql_cfg_exit_on_error }}'
+{% endif %}
+{% if postgresql_cfg_external_pid_file is defined %}
+external_pid_file = '{{ postgresql_cfg_external_pid_file }}'
+{% endif %}
+{% if postgresql_cfg_extra_float_digits is defined %}
+extra_float_digits = '{{ postgresql_cfg_extra_float_digits }}'
+{% endif %}
+{% if postgresql_cfg_from_collapse_limit is defined %}
+from_collapse_limit = '{{ postgresql_cfg_from_collapse_limit }}'
+{% endif %}
+{% if postgresql_cfg_fsync is defined %}
+fsync = '{{ postgresql_cfg_fsync }}'
+{% endif %}
+{% if postgresql_cfg_full_page_writes is defined %}
+full_page_writes = '{{ postgresql_cfg_full_page_writes }}'
+{% endif %}
+{% if postgresql_cfg_geqo is defined %}
+geqo = '{{ postgresql_cfg_geqo }}'
+{% endif %}
+{% if postgresql_cfg_geqo_effort is defined %}
+geqo_effort = '{{ postgresql_cfg_geqo_effort }}'
+{% endif %}
+{% if postgresql_cfg_geqo_generations is defined %}
+geqo_generations = '{{ postgresql_cfg_geqo_generations }}'
+{% endif %}
+{% if postgresql_cfg_geqo_pool_size is defined %}
+geqo_pool_size = '{{ postgresql_cfg_geqo_pool_size }}'
+{% endif %}
+{% if postgresql_cfg_geqo_seed is defined %}
+geqo_seed = '{{ postgresql_cfg_geqo_seed }}'
+{% endif %}
+{% if postgresql_cfg_geqo_selection_bias is defined %}
+geqo_selection_bias = '{{ postgresql_cfg_geqo_selection_bias }}'
+{% endif %}
+{% if postgresql_cfg_geqo_threshold is defined %}
+geqo_threshold = '{{ postgresql_cfg_geqo_threshold }}'
+{% endif %}
+{% if postgresql_cfg_hba_file is defined %}
+hba_file = '{{ postgresql_cfg_hba_file }}'
+{% endif %}
+{% if postgresql_cfg_hot_standby is defined %}
+hot_standby = '{{ postgresql_cfg_hot_standby }}'
+{% endif %}
+{% if postgresql_cfg_hot_standby_feedback is defined %}
+hot_standby_feedback = '{{ postgresql_cfg_hot_standby_feedback }}'
+{% endif %}
+{% if postgresql_cfg_huge_pages is defined %}
+huge_pages = '{{ postgresql_cfg_huge_pages }}'
+{% endif %}
+{% if postgresql_cfg_ident_file is defined %}
+ident_file = '{{ postgresql_cfg_ident_file }}'
+{% endif %}
+{% if postgresql_cfg_include is defined %}
+include = '{{ postgresql_cfg_include }}'
+{% endif %}
+{% if postgresql_cfg_include_dir is defined %}
+include_dir = '{{ postgresql_cfg_include_dir }}'
+{% endif %}
+{% if postgresql_cfg_include_if_exists is defined %}
+include_if_exists = '{{ postgresql_cfg_include_if_exists }}'
+{% endif %}
+{% if postgresql_cfg_intervalstyle is defined %}
+intervalstyle = '{{ postgresql_cfg_intervalstyle }}'
+{% endif %}
+{% if postgresql_cfg_join_collapse_limit is defined %}
+join_collapse_limit = '{{ postgresql_cfg_join_collapse_limit }}'
+{% endif %}
+{% if postgresql_cfg_krb_caseins_users is defined %}
+krb_caseins_users = '{{ postgresql_cfg_krb_caseins_users }}'
+{% endif %}
+{% if postgresql_cfg_krb_server_keyfile is defined %}
+krb_server_keyfile = '{{ postgresql_cfg_krb_server_keyfile }}'
+{% endif %}
+{% if postgresql_cfg_krb_srvname is defined %}
+krb_srvname = '{{ postgresql_cfg_krb_srvname }}'
+{% endif %}
+{% if postgresql_cfg_lc_messages is defined %}
+lc_messages = '{{ postgresql_cfg_lc_messages }}'
+{% endif %}
+{% if postgresql_cfg_lc_monetary is defined %}
+lc_monetary = '{{ postgresql_cfg_lc_monetary }}'
+{% endif %}
+{% if postgresql_cfg_lc_numeric is defined %}
+lc_numeric = '{{ postgresql_cfg_lc_numeric }}'
+{% endif %}
+{% if postgresql_cfg_lc_time is defined %}
+lc_time = '{{ postgresql_cfg_lc_time }}'
+{% endif %}
+{% if postgresql_cfg_listen_addresses is defined %}
+listen_addresses = '{{ postgresql_cfg_listen_addresses }}'
+{% endif %}
+{% if postgresql_cfg_lo_compat_privileges is defined %}
+lo_compat_privileges = '{{ postgresql_cfg_lo_compat_privileges }}'
+{% endif %}
+{% if postgresql_cfg_local_preload_libraries is defined %}
+local_preload_libraries = '{{ postgresql_cfg_local_preload_libraries }}'
+{% endif %}
+{% if postgresql_cfg_lock_timeout is defined %}
+lock_timeout = '{{ postgresql_cfg_lock_timeout }}'
+{% endif %}
+{% if postgresql_cfg_log_autovacuum_min_duration is defined %}
+log_autovacuum_min_duration = '{{ postgresql_cfg_log_autovacuum_min_duration }}'
+{% endif %}
+{% if postgresql_cfg_log_checkpoints is defined %}
+log_checkpoints = '{{ postgresql_cfg_log_checkpoints }}'
+{% endif %}
+{% if postgresql_cfg_log_connections is defined %}
+log_connections = '{{ postgresql_cfg_log_connections }}'
+{% endif %}
+{% if postgresql_cfg_log_destination is defined %}
+log_destination = '{{ postgresql_cfg_log_destination }}'
+{% endif %}
+{% if postgresql_cfg_log_directory is defined %}
+log_directory = '{{ postgresql_cfg_log_directory }}'
+{% endif %}
+{% if postgresql_cfg_log_disconnections is defined %}
+log_disconnections = '{{ postgresql_cfg_log_disconnections }}'
+{% endif %}
+{% if postgresql_cfg_log_duration is defined %}
+log_duration = '{{ postgresql_cfg_log_duration }}'
+{% endif %}
+{% if postgresql_cfg_log_error_verbosity is defined %}
+log_error_verbosity = '{{ postgresql_cfg_log_error_verbosity }}'
+{% endif %}
+{% if postgresql_cfg_log_executor_stats is defined %}
+log_executor_stats = '{{ postgresql_cfg_log_executor_stats }}'
+{% endif %}
+{% if postgresql_cfg_log_file_mode is defined %}
+log_file_mode = '{{ postgresql_cfg_log_file_mode }}'
+{% endif %}
+{% if postgresql_cfg_log_filename is defined %}
+log_filename = '{{ postgresql_cfg_log_filename }}'
+{% endif %}
+{% if postgresql_cfg_log_hostname is defined %}
+log_hostname = '{{ postgresql_cfg_log_hostname }}'
+{% endif %}
+{% if postgresql_cfg_log_line_prefix is defined %}
+log_line_prefix = '{{ postgresql_cfg_log_line_prefix }}'
+{% endif %}
+{% if postgresql_cfg_log_lock_waits is defined %}
+log_lock_waits = '{{ postgresql_cfg_log_lock_waits }}'
+{% endif %}
+{% if postgresql_cfg_log_min_duration_statement is defined %}
+log_min_duration_statement = '{{ postgresql_cfg_log_min_duration_statement }}'
+{% endif %}
+{% if postgresql_cfg_log_min_error_statement is defined %}
+log_min_error_statement = '{{ postgresql_cfg_log_min_error_statement }}'
+{% endif %}
+{% if postgresql_cfg_log_min_messages is defined %}
+log_min_messages = '{{ postgresql_cfg_log_min_messages }}'
+{% endif %}
+{% if postgresql_cfg_log_parser_stats is defined %}
+log_parser_stats = '{{ postgresql_cfg_log_parser_stats }}'
+{% endif %}
+{% if postgresql_cfg_log_planner_stats is defined %}
+log_planner_stats = '{{ postgresql_cfg_log_planner_stats }}'
+{% endif %}
+{% if postgresql_cfg_log_rotation_age is defined %}
+log_rotation_age = '{{ postgresql_cfg_log_rotation_age }}'
+{% endif %}
+{% if postgresql_cfg_log_rotation_size is defined %}
+log_rotation_size = '{{ postgresql_cfg_log_rotation_size }}'
+{% endif %}
+{% if postgresql_cfg_log_statement is defined %}
+log_statement = '{{ postgresql_cfg_log_statement }}'
+{% endif %}
+{% if postgresql_cfg_log_statement_stats is defined %}
+log_statement_stats = '{{ postgresql_cfg_log_statement_stats }}'
+{% endif %}
+{% if postgresql_cfg_log_temp_files is defined %}
+log_temp_files = '{{ postgresql_cfg_log_temp_files }}'
+{% endif %}
+{% if postgresql_cfg_log_timezone is defined %}
+log_timezone = '{{ postgresql_cfg_log_timezone }}'
+{% endif %}
+{% if postgresql_cfg_log_truncate_on_rotation is defined %}
+log_truncate_on_rotation = '{{ postgresql_cfg_log_truncate_on_rotation }}'
+{% endif %}
+{% if postgresql_cfg_logging_collector is defined %}
+logging_collector = '{{ postgresql_cfg_logging_collector }}'
+{% endif %}
+{% if postgresql_cfg_maintenance_work_mem is defined %}
+maintenance_work_mem = '{{ postgresql_cfg_maintenance_work_mem }}'
+{% endif %}
+{% if postgresql_cfg_max_connections is defined %}
+max_connections = '{{ postgresql_cfg_max_connections }}'
+{% endif %}
+{% if postgresql_cfg_max_files_per_process is defined %}
+max_files_per_process = '{{ postgresql_cfg_max_files_per_process }}'
+{% endif %}
+{% if postgresql_cfg_max_locks_per_transaction is defined %}
+max_locks_per_transaction = '{{ postgresql_cfg_max_locks_per_transaction }}'
+{% endif %}
+{% if postgresql_cfg_max_pred_locks_per_transaction is defined %}
+max_pred_locks_per_transaction = '{{ postgresql_cfg_max_pred_locks_per_transaction }}'
+{% endif %}
+{% if postgresql_cfg_max_prepared_transactions is defined %}
+max_prepared_transactions = '{{ postgresql_cfg_max_prepared_transactions }}'
+{% endif %}
+{% if postgresql_cfg_max_replication_slots is defined %}
+max_replication_slots = '{{ postgresql_cfg_max_replication_slots }}'
+{% endif %}
+{% if postgresql_cfg_max_stack_depth is defined %}
+max_stack_depth = '{{ postgresql_cfg_max_stack_depth }}'
+{% endif %}
+{% if postgresql_cfg_max_standby_archive_delay is defined %}
+max_standby_archive_delay = '{{ postgresql_cfg_max_standby_archive_delay }}'
+{% endif %}
+{% if postgresql_cfg_max_standby_streaming_delay is defined %}
+max_standby_streaming_delay = '{{ postgresql_cfg_max_standby_streaming_delay }}'
+{% endif %}
+{% if postgresql_cfg_max_wal_senders is defined %}
+max_wal_senders = '{{ postgresql_cfg_max_wal_senders }}'
+{% endif %}
+{% if postgresql_cfg_max_worker_processes is defined %}
+max_worker_processes = '{{ postgresql_cfg_max_worker_processes }}'
+{% endif %}
+{% if postgresql_cfg_password_encryption is defined %}
+password_encryption = '{{ postgresql_cfg_password_encryption }}'
+{% endif %}
+{% if postgresql_cfg_port is defined %}
+port = '{{ postgresql_cfg_port }}'
+{% endif %}
+{% if postgresql_cfg_quote_all_identifiers is defined %}
+quote_all_identifiers = '{{ postgresql_cfg_quote_all_identifiers }}'
+{% endif %}
+{% if postgresql_cfg_random_page_cost is defined %}
+random_page_cost = '{{ postgresql_cfg_random_page_cost }}'
+{% endif %}
+{% if postgresql_cfg_replication_timeout is defined %}
+replication_timeout = '{{ postgresql_cfg_replication_timeout }}'
+{% endif %}
+{% if postgresql_cfg_restart_after_crash is defined %}
+restart_after_crash = '{{ postgresql_cfg_restart_after_crash }}'
+{% endif %}
+{% if postgresql_cfg_search_path is defined %}
+search_path = '{{ postgresql_cfg_search_path }}'
+{% endif %}
+{% if postgresql_cfg_seq_page_cost is defined %}
+seq_page_cost = '{{ postgresql_cfg_seq_page_cost }}'
+{% endif %}
+{% if postgresql_cfg_session_preload_libraries is defined %}
+session_preload_libraries = '{{ postgresql_cfg_session_preload_libraries }}'
+{% endif %}
+{% if postgresql_cfg_session_replication_role is defined %}
+session_replication_role = '{{ postgresql_cfg_session_replication_role }}'
+{% endif %}
+{% if postgresql_cfg_shared_buffers is defined %}
+shared_buffers = '{{ postgresql_cfg_shared_buffers }}'
+{% endif %}
+{% if postgresql_cfg_shared_preload_libraries is defined or postgresql_repmgr %}
+{% if postgresql_cfg_shared_preload_libraries is defined %}
+shared_preload_libraries = '{{ postgresql_cfg_shared_preload_libraries }},repmgr_funcs'
+{% else %}
+shared_preload_libraries = 'repmgr_funcs'
+{% endif %}
+{% endif %}
+{% if postgresql_cfg_sql_inheritance is defined %}
+sql_inheritance = '{{ postgresql_cfg_sql_inheritance }}'
+{% endif %}
+{% if postgresql_cfg_ssl is defined %}
+ssl = '{{ postgresql_cfg_ssl }}'
+{% endif %}
+{% if postgresql_cfg_ssl_ca_file is defined %}
+ssl_ca_file = '{{ postgresql_cfg_ssl_ca_file }}'
+{% endif %}
+{% if postgresql_cfg_ssl_cert_file is defined %}
+ssl_cert_file = '{{ postgresql_cfg_ssl_cert_file }}'
+{% endif %}
+{% if postgresql_cfg_ssl_ciphers is defined %}
+ssl_ciphers = '{{ postgresql_cfg_ssl_ciphers }}'
+{% endif %}
+{% if postgresql_cfg_ssl_crl_file is defined %}
+ssl_crl_file = '{{ postgresql_cfg_ssl_crl_file }}'
+{% endif %}
+{% if postgresql_cfg_ssl_ecdh_curve is defined %}
+ssl_ecdh_curve = '{{ postgresql_cfg_ssl_ecdh_curve }}'
+{% endif %}
+{% if postgresql_cfg_ssl_key_file is defined %}
+ssl_key_file = '{{ postgresql_cfg_ssl_key_file }}'
+{% endif %}
+{% if postgresql_cfg_ssl_prefer_server_ciphers is defined %}
+ssl_prefer_server_ciphers = '{{ postgresql_cfg_ssl_prefer_server_ciphers }}'
+{% endif %}
+{% if postgresql_cfg_ssl_renegotiation_limit is defined %}
+ssl_renegotiation_limit = '{{ postgresql_cfg_ssl_renegotiation_limit }}'
+{% endif %}
+{% if postgresql_cfg_standard_conforming_strings is defined %}
+standard_conforming_strings = '{{ postgresql_cfg_standard_conforming_strings }}'
+{% endif %}
+{% if postgresql_cfg_statement_timeout is defined %}
+statement_timeout = '{{ postgresql_cfg_statement_timeout }}'
+{% endif %}
+{% if postgresql_cfg_stats_temp_directory is defined %}
+stats_temp_directory = '{{ postgresql_cfg_stats_temp_directory }}'
+{% endif %}
+{% if postgresql_cfg_superuser_reserved_connections is defined %}
+superuser_reserved_connections = '{{ postgresql_cfg_superuser_reserved_connections }}'
+{% endif %}
+{% if postgresql_cfg_synchronize_seqscans is defined %}
+synchronize_seqscans = '{{ postgresql_cfg_synchronize_seqscans }}'
+{% endif %}
+{% if postgresql_cfg_synchronous_commit is defined %}
+synchronous_commit = '{{ postgresql_cfg_synchronous_commit }}'
+{% endif %}
+{% if postgresql_cfg_synchronous_standby_names is defined %}
+synchronous_standby_names = '{{ postgresql_cfg_synchronous_standby_names }}'
+{% endif %}
+{% if postgresql_cfg_syslog_facility is defined %}
+syslog_facility = '{{ postgresql_cfg_syslog_facility }}'
+{% endif %}
+{% if postgresql_cfg_syslog_ident is defined %}
+syslog_ident = '{{ postgresql_cfg_syslog_ident }}'
+{% endif %}
+{% if postgresql_cfg_tcp_keepalives_count is defined %}
+tcp_keepalives_count = '{{ postgresql_cfg_tcp_keepalives_count }}'
+{% endif %}
+{% if postgresql_cfg_tcp_keepalives_idle is defined %}
+tcp_keepalives_idle = '{{ postgresql_cfg_tcp_keepalives_idle }}'
+{% endif %}
+{% if postgresql_cfg_tcp_keepalives_interval is defined %}
+tcp_keepalives_interval = '{{ postgresql_cfg_tcp_keepalives_interval }}'
+{% endif %}
+{% if postgresql_cfg_temp_buffers is defined %}
+temp_buffers = '{{ postgresql_cfg_temp_buffers }}'
+{% endif %}
+{% if postgresql_cfg_temp_file_limit is defined %}
+temp_file_limit = '{{ postgresql_cfg_temp_file_limit }}'
+{% endif %}
+{% if postgresql_cfg_temp_tablespaces is defined %}
+temp_tablespaces = '{{ postgresql_cfg_temp_tablespaces }}'
+{% endif %}
+{% if postgresql_cfg_timezone is defined %}
+timezone = '{{ postgresql_cfg_timezone }}'
+{% endif %}
+{% if postgresql_cfg_timezone_abbreviations is defined %}
+timezone_abbreviations = '{{ postgresql_cfg_timezone_abbreviations }}'
+{% endif %}
+{% if postgresql_cfg_track_activities is defined %}
+track_activities = '{{ postgresql_cfg_track_activities }}'
+{% endif %}
+{% if postgresql_cfg_track_activity_query_size is defined %}
+track_activity_query_size = '{{ postgresql_cfg_track_activity_query_size }}'
+{% endif %}
+{% if postgresql_cfg_track_counts is defined %}
+track_counts = '{{ postgresql_cfg_track_counts }}'
+{% endif %}
+{% if postgresql_cfg_track_functions is defined %}
+track_functions = '{{ postgresql_cfg_track_functions }}'
+{% endif %}
+{% if postgresql_cfg_track_io_timing is defined %}
+track_io_timing = '{{ postgresql_cfg_track_io_timing }}'
+{% endif %}
+{% if postgresql_cfg_transform_null_equals is defined %}
+transform_null_equals = '{{ postgresql_cfg_transform_null_equals }}'
+{% endif %}
+{% if postgresql_cfg_unix_socket_directories is defined %}
+unix_socket_directories = '{{ postgresql_cfg_unix_socket_directories }}'
+{% endif %}
+{% if postgresql_cfg_unix_socket_directory is defined %}
+unix_socket_directory = '{{ postgresql_cfg_unix_socket_directory }}'
+{% endif %}
+{% if postgresql_cfg_unix_socket_group is defined %}
+unix_socket_group = '{{ postgresql_cfg_unix_socket_group }}'
+{% endif %}
+{% if postgresql_cfg_unix_socket_permissions is defined %}
+unix_socket_permissions = '{{ postgresql_cfg_unix_socket_permissions }}'
+{% endif %}
+{% if postgresql_cfg_update_process_title is defined %}
+update_process_title = '{{ postgresql_cfg_update_process_title }}'
+{% endif %}
+{% if postgresql_cfg_vacuum_cost_delay is defined %}
+vacuum_cost_delay = '{{ postgresql_cfg_vacuum_cost_delay }}'
+{% endif %}
+{% if postgresql_cfg_vacuum_cost_limit is defined %}
+vacuum_cost_limit = '{{ postgresql_cfg_vacuum_cost_limit }}'
+{% endif %}
+{% if postgresql_cfg_vacuum_cost_page_dirty is defined %}
+vacuum_cost_page_dirty = '{{ postgresql_cfg_vacuum_cost_page_dirty }}'
+{% endif %}
+{% if postgresql_cfg_vacuum_cost_page_hit is defined %}
+vacuum_cost_page_hit = '{{ postgresql_cfg_vacuum_cost_page_hit }}'
+{% endif %}
+{% if postgresql_cfg_vacuum_cost_page_miss is defined %}
+vacuum_cost_page_miss = '{{ postgresql_cfg_vacuum_cost_page_miss }}'
+{% endif %}
+{% if postgresql_cfg_vacuum_defer_cleanup_age is defined %}
+vacuum_defer_cleanup_age = '{{ postgresql_cfg_vacuum_defer_cleanup_age }}'
+{% endif %}
+{% if postgresql_cfg_vacuum_freeze_min_age is defined %}
+vacuum_freeze_min_age = '{{ postgresql_cfg_vacuum_freeze_min_age }}'
+{% endif %}
+{% if postgresql_cfg_vacuum_freeze_table_age is defined %}
+vacuum_freeze_table_age = '{{ postgresql_cfg_vacuum_freeze_table_age }}'
+{% endif %}
+{% if postgresql_cfg_vacuum_multixact_freeze_min_age is defined %}
+vacuum_multixact_freeze_min_age = '{{ postgresql_cfg_vacuum_multixact_freeze_min_age }}'
+{% endif %}
+{% if postgresql_cfg_vacuum_multixact_freeze_table_age is defined %}
+vacuum_multixact_freeze_table_age = '{{ postgresql_cfg_vacuum_multixact_freeze_table_age }}'
+{% endif %}
+{% if postgresql_cfg_wal_buffers is defined %}
+wal_buffers = '{{ postgresql_cfg_wal_buffers }}'
+{% endif %}
+{% if postgresql_cfg_wal_keep_segments is defined %}
+wal_keep_segments = '{{ postgresql_cfg_wal_keep_segments }}'
+{% endif %}
+{% if postgresql_cfg_wal_level is defined %}
+wal_level = '{{ postgresql_cfg_wal_level }}'
+{% endif %}
+{% if postgresql_cfg_wal_log_hints is defined %}
+wal_log_hints = '{{ postgresql_cfg_wal_log_hints }}'
+{% endif %}
+{% if postgresql_cfg_wal_receiver_status_interval is defined %}
+wal_receiver_status_interval = '{{ postgresql_cfg_wal_receiver_status_interval }}'
+{% endif %}
+{% if postgresql_cfg_wal_receiver_timeout is defined %}
+wal_receiver_timeout = '{{ postgresql_cfg_wal_receiver_timeout }}'
+{% endif %}
+{% if postgresql_cfg_wal_sender_timeout is defined %}
+wal_sender_timeout = '{{ postgresql_cfg_wal_sender_timeout }}'
+{% endif %}
+{% if postgresql_cfg_wal_sync_method is defined %}
+wal_sync_method = '{{ postgresql_cfg_wal_sync_method }}'
+{% endif %}
+{% if postgresql_cfg_wal_writer_delay is defined %}
+wal_writer_delay = '{{ postgresql_cfg_wal_writer_delay }}'
+{% endif %}
+{% if postgresql_cfg_work_mem is defined %}
+work_mem = '{{ postgresql_cfg_work_mem }}'
+{% endif %}
+{% if postgresql_cfg_xmlbinary is defined %}
+xmlbinary = '{{ postgresql_cfg_xmlbinary }}'
+{% endif %}
+{% if postgresql_cfg_xmloption is defined %}
+xmloption = '{{ postgresql_cfg_xmloption }}'
+{% endif %}
+
+#------------------------------------------------------------------------------
+# CUSTOMIZED OPTIONS
+#------------------------------------------------------------------------------
+{% if postgresql_whitelist_extensions is defined %}
+extwlist.extensions = '{% for ext in postgresql_whitelist_extensions %}{{ ext }}{% if not loop.last %},{% endif %}{% endfor %}'
+{% endif %}
