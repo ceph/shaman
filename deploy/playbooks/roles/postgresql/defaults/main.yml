@@ -2,6 +2,7 @@
 
 postgresql_version: 9.5
 postgresql_superuser: postgres
+postgresql_cluster_name: main
 
 postgresql_encoding: UTF-8
 postgresql_locale: en_US.UTF-8
