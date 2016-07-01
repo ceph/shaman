@@ -10,6 +10,8 @@ class _EntityBase(object):
     A custom declarative base that provides some Elixir-inspired shortcuts.
     """
 
+    allowed_keys = []
+
     @classmethod
     def filter_by(cls, *args, **kwargs):
         return cls.query.filter_by(*args, **kwargs)
@@ -33,8 +35,9 @@ class _EntityBase(object):
         We received a JSON blob with updated metadata information
         that needs to update some fields
         """
-        for key in data.keys():
-            setattr(self, key, data[key])
+        for key in self.allowed_keys:
+            for key in data.keys():
+                setattr(self, key, data[key])
 
 
 Session = scoped_session(sessionmaker())

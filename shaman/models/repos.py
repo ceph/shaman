@@ -22,13 +22,20 @@ class Repo(Base):
     project_id = Column(Integer, ForeignKey('projects.id'))
     project = relationship('Project', backref=backref('repos', lazy='dynamic'))
 
-    def __init__(self, project, ref, sha1, distro, distro_version):
+    allowed_keys = [
+        'url',
+        'chacra_url',
+        'ref',
+        'sha1',
+        'distro',
+        'distro_version',
+        'status',
+    ]
+
+    def __init__(self, project, **kwargs):
         self.project = project
-        self.ref = ref
-        self.sha1 = sha1
-        self.distro = distro
-        self.distro_version = distro_version
         self.modified = datetime.datetime.utcnow()
+        self.update_from_json(kwargs)
 
     def __repr__(self):
         try:

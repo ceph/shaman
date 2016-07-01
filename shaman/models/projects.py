@@ -23,9 +23,10 @@ class Project(Base):
             name=self.name,
         )
 
+    @property
+    def refs(self):
+        return list(set([r.ref for r in self.repos.all()]))
 
-def get_or_create(name):
-    project = Project.filter_by(name=name).first()
-    if not project:
-        project = Project(name=name)
-    return project
+    @property
+    def sha1s(self):
+        return list(set([r.sha1s for r in self.repos.all()]))
