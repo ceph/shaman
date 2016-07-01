@@ -1,0 +1,32 @@
+---
+
+- name: configure postgresql.conf
+  sudo: yes
+  template:
+    dest: "/etc/postgresql/{{ postgresql_version }}/{{ postgresql_cluster_name }}/postgresql.conf"
+    src: postgresql.conf.j2
+    mode: 0644
+    owner: "{{ postgresql_superuser }}"
+    group: "{{ postgresql_superuser }}"
+  notify: restart postgresql
+
+- name: configure pg_hba.conf
+  sudo: yes
+  template:
+    dest: "{{ postgresql_cfg_hba_file }}"
+    src: pg_hba.conf.j2
+    mode: 0644
+    owner: "{{ postgresql_superuser }}"
+    group: "{{ postgresql_superuser }}"
+  notify: reload postgresql
+
+- name: create the archive dir
+  file:
+    path: "{{ postgresql_archive_dir_path }}"
+    state: directory
+    recurse: yes
+    mode: 0644
+    owner: "{{ postgresql_superuser }}"
+    group: "{{ postgresql_superuser }}"
+  notify: reload postgresql
+  when: postgresql_archive_dir_path is defined
