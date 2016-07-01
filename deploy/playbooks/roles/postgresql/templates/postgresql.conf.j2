@@ -495,12 +495,8 @@ session_replication_role = '{{ postgresql_cfg_session_replication_role }}'
 {% if postgresql_cfg_shared_buffers is defined %}
 shared_buffers = '{{ postgresql_cfg_shared_buffers }}'
 {% endif %}
-{% if postgresql_cfg_shared_preload_libraries is defined or postgresql_repmgr %}
 {% if postgresql_cfg_shared_preload_libraries is defined %}
-shared_preload_libraries = '{{ postgresql_cfg_shared_preload_libraries }},repmgr_funcs'
-{% else %}
-shared_preload_libraries = 'repmgr_funcs'
-{% endif %}
+shared_preload_libraries = '{{ postgresql_cfg_shared_preload_libraries }}'
 {% endif %}
 {% if postgresql_cfg_sql_inheritance is defined %}
 sql_inheritance = '{{ postgresql_cfg_sql_inheritance }}'
