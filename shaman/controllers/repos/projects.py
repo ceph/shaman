@@ -41,10 +41,6 @@ class ProjectController(object):
         repo.update_from_json(update_data)
         return {}
 
-    @expose()
-    def _lookup(self, name, *remainder):
-        pass
-
 
 class ProjectsController(object):
 
