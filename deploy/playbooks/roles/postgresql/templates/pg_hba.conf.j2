@@ -6,17 +6,18 @@
 # Noninteractive access to all databases is required during automatic
 # maintenance (custom daily cronjobs, replication, and similar tasks).
 #
-# TYPE  DATABASE        USER            ADDRESS                 METHOD
+# TYPE            DATABASE      USER            ADDRESS                 METHOD
 
 # "local" is for Unix domain socket connections only
-local   all             all                                     peer
+local             all           all                                     peer
 # IPv4 local connections:
-host    all             all             127.0.0.1/32            md5
+host              all           all             127.0.0.1/32            md5
 # IPv6 local connections:
-host    all             all             ::1/128                 md5
+host              all           all             ::1/128                 md5
 
 {% for user in (postgresql_users_default + postgresql_users + postgresql_users_replication) %}
 {% for connection in user.connections | default([]) %}
-{{ connection.type }} {{ connection.database }} {{ user.user }} {{ connection.address | default('') }} {{ connection.auth }}
+{{ connection.type.ljust(8) }} {{ connection.database.rjust(12) }} {{ user.user.rjust(18) }} {{ connection.address | default('            ') }} {{ connection.auth.rjust(15) }}
+
 {% endfor %}
 {% endfor %}
