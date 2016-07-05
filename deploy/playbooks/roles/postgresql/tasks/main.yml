@@ -2,15 +2,15 @@
 
 - include: install.yml
 
-- include: users.yml
-
-- include: configure.yml
-
 - name: ensure database service is up
   service:
     name: postgresql
     state: started
   sudo: yes
+
+- include: users.yml
+
+- include: configure.yml
 
 - name: make {{ app_name }} database
   postgresql_db:

@@ -59,7 +59,7 @@ postgresql_cfg_default_text_search_config: 'pg_catalog.english'
 #postgresql_cfg_default_transaction_read_only:
 #postgresql_cfg_default_with_oids:
 #postgresql_cfg_dynamic_library_path:
-#postgresql_cfg_dynamic_shared_memory_type: 'posix'
+postgresql_cfg_dynamic_shared_memory_type: 'posix'
 #postgresql_cfg_effective_cache_size:
 #postgresql_cfg_effective_io_concurrency:
 #postgresql_cfg_enable_bitmapscan:
@@ -163,11 +163,11 @@ postgresql_cfg_shared_buffers: 128MB
 #postgresql_cfg_sql_inheritance:
 postgresql_cfg_ssl: 'true'
 #postgresql_cfg_ssl_ca_file:
-#postgresql_cfg_ssl_cert_file: '/etc/ssl/certs/ssl-cert-snakeoil.pem'
+postgresql_cfg_ssl_cert_file: '/etc/ssl/certs/ssl-cert-snakeoil.pem'
 #postgresql_cfg_ssl_ciphers:
 #postgresql_cfg_ssl_crl_file:
 #postgresql_cfg_ssl_ecdh_curve:
-#postgresql_cfg_ssl_key_file: '/etc/ssl/private/ssl-cert-snakeoil.key'
+postgresql_cfg_ssl_key_file: '/etc/ssl/private/ssl-cert-snakeoil.key'
 #postgresql_cfg_ssl_prefer_server_ciphers:
 #postgresql_cfg_ssl_renegotiation_limit:
 #postgresql_cfg_standard_conforming_strings:
