@@ -11,6 +11,7 @@
 - include: users.yml
 
 - include: configure.yml
+  when: "'postgresql_master' in group_names"
 
 - name: make {{ app_name }} database
   postgresql_db:
@@ -20,3 +21,6 @@
     login_user: postgres
   sudo_user: postgres
   sudo: yes
+
+- include: standby.yml
+  when: "'postgresql_standby' in group_names"
