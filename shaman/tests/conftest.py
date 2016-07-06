@@ -184,6 +184,8 @@ class TestApp(object):
         @param (string) url - The URL to emulate a GET request to
         @returns (paste.fixture.TestResponse)
         """
+        if not kwargs.get('headers'):
+            kwargs['headers'] = {'Authorization': util.make_credentials()}
         return self._do_request(url, 'GET', **kwargs)
 
     def put(self, url, **kwargs):
