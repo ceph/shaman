@@ -17,6 +17,8 @@ postgresql_replication: false
 postgresql_replication_role: master
 #postgresql_replication_master_ip: 10.0.0.1
 postgresql_users_replication: [ ]
+postgresql_replication_user_password: "{{ generated_replication_user_password.stdout }}"
+postgresql_replication_user: "repuser"
 
 postgresql_users_default:
   - user: "{{ postgresql_superuser }}"
