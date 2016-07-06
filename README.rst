@@ -45,7 +45,7 @@ Returns a list of projects that shaman has repo
 information about.
 
 POST /api/repos/(project)/
-----------------------
+--------------------------
 
 Used to add and update a repo for a given project.
 
@@ -73,10 +73,10 @@ with the following::
     }
 
 GET /api/search/(project)/(ref|sha1)/
---------------------------------
+-------------------------------------
 
 This endpoint is used to query for repos by ref or sha1. It will return metadata about
-the latest built repository or repositories that matches your search criteria. 
+the latest built repository or repositories that matches your search criteria.
 
 A GET to ``/repos/ceph/master/`` would return the a list of all repos
 for the ``master`` ref::
@@ -121,14 +121,14 @@ If you choose to use ``sha1`` instead of ``ref`` at this endoint, the ``common_s
 parameter would not be effective.
 
 GET /api/nodes/
------------
+---------------
 
 Returns a list of the chacra nodes available in the pool::
 
     ["https://chacra01.ceph.com", "https://chacra02.ceph.com"]
 
 POST /api/nodes/
------------
+----------------
 
 This endpoint is used to add a new chacra node to the pool.
 
@@ -138,7 +138,7 @@ You must POST a json object representing the new chacra node::
 
 
 GET /api/nodes/next/
-----------------
+--------------------
 
 Returns the url for the next chacra node in the rotation,
 in plain text::
