@@ -2,7 +2,7 @@ import requests
 import datetime
 
 from pecan import conf
-from sqlalchemy import desc
+from sqlalchemy import asc
 
 from shaman import models
 
@@ -12,7 +12,7 @@ def get_next_node():
     Retrieves the next chacra node in
     the rotation and returns it.
     """
-    next_node = models.Node.query.filter_by(healthy=True).order_by(desc(models.Node.last_used)).first()
+    next_node = models.Node.query.filter_by(healthy=True).order_by(asc(models.Node.last_used)).first()
     if not next_node:
         # maybe raise an exception here?
         return None

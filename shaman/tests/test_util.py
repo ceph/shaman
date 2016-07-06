@@ -78,3 +78,12 @@ class TestGetNextNode(object):
         n2 = Node("chacra02.ceph.com")
         session.commit()
         assert n2 == util.get_next_node()
+
+    def test_pick_last_used_node(self, session, monkeypatch):
+        monkeypatch.setattr(util, "is_node_healthy", lambda node: True)
+        n1 = Node("chacra01.ceph.com")
+        n1.last_used = datetime.datetime.now() - datetime.timedelta(days=1)
+        n2 = Node("chacra02.ceph.com")
+        n2.last_used = datetime.datetime.now()
+        session.commit()
+        assert n1 == util.get_next_node()
