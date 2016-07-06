@@ -15,9 +15,13 @@ host              all           all             127.0.0.1/32            md5
 # IPv6 local connections:
 host              all           all             ::1/128                 md5
 
-{% for user in (postgresql_users_default + postgresql_users + postgresql_users_replication) %}
+{% for user in (postgresql_users_default + postgresql_users) %}
 {% for connection in user.connections | default([]) %}
 {{ connection.type.ljust(8) }} {{ connection.database.rjust(12) }} {{ user.user.rjust(18) }} {{ connection.address | default('            ') }} {{ connection.auth.rjust(15) }}
 
 {% endfor %}
+{% endfor %}
+
+{% for node in postgresql_replication_hosts %}
+host              replication     {{ postgresql_replication_user }}        {{ node.address }}/32      {{ node.auth }}
 {% endfor %}
