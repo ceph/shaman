@@ -1,0 +1,5 @@
+[postgresql_master]
+node1
+
+[postgresql_standby]
+node2

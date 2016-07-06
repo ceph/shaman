@@ -9,8 +9,10 @@
   sudo: yes
 
 - include: users.yml
+  when: "'postgresql_master' in group_names"
 
 - include: configure.yml
+  when: "'postgresql_master' in group_names"
 
 - name: make {{ app_name }} database
   postgresql_db:
@@ -18,5 +20,9 @@
     owner: "{{ app_name }}"
     state: present
     login_user: postgres
+  when: "'postgresql_master' in group_names"
   sudo_user: postgres
   sudo: yes
+
+- include: standby.yml
+  when: "'postgresql_standby' in group_names"

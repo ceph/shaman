@@ -1,10 +1,14 @@
 ---
 
 - name: generate pseudo-random password for the postgres replication user
-  shell: python -c "exec 'import os; print os.urandom(30).encode(\'base64\')[:${length}]'"
+  local_action: shell python -c "exec 'import os; print os.urandom(30).encode(\'base64\')[:${length}]'" | tee {{ playbook_dir }}/replication_user_password
   register: generated_replication_user_password
   changed_when: false
-  when: postgres_replication_user_password is not defined
+
+- name: read pseudo-random password for the postgres replication user if it exists
+  local_action: command cat {{ playbook_dir }}/replication_user_password
+  register: generated_replication_user_password
+  changed_when: false
 
 - name: generate pseudo-random password for the postgres app user
   shell: python -c "exec 'import os; print os.urandom(30).encode(\'base64\')[:${length}]'"
@@ -15,10 +19,6 @@
 - set_fact:
     postgres_app_user_password: "{{ generated_app_user_password.stdout }}"
     when: postgres_app_user_password is not defined
-
-- set_fact:
-    postgres_replication_user_password: "{{ generated_replication_user_password.stdout }}"
-    when: postgres_replication_user_password is not defined
 
 - name: create user for {{ app_name }} app
   postgresql_user:
@@ -35,9 +35,8 @@
   sudo_user: postgres
   postgresql_user:
     name: "{{ postgresql_replication_user }}"
-    password: "{{ postgres_replication_user_password }}"
+    password: "{{ postgresql_replication_user_password }}"
     role_attr_flags: LOGIN,REPLICATION
     state: "present"
     fail_on_user: no
-  with_items: postgresql_users_replication
   when: postgresql_replication and postgresql_replication_user is defined
