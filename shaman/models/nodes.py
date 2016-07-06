@@ -7,22 +7,22 @@ class Node(Base):
 
     __tablename__ = 'nodes'
     id = Column(Integer, primary_key=True)
-    url = Column(String(256), nullable=False, unique=True, index=True)
+    host = Column(String(256), nullable=False, unique=True, index=True)
     last_used = Column(DateTime, index=True)
     last_check = Column(DateTime, index=True)
 
-    def __init__(self, url):
-        self.url = url
+    def __init__(self, host):
+        self.host = host
 
     def __repr__(self):
         try:
-            return '<Node %r>' % self.url
+            return '<Node %r>' % self.host
         except DetachedInstanceError:
             return '<Node detached>'
 
     def __json__(self):
         return dict(
-            url=self.url,
+            host=self.host,
             last_used=self.last_used,
             last_check=self.last_check,
         )

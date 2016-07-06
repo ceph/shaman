@@ -29,14 +29,14 @@ class TestNodesContoller(object):
         assert result.status_int == 404
 
     def test_create_node(self, session):
-        result = session.app.post("/api/nodes/chacra.ceph.com/")
+        session.app.post("/api/nodes/chacra.ceph.com/")
         n = Node.get(1)
-        assert n.url == "chacra.ceph.com"
+        assert n.host == "chacra.ceph.com"
 
     def test_updates_last_check_time(self, session):
-        result = session.app.post("/api/nodes/chacra.ceph.com/")
+        session.app.post("/api/nodes/chacra.ceph.com/")
         n = Node.get(1)
         last_check = n.last_check.time()
-        result = session.app.post("/api/nodes/chacra.ceph.com/")
+        session.app.post("/api/nodes/chacra.ceph.com/")
         n = Node.get(1)
         assert n.last_check.time() > last_check
