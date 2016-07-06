@@ -51,3 +51,30 @@ class TestIsNodeHealthy(object):
         util.is_node_healthy(node)
         node = Node.get(1)
         assert not node.healthy
+
+
+class TestGetNextNode(object):
+
+    def test_no_nodes(self, session):
+        assert not util.get_next_node()
+
+    def test_finds_a_node(self, session, monkeypatch):
+        monkeypatch.setattr(util, "is_node_healthy", lambda node: True)
+        node = Node("chacra.ceph.com")
+        session.commit()
+        next_node = util.get_next_node()
+        assert next_node == node
+
+    def test_no_healthy_nodes(self, session):
+        node = Node("chacra.ceph.com")
+        node.healthy = False
+        session.commit()
+        assert not util.get_next_node()
+
+    def test_use_newly_added_node(self, session, monkeypatch):
+        monkeypatch.setattr(util, "is_node_healthy", lambda node: True)
+        n1 = Node("chacra01.ceph.com")
+        n1.last_used = datetime.datetime.now()
+        n2 = Node("chacra02.ceph.com")
+        session.commit()
+        assert n2 == util.get_next_node()
