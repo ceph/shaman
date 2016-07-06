@@ -9,6 +9,7 @@
   sudo: yes
 
 - include: users.yml
+  when: "'postgresql_master' in group_names"
 
 - include: configure.yml
   when: "'postgresql_master' in group_names"
@@ -19,6 +20,7 @@
     owner: "{{ app_name }}"
     state: present
     login_user: postgres
+  when: "'postgresql_master' in group_names"
   sudo_user: postgres
   sudo: yes
 
