@@ -1,4 +1,4 @@
 # {{ ansible_managed }}
 standby_mode = 'on'
-primary_conninfo = 'host={{ postgresql_replication_master_ip }} port=5432 user={{ postgresql_replication_users[0].user }} password={{ postgres_replication_user_password }}'
+primary_conninfo = 'host={{ postgresql_replication_master_ip }} port=5432 user={{ postgresql_replication_user }} password={{ postgresql_replication_user_password }}'
 trigger_file = '/tmp/postgresql.trigger.5432'
