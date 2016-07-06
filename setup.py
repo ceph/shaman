@@ -18,6 +18,7 @@ setup(
         "sqlalchemy",
         "psycopg2",
         "pecan-notario",
+        "requests",
     ],
     test_suite='shaman',
     zip_safe=False,
