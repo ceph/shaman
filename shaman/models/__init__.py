@@ -126,3 +126,4 @@ def flush():
 
 from projects import Project  # noqa
 from repos import Repo  # noqa
+from nodes import Node  # noqa

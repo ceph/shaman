@@ -1,6 +1,6 @@
 from pecan import expose
 
-from shaman.controllers import repos
+from shaman.controllers import repos, nodes
 
 description = "shaman is the source of truth for the state of repositories on chacra nodes."
 
@@ -13,6 +13,7 @@ class APIController(object):
         )
 
     repos = repos.ProjectsController()
+    nodes = nodes.NodesController()
 
 
 class RootController(object):
