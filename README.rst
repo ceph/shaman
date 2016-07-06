@@ -12,7 +12,7 @@ Configuration
 =============
 
 credentials
-^^^^^^^^^^^
+-----------
 The POST and DELETE HTTP methods are protected by default using basic HTTP
 authentication. The credentials must be defined in the configuration file for
 the service as follows::
