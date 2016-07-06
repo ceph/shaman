@@ -13,6 +13,7 @@ app = {
     'root': 'shaman.controllers.root.RootController',
     'modules': ['shaman'],
     'default_renderer': 'json',
+    'guess_content_type_from_ext': False,
     'hooks': [
         TransactionHook(
             models.start,
@@ -30,6 +31,7 @@ logging = {
     'loggers': {
         'root': {'level': 'INFO', 'handlers': ['console']},
         'shaman': {'level': 'DEBUG', 'handlers': ['console']},
+        'pecan': {'level': 'DEBUG', 'handlers': ['console']},
         'pecan.commands.serve': {'level': 'DEBUG', 'handlers': ['console']},
         'py.warnings': {'handlers': ['console']},
         '__force_dict__': True
