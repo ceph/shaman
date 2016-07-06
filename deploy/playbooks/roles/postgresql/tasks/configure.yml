@@ -26,7 +26,7 @@
     path: "{{ postgresql_archive_dir_path }}"
     state: directory
     recurse: yes
-    mode: 0644
+    mode: 0755
     owner: "{{ postgresql_superuser }}"
     group: "{{ postgresql_superuser }}"
   notify: reload postgresql
