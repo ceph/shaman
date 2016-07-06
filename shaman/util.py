@@ -1,6 +1,7 @@
 import requests
 import datetime
 
+from pecan import conf
 from sqlalchemy import desc
 
 from shaman import models
@@ -31,8 +32,7 @@ def is_node_healthy(node):
         return True
     else:
         node.down_count = node.down_count + 1
-        # TODO: make the magic number 3 a config option
-        if node.down_count == 3:
+        if node.down_count == conf.health_check_retries:
             node.healthy = False
         models.commit()
 
