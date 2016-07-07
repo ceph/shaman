@@ -12,14 +12,9 @@ def get_next_node():
     Retrieves the next chacra node in
     the rotation and returns it.
     """
-    new_nodes = models.Node.query.filter_by(healthy=True, last_used=None)
-    nodes = models.Node.query.filter_by(healthy=True).filter(
-        models.Node.last_used.isnot(None)
-    ).order_by(
+    nodes = models.Node.query.filter_by(healthy=True).order_by(
         asc(models.Node.last_used),
     )
-    # use newly added nodes first
-    nodes = list(new_nodes) + list(nodes)
     for node in nodes:
         if is_node_healthy(node):
             return node
