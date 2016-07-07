@@ -65,6 +65,14 @@ class TestGetNextNode(object):
         next_node = util.get_next_node()
         assert next_node == node
 
+    def test_sets_last_used_on_selection(self, session, monkeypatch):
+        monkeypatch.setattr(util, "is_node_healthy", lambda node: True)
+        node = Node("chacra.ceph.com")
+        session.commit()
+        last_used = node.last_used
+        next_node = util.get_next_node()
+        assert next_node.last_used.time() > last_used.time()
+
     def test_no_healthy_nodes(self, session):
         node = Node("chacra.ceph.com")
         node.healthy = False

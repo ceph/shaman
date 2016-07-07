@@ -17,6 +17,8 @@ def get_next_node():
     )
     for node in nodes:
         if is_node_healthy(node):
+            node.last_used = datetime.datetime.utcnow()
+            models.commit()
             return node
     return None
 
