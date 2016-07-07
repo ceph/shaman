@@ -41,8 +41,10 @@ def is_node_healthy(node):
     check_url = "https://{}/health/".format(node.host)
     r = requests.get(check_url)
     node.last_check = datetime.datetime.utcnow()
-    models.commit()
     if r.status_code == 200:
+        # reset the down_count when the node is healthy
+        node.down_count = 0
+        models.commit()
         return True
     else:
         node.down_count = node.down_count + 1
