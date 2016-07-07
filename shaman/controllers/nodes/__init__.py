@@ -49,7 +49,7 @@ class NodesController(object):
         next_node = get_next_node()
         if not next_node:
             abort(404, "There are no healthy chacra nodes available.")
-        return next_node.host
+        return "https://{}/".format(next_node.host)
 
     @expose()
     def _lookup(self, host, *remainder):

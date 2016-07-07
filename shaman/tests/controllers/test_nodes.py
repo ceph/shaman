@@ -51,7 +51,7 @@ class TestNodesContoller(object):
 
         monkeypatch.setattr(nodes, "get_next_node", _get_next_node)
         result = session.app.get("/api/nodes/next/")
-        assert result.body == "chacra.ceph.com"
+        assert result.body == "https://chacra.ceph.com/"
 
     def test_get_next_node_fails(self, session, monkeypatch):
         Node("chacra.ceph.com")
