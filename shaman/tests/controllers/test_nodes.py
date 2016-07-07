@@ -62,4 +62,4 @@ class TestNodesContoller(object):
 
         monkeypatch.setattr(nodes, "get_next_node", _get_next_node)
         result = session.app.get("/api/nodes/next/", expect_errors=True)
-        assert result.status_int == 500
+        assert result.status_int == 404

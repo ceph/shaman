@@ -48,7 +48,7 @@ class NodesController(object):
     def next(self):
         next_node = get_next_node()
         if not next_node:
-            abort(500, "There are no healthy chacra nodes available.")
+            abort(404, "There are no healthy chacra nodes available.")
         return next_node.host
 
     @expose()
