@@ -27,6 +27,16 @@ class TestIsNodeHealthy(object):
         assert node.last_check.time() > last_check.time()
 
     @patch("shaman.util.requests.get")
+    def test_down_count_is_cleared_when_healthy(self, m_get, session):
+        m_get.return_value.status_code = 200
+        node = Node("chacra.ceph.com")
+        node.down_count = 2
+        session.commit()
+        util.is_node_healthy(node)
+        node = Node.get(1)
+        assert node.down_count == 0
+
+    @patch("shaman.util.requests.get")
     def test_node_is_not_healthy(self, m_get, session):
         m_get.return_value.status_code = 500
         node = Node("chacra.ceph.com")
