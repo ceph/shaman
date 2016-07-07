@@ -130,18 +130,48 @@ parameter would not be effective.
 GET /api/nodes/
 ---------------
 
-Returns a list of the chacra nodes available in the pool::
+Returns a dict containing info on all the chacra nodes available in the pool::
 
-    ["https://chacra01.ceph.com", "https://chacra02.ceph.com"]
+    {"chacra01.ceph.com", {
+        "host": "chacra01.ceph.com",
+        "last_used": "2016-07-07 22:08:13.112633",
+        "last_check": "2016-07-07 22:08:13.112633",
+        "healthy": true,
+        "down_count": 0
+    },
+    {"chacra02.ceph.com", {
+        "host": "chacra02.ceph.com",
+        "last_used": "2016-07-05 22:08:13.112633",
+        "last_check": "2016-07-07 22:08:13.112633",
+        "healthy": false,
+        "down_count": 3
+    }
 
-POST /api/nodes/
-----------------
+GET /api/nodes/(node_host)/
+---------------------------
+
+Returns a JSON object representing the requested node::
+
+    {
+      "host": "chacra02.ceph.com",
+      "last_used": "2016-07-05 22:08:13.112633",
+      "last_check": "2016-07-07 22:08:13.112633",
+      "healthy": false,
+      "down_count": 3
+    }
+
+
+POST /api/nodes/(node_host)/
+----------------------------
 
 This endpoint is used to add a new chacra node to the pool.
 
-You must POST a json object representing the new chacra node::
+No JSON body is needed for this endpoint, ``node_host`` will
+be used as the new node's ``host``.
 
-    {"url": "http://chacra03.ceph.com"}
+If the node already exists, this endpoint acts as a health
+check and it's ``last_check`` field will be reset back
+to zero.
 
 
 GET /api/nodes/next/
@@ -150,4 +180,4 @@ GET /api/nodes/next/
 Returns the url for the next chacra node in the rotation,
 in plain text::
 
-    "https://chacra02.ceph.com"
+    "https://chacra02.ceph.com/"
