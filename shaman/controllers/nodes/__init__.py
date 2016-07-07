@@ -30,7 +30,7 @@ class NodeController(object):
     def index_post(self):
         if not self.node:
             self.node = models.get_or_create(Node, host=self.host)
-        self.node.last_check = datetime.datetime.now()
+        self.node.last_check = datetime.datetime.utcnow()
         return {}
 
 

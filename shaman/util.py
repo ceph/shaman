@@ -40,7 +40,7 @@ def is_node_healthy(node):
     """
     check_url = "https://{}/health/".format(node.host)
     r = requests.get(check_url)
-    node.last_check = datetime.datetime.now()
+    node.last_check = datetime.datetime.utcnow()
     models.commit()
     if r.status_code == 200:
         return True
