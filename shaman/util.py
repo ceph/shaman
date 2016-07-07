@@ -47,7 +47,7 @@ def is_node_healthy(node):
     else:
         node.down_count = node.down_count + 1
         logger.warning("node: %s has failed a health check. current count: %s", node.host, node.down_count)
-        if node.down_count == conf.health_check_retries:
+        if node.down_count == getattr(conf, 'health_check_retries', 3):
             logger.warning("node: %s has reached the limit for health check retires and will marked down", node.host)
             node.healthy = False
         models.commit()
