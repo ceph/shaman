@@ -68,3 +68,8 @@ sqlalchemy = {
 # Basic HTTP Auth credentials
 api_user = 'admin'
 api_key = 'secret'
+
+# The amount of times a chacra node's health
+# check can fail before being marked down and taken
+# out of the pool.
+health_check_retries = 3

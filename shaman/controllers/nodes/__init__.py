@@ -5,6 +5,7 @@ from pecan.secure import secure
 
 from shaman.models import Node
 from shaman.auth import basic_auth
+from shaman.util import get_next_node
 from shaman import models
 
 
@@ -41,6 +42,14 @@ class NodesController(object):
         for node in Node.query.all():
             resp[node.host] = node.__json__()
         return resp
+
+    @secure(basic_auth)
+    @expose(method='GET', content_type="text/plain")
+    def next(self):
+        next_node = get_next_node()
+        if not next_node:
+            abort(404, "There are no healthy chacra nodes available.")
+        return "https://{}/".format(next_node.host)
 
     @expose()
     def _lookup(self, host, *remainder):

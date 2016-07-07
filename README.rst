@@ -20,6 +20,13 @@ the service as follows::
     api_user = 'username'
     api_key = 'secret'
 
+chacra health checks
+--------------------
+To configure the amount of times a chacra node can fail it's health
+check before being marked down set the following::
+
+    health_check_retries = 3
+
 
 API Endpoints
 =============

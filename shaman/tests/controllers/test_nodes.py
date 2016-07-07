@@ -1,4 +1,5 @@
 from shaman.models import Node
+from shaman.controllers import nodes
 
 
 class TestNodeController(object):
@@ -40,3 +41,25 @@ class TestNodesContoller(object):
         session.app.post("/api/nodes/chacra.ceph.com/")
         n = Node.get(1)
         assert n.last_check.time() > last_check
+
+    def test_get_next_node_succeeds(self, session, monkeypatch):
+        node = Node("chacra.ceph.com")
+        session.commit()
+
+        def _get_next_node():
+            return node
+
+        monkeypatch.setattr(nodes, "get_next_node", _get_next_node)
+        result = session.app.get("/api/nodes/next/")
+        assert result.body == "https://chacra.ceph.com/"
+
+    def test_get_next_node_fails(self, session, monkeypatch):
+        Node("chacra.ceph.com")
+        session.commit()
+
+        def _get_next_node():
+            return None
+
+        monkeypatch.setattr(nodes, "get_next_node", _get_next_node)
+        result = session.app.get("/api/nodes/next/", expect_errors=True)
+        assert result.status_int == 404
