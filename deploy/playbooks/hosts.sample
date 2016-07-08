@@ -1,3 +1,7 @@
+[app]
+node1
+node2
+
 [postgresql_master]
 node1
 
