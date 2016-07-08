@@ -100,11 +100,12 @@ def _engine_from_config(configuration):
 
 def start():
     Session()
-    metadata.bind = conf.sqlalchemy.engine
+    metadata.bind = conf.sqlalchemy_w.engine
 
 
 def start_read_only():
-    start()
+    Session()
+    metadata.bind = conf.sqlalchemy_ro.engine
 
 
 def commit():
