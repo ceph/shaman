@@ -41,17 +41,16 @@ def is_node_healthy(node):
     check_url = "https://{}/health/".format(node.host)
     r = requests.get(check_url)
     node.last_check = datetime.datetime.utcnow()
-    if r.status_code == 200:
-        # reset the down_count when the node is healthy
-        node.down_count = 0
-        models.commit()
-        return True
-    else:
+    if not r.ok:
         node.down_count = node.down_count + 1
         logger.warning("node: %s has failed a health check. current count: %s", node.host, node.down_count)
         if node.down_count == getattr(conf, 'health_check_retries', 3):
             logger.warning("node: %s has reached the limit for health check retires and will marked down", node.host)
             node.healthy = False
         models.commit()
+        return False
 
-    return False
+    # reset the down_count when the node is healthy
+    node.down_count = 0
+    models.commit()
+    return True
