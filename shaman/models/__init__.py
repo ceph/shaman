@@ -88,8 +88,8 @@ def init_model():
         Base.metadata.create_all(conf.sqlalchemy.engine)
 
     """
-    conf.sqlalchemy.engine = _engine_from_config(conf.sqlalchemy)
-    Session.configure(bind=conf.sqlalchemy.engine)
+    conf.sqlalchemy_w.engine = _engine_from_config(conf.sqlalchemy_w)
+    Session.configure(bind=conf.sqlalchemy_w.engine)
 
 
 def _engine_from_config(configuration):
