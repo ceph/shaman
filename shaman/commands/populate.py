@@ -35,7 +35,7 @@ class PopulateCommand(BaseCommand):
         try:
             out("STARTING A TRANSACTION...")
             models.start()
-            models.Base.metadata.create_all(conf.sqlalchemy.engine)
+            models.Base.metadata.create_all(conf.sqlalchemy_w.engine)
         except:
             models.rollback()
             out("ROLLING BACK... ")
