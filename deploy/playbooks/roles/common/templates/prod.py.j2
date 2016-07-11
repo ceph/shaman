@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 from pecan.hooks import TransactionHook, RequestViewerHook
 from shaman import models
-from prod_db import sqlalchemy
+from prod_db import sqlalchemy_w, sqlalchemy_ro
 from prod_api_creds import api_key, api_user
 
 
