@@ -10,6 +10,9 @@
   register: generated_app_user_password
   changed_when: false
 
+- set_fact:
+    postgresql_app_user_password: "{{ generated_app_user_password.stdout }}"
+
 - name: Make {{ app_name }} user
   postgresql_user:
     name: "{{ app_name }}"
