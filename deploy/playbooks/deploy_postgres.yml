@@ -30,6 +30,14 @@
            - database: "{{ app_name }}"
              type: local
              auth: md5
+           - database: "{{ app_name }}"
+             type: host
+             address: "{{ standby_ip }}/32"
+             auth: md5
+           - database: "{{ app_name }}"
+             type: host
+             address: "{{ master_ip }}/32"
+             auth: md5
 
      postgresql_replication_hosts:
        - address: "{{ standby_ip }}"
@@ -59,6 +67,14 @@
          connections:
            - database: "{{ app_name }}"
              type: local
+             auth: md5
+           - database: "{{ app_name }}"
+             type: host
+             address: "{{ master_ip }}/32"
+             auth: md5
+           - database: "{{ app_name }}"
+             type: host
+             address: "{{ standby_ip }}/32"
              auth: md5
 
      postgresql_replication_hosts:
