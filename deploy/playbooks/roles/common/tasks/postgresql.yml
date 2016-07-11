@@ -20,6 +20,7 @@
     role_attr_flags: "CREATEDB,LOGIN,NOSUPERUSER"
     state: "present"
     login_user: postgres
+    db: "{{ app_name }}"
   sudo_user: postgres
   sudo: yes
   when: "'postgresql_master' in group_names"

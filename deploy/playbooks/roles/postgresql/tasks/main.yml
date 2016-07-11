@@ -17,7 +17,6 @@
 - name: make {{ app_name }} database
   postgresql_db:
     name: "{{ app_name }}"
-    owner: "{{ app_name }}"
     state: present
     login_user: postgres
   when: "'postgresql_master' in group_names"

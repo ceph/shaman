@@ -94,3 +94,5 @@
      fqdn: "localhost"
      api_user: "admin"
      api_key: "secret"
+  tags:
+    - deploy_app
