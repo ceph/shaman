@@ -8,6 +8,16 @@
     state: started
   sudo: yes
 
+# this needs to be here so that the master and slave nodes can access
+# this variable in the common role for pecan config creation
+- name: generate pseudo-random password for the app user database connection
+  shell: python -c "exec 'import os; print os.urandom(30).encode(\'base64\')[:${length}]'"
+  register: generated_app_user_password
+  changed_when: false
+
+- set_fact:
+    postgresql_app_user_password: "{{ generated_app_user_password.stdout }}"
+
 - include: users.yml
   when: "'postgresql_master' in group_names"
 

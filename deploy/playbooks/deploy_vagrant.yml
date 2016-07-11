@@ -1,5 +1,4 @@
 ---
-
 - hosts: postgresql_master
   user: vagrant
   roles:

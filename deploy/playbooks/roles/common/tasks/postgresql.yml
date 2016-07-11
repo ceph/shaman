@@ -5,35 +5,6 @@
     state: started
   sudo: yes
 
-- name: generate pseudo-random password for the database connection
-  shell: python -c "exec 'import os; print os.urandom(30).encode(\'base64\')[:${length}]'"
-  register: generated_app_user_password
-  changed_when: false
-
-- set_fact:
-    postgresql_app_user_password: "{{ generated_app_user_password.stdout }}"
-
-- name: Make {{ app_name }} user
-  postgresql_user:
-    name: "{{ app_name }}"
-    password: "{{ postgresql_app_user_password }}"
-    role_attr_flags: "CREATEDB,LOGIN,NOSUPERUSER"
-    state: "present"
-    login_user: postgres
-  sudo_user: postgres
-  sudo: yes
-  when: "'postgresql_master' in group_names"
-
-- name: Make {{ app_name }} database
-  postgresql_db:
-    name: "{{ app_name }}"
-    owner: "{{ app_name }}"
-    state: present
-    login_user: postgres
-  sudo_user: postgres
-  sudo: yes
-  when: "'postgresql_master' in group_names"
-
 - name: create the prod_db config file with the db password
   template:
     src: prod_db.py.j2
