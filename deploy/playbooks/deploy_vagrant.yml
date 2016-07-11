@@ -1,6 +1,84 @@
 ---
 
-- hosts: all
+- hosts: postgresql_master
+  user: vagrant
+  roles:
+    - postgresql
+  vars:
+     app_name: "shaman"
+     use_ssl: true
+     ansible_ssh_port: 22
+     development_server: true
+     fqdn: "localhost"
+     api_user: "admin"
+     api_key: "secret"
+     # postgres specific
+     postgresql_replication: true
+     postgresql_replication_master_ip: "{{ master_ip }}"
+     postgresql_cfg_listen_addresses: "localhost,127.0.0.1,{{ master_ip }}"
+     postgresql_cfg_wal_level: 'hot_standby'
+     postgresql_cfg_max_wal_senders: 3
+     postgresql_cfg_archive_mode: 'on'
+     postgresql_cfg_archive_command: 'test ! -f {{ postgresql_archive_dir_path }}/%f && cp %p {{ postgresql_archive_dir_path }}/%f'
+
+     postgresql_users:
+       - user: "{{ app_name }}"
+         connections:
+           - database: "{{ app_name }}"
+             type: local
+             auth: md5
+           - database: "{{ app_name }}"
+             type: host
+             address: "{{ standby_ip }}/32"
+             auth: md5
+           - database: "{{ app_name }}"
+             type: host
+             address: "{{ master_ip }}/32"
+             auth: md5
+
+     postgresql_replication_hosts:
+       - address: "{{ standby_ip }}"
+         auth: md5
+
+- hosts: postgresql_standby
+  user: vagrant
+  roles:
+    - postgresql
+  vars:
+     postgresql_replication: true
+     app_name: "shaman"
+     use_ssl: true
+     ansible_ssh_port: 22
+     development_server: true
+     fqdn: "localhost"
+     api_user: "admin"
+     api_key: "secret"
+     # postgres specific
+     postgresql_cfg_listen_addresses: "localhost,127.0.0.1,{{ standby_ip }}"
+     postgresql_replication_master_ip: "{{ master_ip }}"
+     postgresql_cfg_hot_standby: 'on'
+     postgresql_cfg_archive_command: 'test ! -f {{ postgresql_archive_dir_path }}/%f && cp %p {{ postgresql_archive_dir_path }}/%f'
+
+     postgresql_users:
+       - user: "{{ app_name }}"
+         connections:
+           - database: "{{ app_name }}"
+             type: local
+             auth: md5
+           - database: "{{ app_name }}"
+             type: host
+             address: "{{ master_ip }}/32"
+             auth: md5
+           - database: "{{ app_name }}"
+             type: host
+             address: "{{ standby_ip }}/32"
+             auth: md5
+
+     postgresql_replication_hosts:
+       - address: "{{ standby_ip }}"
+         auth: md5
+
+- hosts: app
   user: vagrant
   roles:
     - common
