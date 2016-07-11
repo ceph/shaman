@@ -88,8 +88,10 @@ def init_model():
         Base.metadata.create_all(conf.sqlalchemy.engine)
 
     """
-    conf.sqlalchemy.engine = _engine_from_config(conf.sqlalchemy)
-    Session.configure(bind=conf.sqlalchemy.engine)
+    conf.sqlalchemy_w.engine = _engine_from_config(conf.sqlalchemy_w)
+    Session.configure(bind=conf.sqlalchemy_w.engine)
+    conf.sqlalchemy_ro.engine = _engine_from_config(conf.sqlalchemy_ro)
+    Session.configure(bind=conf.sqlalchemy_ro.engine)
 
 
 def _engine_from_config(configuration):
@@ -100,11 +102,12 @@ def _engine_from_config(configuration):
 
 def start():
     Session()
-    metadata.bind = conf.sqlalchemy.engine
+    metadata.bind = conf.sqlalchemy_w.engine
 
 
 def start_read_only():
-    start()
+    Session()
+    metadata.bind = conf.sqlalchemy_ro.engine
 
 
 def commit():

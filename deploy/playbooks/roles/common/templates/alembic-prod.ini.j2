@@ -29,7 +29,7 @@ script_location = {{ app_home }}/src/{{ app_name }}/alembic
 # are written from script.py.mako
 # output_encoding = utf-8
 
-sqlalchemy.url = postgresql://{{ app_name }}:{{ db_password.stdout }}@127.0.0.1/{{ app_name }} 
+sqlalchemy.url = postgresql://{{ app_name }}:{{ postgresql_app_user_password }}@{{ master_ip }}/{{ app_name }}
 
 
 # Logging configuration

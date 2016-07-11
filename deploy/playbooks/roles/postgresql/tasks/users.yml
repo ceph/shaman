@@ -10,26 +10,6 @@
   register: generated_replication_user_password
   changed_when: false
 
-- name: generate pseudo-random password for the postgres app user
-  shell: python -c "exec 'import os; print os.urandom(30).encode(\'base64\')[:${length}]'"
-  register: generated_app_user_password
-  changed_when: false
-  when: postgres_app_user_password is not defined
-
-- set_fact:
-    postgres_app_user_password: "{{ generated_app_user_password.stdout }}"
-    when: postgres_app_user_password is not defined
-
-- name: create user for {{ app_name }} app
-  postgresql_user:
-    name: "{{ app_name }}"
-    password: "{{ postgres_app_user_password }}"
-    role_attr_flags: "CREATEDB,LOGIN,NOSUPERUSER"
-    login_user: postgres
-    state: "present"
-  sudo_user: postgres
-  sudo: yes
-
 - name: create replication postgresql user
   sudo: yes
   sudo_user: postgres
