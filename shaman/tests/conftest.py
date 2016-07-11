@@ -28,7 +28,7 @@ def reload_config():
     config = configuration.conf_from_file(config_file()).to_dict()
 
     # Add the appropriate connection string to the app config.
-    config['sqlalchemy'] = {
+    config['sqlalchemy_w'] = {
         'url': '%s/%s' % (BIND, DBNAME),
         'encoding': 'utf-8',
         'poolclass': NullPool
@@ -46,12 +46,17 @@ def app(request):
     config = configuration.conf_from_file(config_file()).to_dict()
 
     # Add the appropriate connection string to the app config.
-    config['sqlalchemy'] = {
+    config['sqlalchemy_w'] = {
         'url': '%s/%s' % (BIND, DBNAME),
         'encoding': 'utf-8',
         'poolclass': NullPool
     }
 
+    config['sqlalchemy_ro'] = {
+        'url': '%s/%s' % (BIND, DBNAME),
+        'encoding': 'utf-8',
+        'poolclass': NullPool
+    }
     # Set up a fake app
     app = TestApp(load_test_app(config))
     return app
@@ -101,7 +106,13 @@ def session(connection, request):
     config = deepcopy(_config)
 
     # Add the appropriate connection string to the app config.
-    config['sqlalchemy'] = {
+    config['sqlalchemy_w'] = {
+        'url': '%s/%s' % (BIND, DBNAME),
+        'encoding': 'utf-8',
+        'poolclass': NullPool
+    }
+
+    config['sqlalchemy_ro'] = {
         'url': '%s/%s' % (BIND, DBNAME),
         'encoding': 'utf-8',
         'poolclass': NullPool
@@ -116,7 +127,7 @@ def session(connection, request):
         connection.clear()
 
         # start a transaction
-        engine = conf.sqlalchemy.engine
+        engine = conf.sqlalchemy_w.engine
         conn = engine.connect()
         trans = conn.begin()
 
