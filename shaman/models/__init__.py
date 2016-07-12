@@ -89,9 +89,7 @@ def init_model():
 
     """
     conf.sqlalchemy_w.engine = _engine_from_config(conf.sqlalchemy_w)
-    Session.configure(bind=conf.sqlalchemy_w.engine)
     conf.sqlalchemy_ro.engine = _engine_from_config(conf.sqlalchemy_ro)
-    Session.configure(bind=conf.sqlalchemy_ro.engine)
 
 
 def _engine_from_config(configuration):
@@ -101,12 +99,12 @@ def _engine_from_config(configuration):
 
 
 def start():
-    Session()
+    Session.bind = conf.sqlalchemy_w.engine
     metadata.bind = conf.sqlalchemy_w.engine
 
 
 def start_read_only():
-    Session()
+    Session.bind = conf.sqlalchemy_ro.engine
     metadata.bind = conf.sqlalchemy_ro.engine
 
 
