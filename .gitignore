@@ -23,3 +23,5 @@ htmlcov
 # development files
 dev.db
 celerybeat-schedule
+deploy/playbooks/tmp
+deploy/playbooks/hosts
