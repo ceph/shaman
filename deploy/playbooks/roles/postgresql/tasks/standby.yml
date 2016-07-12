@@ -12,7 +12,7 @@
   ignore_errors: true
 
 - name: read pseudo-random password for the postgres replication user if it exists
-  local_action: command cat {{ playbook_dir }}/replication_user_password
+  local_action: command cat {{ playbook_dir }}/tmp/replication_user_password
   register: generated_replication_user_password
   changed_when: false
 
