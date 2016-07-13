@@ -117,7 +117,6 @@ def rollback():
 
 
 def clear():
-    Session.remove()
     Session.close()
 
 
