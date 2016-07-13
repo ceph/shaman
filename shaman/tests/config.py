@@ -13,7 +13,6 @@ app = {
     'root': 'shaman.controllers.root.RootController',
     'modules': ['shaman'],
     'static_root': '%(confdir)s/public',
-    'default_renderer': 'json',
     'guess_content_type_from_ext': False,
     'hooks': [
         TransactionHook(
