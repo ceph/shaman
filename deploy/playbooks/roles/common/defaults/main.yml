@@ -1,3 +1,4 @@
 ---
 app_home: /opt/{{ app_name }}
 app_use_ssl: yes
+postgresql_app_user_password: "{{ generated_app_user_password.stdout }}"

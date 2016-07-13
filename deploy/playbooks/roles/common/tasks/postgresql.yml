@@ -5,13 +5,16 @@
     state: started
   sudo: yes
 
-- name: generate pseudo-random password for the database connection
-  shell: python -c "exec 'import os; print os.urandom(30).encode(\'base64\')[:${length}]'"
+- name: generate pseudo-random password for the postgres {{ app_name }} user
+  local_action: shell python -c "exec 'import os; print os.urandom(30).encode(\'base64\')[:${length}]'" | tee {{ playbook_dir }}/tmp/app_user_password
   register: generated_app_user_password
   changed_when: false
+  when: "'postgresql_master' in group_names"
 
-- set_fact:
-    postgresql_app_user_password: "{{ generated_app_user_password.stdout }}"
+- name: read pseudo-random password for the postgres {{ app_name }} user if it exists
+  local_action: command cat {{ playbook_dir }}/tmp/app_user_password
+  register: generated_app_user_password
+  changed_when: false
 
 - name: Make {{ app_name }} user
   postgresql_user:

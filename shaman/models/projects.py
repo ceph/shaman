@@ -29,4 +29,4 @@ class Project(Base):
 
     @property
     def sha1s(self):
-        return list(set([r.sha1s for r in self.repos.all()]))
+        return list(set([r.sha1 for r in self.repos.all()]))

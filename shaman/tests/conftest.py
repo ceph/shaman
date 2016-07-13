@@ -34,6 +34,12 @@ def reload_config():
         'poolclass': NullPool
     }
 
+    config['sqlalchemy_ro'] = {
+        'url': '%s/%s' % (BIND, DBNAME),
+        'encoding': 'utf-8',
+        'poolclass': NullPool
+    }
+
     configuration.set_config(
         config,
         overwrite=True
