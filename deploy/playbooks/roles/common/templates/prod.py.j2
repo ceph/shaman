@@ -58,6 +58,9 @@ logging = {
     }
 }
 
+# if this file exists the check at /_health/ will fail
+fail_check_trigger_path = "/tmp/fail_check"
+
 # production Basic HTTP Auth credentials are imported from prod_api_creds.py
 
 # production database configurations are imported from prod_db.py
