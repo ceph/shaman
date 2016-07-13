@@ -10,6 +10,7 @@
   sudo: yes
   command: "mv {{ postgresql_cfg_data_directory }} {{ postgresql_cfg_data_directory }}_{{ timestamp }}"
   ignore_errors: true
+  when: postgresql_init_replication
 
 - name: read pseudo-random password for the postgres replication user if it exists
   local_action: command cat {{ playbook_dir }}/tmp/replication_user_password
@@ -31,6 +32,7 @@
   command: "pg_basebackup --xlog-method=stream -h {{ master_ip }} -U {{ postgresql_replication_user }} -D {{ postgresql_cfg_data_directory }} -Pw"
   sudo_user: postgres
   sudo: yes
+  when: postgresql_init_replication
 
 - name: "standby | configure recovery.conf"
   sudo: yes
