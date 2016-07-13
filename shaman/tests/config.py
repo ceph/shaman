@@ -13,8 +13,8 @@ app = {
     'root': 'shaman.controllers.root.RootController',
     'modules': ['shaman'],
     'static_root': '%(confdir)s/public',
-    'default_renderer': 'json',
     'guess_content_type_from_ext': False,
+    'default_renderer': 'json',
     'hooks': [
         TransactionHook(
             models.start,
@@ -87,3 +87,6 @@ api_key = 'secret'
 # check can fail before being marked down and taken
 # out of the pool.
 health_check_retries = 3
+
+# if this file exists the check at /_health/ will fail
+fail_check_trigger_path = "/tmp/fail_check"

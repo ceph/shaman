@@ -1,6 +1,6 @@
 from pecan import expose
 
-from shaman.controllers import repos, nodes
+from shaman.controllers import repos, nodes, health
 
 description = "shaman is the source of truth for the state of repositories on chacra nodes."
 
@@ -27,3 +27,4 @@ class RootController(object):
         )
 
     api = APIController()
+    _health = health.HealthController()
