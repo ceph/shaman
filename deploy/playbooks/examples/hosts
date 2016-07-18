@@ -1,0 +1,9 @@
+[app]
+1.node.a fqdn=1.node.a ssl_cert_path="files/ssl/dev/ssl.crt" ssl_key_path="files/ssl/dev/ssl.key"
+2.node.a fqdn=2.node.a ssl_cert_path="files/ssl/dev/ssl.crt" ssl_key_path="files/ssl/dev/ssl.key"
+
+[postgresql_master]
+1.node.a
+
+[postgresql_standby]
+2.node.a
