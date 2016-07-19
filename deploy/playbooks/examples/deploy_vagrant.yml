@@ -91,7 +91,9 @@
      restart_app: true
      branch: "master"
      development_server: true
-     fqdn: "localhost"
+     fqdn: "{{ inventory_hostname }}"
+     nginx_ssl_cert_path: "/etc/ssl/certs/{{ fqdn }}-bundled.crt"
+     nginx_ssl_key_path: "/etc/ssl/private/{{ fqdn }}.key"
      api_user: "admin"
      api_key: "secret"
   tags:
