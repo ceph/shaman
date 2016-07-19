@@ -1,0 +1,100 @@
+---
+
+- hosts: postgresql_master
+  user: ubuntu
+  roles:
+    - postgresql
+  vars:
+     app_name: "shaman"
+     use_ssl: true
+     ansible_ssh_port: 2222
+     development_server: false
+     fqdn: "1.shaman.ceph.com"
+     api_user: "admin"
+     api_key: "secret"
+     # postgres specific
+     postgresql_replication: true
+     postgresql_replication_master_ip: "{{ master_ip }}"
+     postgresql_cfg_listen_addresses: "localhost,127.0.0.1,{{ master_ip }}"
+     postgresql_cfg_wal_level: 'hot_standby'
+     postgresql_cfg_max_wal_senders: 3
+     postgresql_cfg_archive_mode: 'on'
+     postgresql_cfg_archive_command: 'test ! -f {{ postgresql_archive_dir_path }}/%f && cp %p {{ postgresql_archive_dir_path }}/%f'
+
+     postgresql_users:
+       - user: "{{ app_name }}"
+         connections:
+           - database: "{{ app_name }}"
+             type: local
+             auth: md5
+           - database: "{{ app_name }}"
+             type: host
+             address: "{{ standby_ip }}/32"
+             auth: md5
+           - database: "{{ app_name }}"
+             type: host
+             address: "{{ master_ip }}/32"
+             auth: md5
+
+     postgresql_replication_hosts:
+       - address: "{{ standby_ip }}"
+         auth: md5
+
+- hosts: postgresql_standby
+  user: ubuntu
+  roles:
+    - postgresql
+  vars:
+     postgresql_replication: true
+     app_name: "shaman"
+     use_ssl: true
+     ansible_ssh_port: 2222
+     development_server: false
+     fqdn: "2.shaman.ceph.com"
+     api_user: "admin"
+     api_key: "secret"
+     # postgres specific
+     postgresql_cfg_listen_addresses: "localhost,127.0.0.1,{{ standby_ip }}"
+     postgresql_replication_master_ip: "{{ master_ip }}"
+     postgresql_cfg_hot_standby: 'on'
+     postgresql_cfg_archive_command: 'test ! -f {{ postgresql_archive_dir_path }}/%f && cp %p {{ postgresql_archive_dir_path }}/%f'
+
+     postgresql_users:
+       - user: "{{ app_name }}"
+         connections:
+           - database: "{{ app_name }}"
+             type: local
+             auth: md5
+           - database: "{{ app_name }}"
+             type: host
+             address: "{{ master_ip }}/32"
+             auth: md5
+           - database: "{{ app_name }}"
+             type: host
+             address: "{{ standby_ip }}/32"
+             auth: md5
+
+     postgresql_replication_hosts:
+       - address: "{{ standby_ip }}"
+         auth: md5
+
+- hosts: app
+  user: ubuntu
+  roles:
+    - common
+  vars:
+     app_name: "shaman"
+     use_ssl: true
+     wsgi_file: wsgi.py
+     wsgi_callable: application
+     ansible_ssh_port: 2222
+     restart_app: true
+     branch: "master"
+     development_server: false
+     fqdn: "{{ inventory_hostname }}"
+     nginx_ssl_cert_path: "/etc/letsencrypt/live/{{ fqdn }}/fullchain.pem"
+     nginx_ssl_key_path: "/etc/letsencrypt/live/{{ fqdn }}/privkey.pem"
+     api_user: "admin"
+     api_key: "secret"
+  tags:
+    - deploy_app
