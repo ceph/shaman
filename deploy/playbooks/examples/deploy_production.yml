@@ -1,15 +1,15 @@
 ---
 
 - hosts: postgresql_master
-  user: vagrant
+  user: ubuntu
   roles:
     - postgresql
   vars:
      app_name: "shaman"
      use_ssl: true
-     ansible_ssh_port: 22
-     development_server: true
-     fqdn: "localhost"
+     ansible_ssh_port: 2222
+     development_server: false
+     fqdn: "1.shaman.ceph.com"
      api_user: "admin"
      api_key: "secret"
      # postgres specific
@@ -41,16 +41,16 @@
          auth: md5
 
 - hosts: postgresql_standby
-  user: vagrant
+  user: ubuntu
   roles:
     - postgresql
   vars:
      postgresql_replication: true
      app_name: "shaman"
      use_ssl: true
-     ansible_ssh_port: 22
-     development_server: true
-     fqdn: "localhost"
+     ansible_ssh_port: 2222
+     development_server: false
+     fqdn: "2.shaman.ceph.com"
      api_user: "admin"
      api_key: "secret"
      # postgres specific
@@ -79,7 +79,7 @@
          auth: md5
 
 - hosts: app
-  user: vagrant
+  user: ubuntu
   roles:
     - common
   vars:
@@ -87,13 +87,13 @@
      use_ssl: true
      wsgi_file: wsgi.py
      wsgi_callable: application
-     ansible_ssh_port: 22
+     ansible_ssh_port: 2222
      restart_app: true
      branch: "master"
-     development_server: true
+     development_server: false
      fqdn: "{{ inventory_hostname }}"
-     nginx_ssl_cert_path: "/etc/ssl/certs/{{ fqdn }}-bundled.crt"
-     nginx_ssl_key_path: "/etc/ssl/private/{{ fqdn }}.key"
+     nginx_ssl_cert_path: "/etc/letsencrypt/live/{{ fqdn }}/fullchain.pem"
+     nginx_ssl_key_path: "/etc/letsencrypt/live/{{ fqdn }}/privkey.pem"
      api_user: "admin"
      api_key: "secret"
   tags:
