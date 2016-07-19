@@ -2,3 +2,6 @@
 app_home: /opt/{{ app_name }}
 app_use_ssl: yes
 postgresql_app_user_password: "{{ generated_app_user_password.stdout }}"
+ssl_support_email: "adeza@redhat.com"
+ssl_webroot_path: "/var/www/{{ fqdn }}"
+letsencrypt_command: "letsencrypt certonly --webroot -w {{ ssl_webroot_path }} -d {{ fqdn }} --email {{ ssl_support_email }} --agree-tos --renew-by-default"
