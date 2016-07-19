@@ -21,3 +21,4 @@ system_packages:
 ssl_requirements:
   - openssl
   - libssl-dev
+  - letsencrypt
