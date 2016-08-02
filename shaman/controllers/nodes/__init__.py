@@ -37,7 +37,7 @@ class NodeController(object):
 
 class NodesController(object):
 
-    @expose(generic=True, template='json')
+    @expose(template='json')
     def index(self):
         resp = {}
         for node in Node.query.all():
@@ -46,7 +46,7 @@ class NodesController(object):
 
     @secure(basic_auth)
     @transactional()
-    @expose(method='GET', content_type="text/plain")
+    @expose(content_type="text/plain")
     def next(self):
         next_node = get_next_node()
         if not next_node:

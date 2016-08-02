@@ -43,10 +43,11 @@ class TestNodesContoller(object):
         assert n.last_check.time() > last_check
 
     def test_get_next_node_succeeds(self, session, monkeypatch):
-        node = Node("chacra.ceph.com")
+        Node("chacra.ceph.com")
         session.commit()
 
         def _get_next_node():
+            node = Node.get(1)
             return node
 
         monkeypatch.setattr(nodes, "get_next_node", _get_next_node)
