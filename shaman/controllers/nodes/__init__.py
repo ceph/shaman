@@ -2,6 +2,7 @@ import datetime
 
 from pecan import expose, abort
 from pecan.secure import secure
+from pecan.decorators import transactional
 
 from shaman.models import Node
 from shaman.auth import basic_auth
@@ -36,7 +37,7 @@ class NodeController(object):
 
 class NodesController(object):
 
-    @expose(generic=True, template='json')
+    @expose(template='json')
     def index(self):
         resp = {}
         for node in Node.query.all():
@@ -44,7 +45,8 @@ class NodesController(object):
         return resp
 
     @secure(basic_auth)
-    @expose(method='GET', content_type="text/plain")
+    @transactional()
+    @expose(content_type="text/plain")
     def next(self):
         next_node = get_next_node()
         if not next_node:
