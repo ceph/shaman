@@ -7,3 +7,4 @@ ssl_webroot_path: "/var/www/{{ fqdn }}"
 letsencrypt_command: "letsencrypt certonly --webroot -w {{ ssl_webroot_path }} -d {{ fqdn }} --email {{ ssl_support_email }} --agree-tos --renew-by-default"
 ssl_cert_path: "files/ssl/dev/ssl.crt"
 ssl_key_path: "files/ssl/dev/ssl.key"
+chacra_verify_ssl: False
