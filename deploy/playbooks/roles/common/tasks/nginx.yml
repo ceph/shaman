@@ -40,8 +40,14 @@
 - include: ssl.yml
   when: development_server == true
 
+- name: check to see if ssl cert needs created
+  stat:
+    path: "{{ nginx_ssl_cert_path }}"
+  sudo: true
+  register: ssl_cert
+
 - include: letsencrypt.yml
-  when: development_server == false
+  when: development_server == false and not ssl_cert.stat.exists
 
 - name: link nginx config
   file:
