@@ -39,7 +39,8 @@ def is_node_healthy(node):
     marked down and removed from the pool.
     """
     check_url = "https://{}/health/".format(node.host)
-    r = requests.get(check_url)
+    verify_ssl = getattr(conf, "chacra_verify_ssl", False)
+    r = requests.get(check_url, verify=verify_ssl)
     node.last_check = datetime.datetime.utcnow()
     if not r.ok:
         node.down_count = node.down_count + 1

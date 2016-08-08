@@ -96,5 +96,6 @@
      nginx_ssl_key_path: "/etc/letsencrypt/live/{{ fqdn }}/privkey.pem"
      api_user: "admin"
      api_key: "secret"
+     chacra_verify_ssl: False
   tags:
     - deploy_app
