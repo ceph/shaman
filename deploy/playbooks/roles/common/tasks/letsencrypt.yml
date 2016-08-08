@@ -32,9 +32,9 @@
 - name: setup a cron to renew the SSL cert every day
   cron:
     name: "renew letsencrypt cert"
-    minute: "0"
+    minute: "23"
     hour: "6,18"
-    job: "{{letsencrypt_command}}"
+    job: "letsencrypt renew"
   sudo: yes
 
 - name: unlink tmp nginx config
