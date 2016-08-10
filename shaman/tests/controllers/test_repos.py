@@ -38,6 +38,7 @@ class TestProjectController(object):
         self.repo_data = dict(
             ref="jewel",
             sha1="45107e21c568dd033c2f0a3107dec8f0b0e58374",
+            flavor="default",
             distro="ubuntu",
             distro_version="xenial",
             chacra_url="chacra.ceph.com/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/xenial/",
@@ -53,8 +54,10 @@ class TestProjectController(object):
     def test_create_a_repo(self, session):
         result = session.app.post_json('/api/repos/ceph/', params=self.repo_data)
         assert result.status_int == 200
-        assert Repo.get(1).ref == "jewel"
-        assert Repo.get(1).project.name == "ceph"
+        repo = Repo.get(1)
+        assert repo.ref == "jewel"
+        assert repo.project.name == "ceph"
+        assert repo.flavor == "default"
 
     def test_update_a_repo_status(self, session):
         result = session.app.post_json('/api/repos/ceph/', params=self.repo_data)

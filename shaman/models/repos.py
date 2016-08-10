@@ -14,6 +14,7 @@ class Repo(Base):
     chacra_url = Column(String(256))
     ref = Column(String(256), index=True)
     sha1 = Column(String(256), index=True)
+    flavor = Column(String(256), nullable=False, index=True, default="default")
     distro = Column(String(256), nullable=False, index=True)
     distro_version = Column(String(256), nullable=False, index=True)
     modified = Column(DateTime, index=True)
@@ -30,6 +31,7 @@ class Repo(Base):
         'distro',
         'distro_version',
         'status',
+        'flavor',
     ]
 
     def __init__(self, project, **kwargs):

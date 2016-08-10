@@ -29,6 +29,7 @@ class ProjectController(object):
                 project=self.project,
                 ref=request.json["ref"],
                 sha1=request.json["sha1"],
+                flavor=request.json["flavor"],
                 distro=request.json["distro"],
                 distro_version=request.json["distro_version"],
                 chacra_url=chacra_url,
