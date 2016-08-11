@@ -139,7 +139,8 @@ class TestDistroVersionController(object):
     def test_get_existing_sha1(self, session):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data())
         result = session.app.get('/api/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/xenial/')
-        assert result.json == ["default"]
+        assert result.json[0]['distro_version'] == 'xenial'
+        assert result.json[0]['flavor'] == 'default'
 
 
 class TestFlavorsController(object):
