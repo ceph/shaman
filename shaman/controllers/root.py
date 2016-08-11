@@ -1,6 +1,7 @@
 from pecan import expose
 
 from shaman.controllers import repos, nodes, health
+from shaman.models import Project
 
 description = "shaman is the source of truth for the state of repositories on chacra nodes."
 
@@ -9,7 +10,7 @@ class APIController(object):
     @expose('json')
     def index(self):
         return dict(
-            repos="",
+            repos=[p.name for p in Project.query.all()],
         )
 
     repos = repos.ProjectsController()
