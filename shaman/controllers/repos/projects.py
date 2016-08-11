@@ -16,6 +16,12 @@ class ProjectController(object):
     def index(self):
         abort(405)
 
+    @index.when(method='GET', template='json')
+    def index_get(self):
+        if not self.project:
+            abort(404)
+        return self.project
+
     #TODO: we need schema validation on this method
     @secure(basic_auth)
     @index.when(method='POST', template='json')
