@@ -45,11 +45,11 @@ class TestProjectController(object):
             status="requested",
         )
 
-    def test_get_not_allowed(self, session):
+    def test_get_project_metadata(self, session):
         Project("ceph")
         session.commit()
-        result = session.app.get('/api/repos/ceph/', expect_errors=True)
-        assert result.status_int == 405
+        result = session.app.get('/api/repos/ceph/')
+        assert result.json == {'name': 'ceph'}
 
     def test_create_a_repo(self, session):
         result = session.app.post_json('/api/repos/ceph/', params=self.repo_data)
