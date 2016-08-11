@@ -14,7 +14,8 @@ class DistroVersionController(object):
             ref=request.context['ref'],
             sha1=request.context['sha1'],
             distro=request.context['distro'],
-            distro_version=distro_version_name).all()
+            distro_version=distro_version_name,
+            flavor='default').all()
 
     @expose(generic=True, template='json')
     def index(self):
@@ -22,9 +23,7 @@ class DistroVersionController(object):
 
     @index.when(method='GET', template='json')
     def index_get(self):
-        if 'default' in [r.flavor for r in self.repos]:
-            return ['default']
-        return []
+        return [r for r in self.repos]
 
     flavors = _flavors.FlavorsController()
 

@@ -61,6 +61,7 @@ class Repo(Base):
             distro_version=self.distro_version,
             modified=self.modified,
             status=self.status,
+            flavor=self.flavor,
         )
 
 
