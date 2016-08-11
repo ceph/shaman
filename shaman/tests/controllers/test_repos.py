@@ -1,6 +1,21 @@
 from shaman.models import Project, Repo
 
 
+class TestApiController(object):
+
+    def test_get_index_no_projects(self, session):
+        result = session.app.get('/api/')
+        assert result.status_int == 200
+        assert result.json == {'repos': []}
+
+    def test_get_index_shows_projects(self, session):
+        Project("ceph")
+        session.commit()
+        result = session.app.get('/api/')
+        assert result.status_int == 200
+        assert result.json == {'repos': ['ceph']}
+
+
 class TestProjectsController(object):
 
     def test_get_index_no_projects(self, session):
@@ -45,11 +60,16 @@ class TestProjectController(object):
             status="requested",
         )
 
-    def test_get_not_allowed(self, session):
+    def test_get_project_repos_is_empty(self, session):
         Project("ceph")
         session.commit()
-        result = session.app.get('/api/repos/ceph/', expect_errors=True)
-        assert result.status_int == 405
+        result = session.app.get('/api/repos/ceph/')
+        assert result.json == []
+
+    def test_get_project_with_a_repo(self, session):
+        session.app.post_json('/api/repos/ceph/', params=self.repo_data)
+        result = session.app.get('/api/repos/ceph/')
+        assert result.json == ["jewel"]
 
     def test_create_a_repo(self, session):
         result = session.app.post_json('/api/repos/ceph/', params=self.repo_data)
@@ -76,3 +96,67 @@ class TestProjectController(object):
         new_data["url"] = "chacra.ceph.com/r/ceph/jewel/"
         result = session.app.post_json('/api/repos/ceph/', params=new_data)
         assert Repo.get(1).url == "chacra.ceph.com/r/ceph/jewel/"
+
+
+def base_repo_data():
+    return dict(
+        ref="jewel",
+        sha1="45107e21c568dd033c2f0a3107dec8f0b0e58374",
+        flavor="default",
+        distro="ubuntu",
+        distro_version="xenial",
+        chacra_url="chacra.ceph.com/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/xenial/",
+        status="requested",
+    )
+
+
+class TestRefController(object):
+
+    def test_get_existing_ref(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        result = session.app.get('/api/repos/ceph/jewel/')
+        assert result.json == ["45107e21c568dd033c2f0a3107dec8f0b0e58374"]
+
+
+class TestSHA1Controller(object):
+
+    def test_get_existing_sha1(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        result = session.app.get('/api/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/')
+        assert result.json == ["ubuntu"]
+
+
+class TestDistroController(object):
+
+    def test_get_existing_sha1(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        result = session.app.get('/api/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/')
+        assert result.json == ["xenial"]
+
+
+class TestDistroVersionController(object):
+
+    def test_get_existing_sha1(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        result = session.app.get('/api/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/xenial/')
+        assert result.json == ["default"]
+
+
+class TestFlavorsController(object):
+
+    def test_get_existing_sha1(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        result = session.app.get('/api/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/xenial/flavors/')
+        assert result.json == ["default"]
+
+
+class TestFlavorController(object):
+
+    def test_get_existing_sha1(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        result = session.app.get('/api/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/xenial/flavors/default/')
+        assert result.json[0]['distro_version'] == 'xenial'
+        assert result.json[0]['status'] == 'requested'
+        assert result.json[0]['distro'] == 'ubuntu'
+        assert result.json[0]['ref'] == 'jewel'
+        assert result.json[0]['sha1'] == '45107e21c568dd033c2f0a3107dec8f0b0e58374'

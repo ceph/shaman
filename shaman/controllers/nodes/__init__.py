@@ -24,7 +24,7 @@ class NodeController(object):
     def index_get(self):
         if not self.node:
             abort(404)
-        return self.node.__json__()
+        return self.node
 
     @secure(basic_auth)
     @index.when(method='POST', template='json')
