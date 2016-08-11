@@ -2,6 +2,7 @@ from pecan import expose, abort, request
 from pecan.secure import secure
 
 from shaman.models import Project, Repo
+from shaman.controllers.repos import refs
 from shaman.auth import basic_auth
 from shaman import models
 
@@ -11,6 +12,11 @@ class ProjectController(object):
     def __init__(self, project_name):
         self.project_name = project_name
         self.project = Project.query.filter_by(name=project_name).first()
+        if not self.project:
+            if request.method != 'POST':
+                abort(404)
+        else:
+            request.context['project_id'] = self.project.id
 
     @expose(generic=True, template='json')
     def index(self):
@@ -18,9 +24,9 @@ class ProjectController(object):
 
     @index.when(method='GET', template='json')
     def index_get(self):
-        if not self.project:
-            abort(404)
-        return self.project
+        return list(
+            set([r.ref for r in self.project.repos])
+        )
 
     #TODO: we need schema validation on this method
     @secure(basic_auth)
@@ -48,6 +54,9 @@ class ProjectController(object):
         repo.update_from_json(update_data)
         return {}
 
+    @expose()
+    def _lookup(self, ref_name, *remainder):
+        return refs.RefController(ref_name), remainder
 
 class ProjectsController(object):
 
