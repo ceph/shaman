@@ -1,6 +1,21 @@
 from shaman.models import Project, Repo
 
 
+class TestApiController(object):
+
+    def test_get_index_no_projects(self, session):
+        result = session.app.get('/api/')
+        assert result.status_int == 200
+        assert result.json == {'repos': []}
+
+    def test_get_index_shows_projects(self, session):
+        Project("ceph")
+        session.commit()
+        result = session.app.get('/api/')
+        assert result.status_int == 200
+        assert result.json == {'repos': ['ceph']}
+
+
 class TestProjectsController(object):
 
     def test_get_index_no_projects(self, session):
