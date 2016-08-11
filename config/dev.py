@@ -57,7 +57,15 @@ logging = {
     }
 }
 
-sqlalchemy = {
+sqlalchemy_w = {
+    'url': 'sqlite:///dev.db',
+    'echo':          True,
+    'echo_pool':     True,
+    'pool_recycle':  3600,
+    'encoding':      'utf-8'
+}
+
+sqlalchemy_ro = {
     'url': 'sqlite:///dev.db',
     'echo':          True,
     'echo_pool':     True,

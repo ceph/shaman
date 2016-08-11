@@ -17,6 +17,7 @@ class TestRepo(object):
         assert repo.project.name == "ceph"
         assert repo.distro == "ubuntu"
         assert repo.distro_version == "trusty"
+        assert repo.flavor == "default"
 
     def test_sets_modified(self, session):
         repo = Repo(self.p, **self.data)
