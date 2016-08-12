@@ -17,7 +17,9 @@ class RefController(object):
 
     @index.when(method='GET', template='json')
     def index_get(self):
-        return [r.sha1 for r in self.repos]
+        return list(
+            set([r.sha1 for r in self.repos])
+        )
 
     @expose()
     def _lookup(self, sha1_name, *remainder):

@@ -117,6 +117,14 @@ class TestRefController(object):
         result = session.app.get('/api/repos/ceph/jewel/')
         assert result.json == ["45107e21c568dd033c2f0a3107dec8f0b0e58374"]
 
+    def test_same_refs_show_once(self, session):
+        repo_1 = base_repo_data()
+        repo_2 = base_repo_data()
+        repo_2['chacra_url'] = 'https://localhost/'
+        session.app.post_json('/api/repos/ceph/', params=repo_1)
+        session.app.post_json('/api/repos/ceph/', params=repo_2)
+        result = session.app.get('/api/repos/ceph/jewel/')
+        assert result.json == ["45107e21c568dd033c2f0a3107dec8f0b0e58374"]
 
 class TestSHA1Controller(object):
 
