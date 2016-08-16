@@ -45,7 +45,9 @@ class DistroController(object):
 
     @index.when(method='GET', template='json')
     def index_get(self):
-        return [r.distro_version for r in self.repos]
+        return list(
+            set([r.distro_version for r in self.repos])
+        )
 
     @expose()
     def _lookup(self, distro_version_name, *remainder):
