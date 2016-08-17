@@ -79,14 +79,14 @@ with the following::
         "status": "ready"
     }
 
-GET /api/search/(project)/(ref|sha1)/
--------------------------------------
+GET /api/search/
+----------------
 
-This endpoint is used to query for repos by ref or sha1. It will return metadata about
+This endpoint is used to query for repos. It will return metadata about
 the latest built repository or repositories that matches your search criteria.
 
-A GET to ``/repos/ceph/master/`` would return the a list of all repos
-for the ``master`` ref::
+Search results are returned as a list of Repo objects and ordered by
+the date they were built in descending order. For example::
 
    [
      {
@@ -98,6 +98,7 @@ for the ``master`` ref::
        "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
        "modified" "2016-06-15 14:04:54.671504",
        "status": "building",
+       "flavor": "default"
      },
      {
        "ref": "master",
@@ -108,6 +109,7 @@ for the ``master`` ref::
        "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/xenial/"
        "modified" "2016-06-15 14:04:54.671504",
        "status": "queued",
+       "flavor": "notcmalloc"
      },
      ...
    ]
@@ -118,14 +120,19 @@ The following querystring parameters are supported.
   A list of distros in ``distro.distro_version`` or ``distro`` format.
   i.e. ``?distros=ubuntu, centos.7``
 
-- ``common_sha1``
-  Requires that the repos return be built for a common sha1
-  across all given distros. If a common built sha1 is not found
-  for distros then no results are returned.
-  i.e. ``?common_sha1=True&distros=centos.7,ubuntu.xenial``
+- ``sha1``
+  Pass a sha1 to limit the results by that sha1. Optionally, you can use
+  the special keyword ``common`` to only return Repo objects that are built
+  for the latest built ``sha1``.
 
-If you choose to use ``sha1`` instead of ``ref`` at this endoint, the ``common_sha1``
-parameter would not be effective.
+- ``ref``
+  Limit the search results to the given ``ref``.
+
+- ``flavor``
+  Limit the search results to the given ``flavor``.
+
+For example, to find the latest sha1 built for the jewel branch of ceph for
+all ubuntu distros and centos7 you would do the following: ``?distros=ubuntu,centos.7&ref=jewel&sha1=common``
 
 GET /api/nodes/
 ---------------
