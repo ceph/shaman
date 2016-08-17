@@ -47,6 +47,9 @@ class ProjectController(object):
                 chacra_url=chacra_url,
             )
             repo = models.get_or_create(Repo, **data)
+        if request.json["status"] == "deleted":
+            repo.delete()
+            return {}
         update_data = dict(
             status=request.json["status"],
             url=request.json.get("url", ""),

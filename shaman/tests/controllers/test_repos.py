@@ -88,6 +88,15 @@ class TestProjectController(object):
         result = session.app.post_json('/api/repos/ceph/', params=new_data)
         assert Repo.get(1).status == "ready"
 
+    def test_delete_a_repo(self, session):
+        result = session.app.post_json('/api/repos/ceph/', params=self.repo_data)
+        assert result.status_int == 200
+        assert Repo.get(1).status == "requested"
+        new_data = self.repo_data.copy()
+        new_data["status"] = "deleted"
+        result = session.app.post_json('/api/repos/ceph/', params=new_data)
+        assert not Repo.get(1)
+
     def test_update_a_repo_url(self, session):
         result = session.app.post_json('/api/repos/ceph/', params=self.repo_data)
         assert result.status_int == 200
