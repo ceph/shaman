@@ -122,8 +122,10 @@ The following querystring parameters are supported.
 
 - ``sha1``
   Pass a sha1 to limit the results by that sha1. Optionally, you can use
-  the special keyword ``common`` to only return Repo objects that are built
-  for the latest built ``sha1``.
+  the special keyword ``latest`` to only return Repo objects that are built
+  for the latest built ``sha1``. If you provide multiple ``distros`` and also
+  use ``?sha1=latest`` it will be the latest ``sha1`` that is common across
+  all of the provided distros.
 
 - ``ref``
   Limit the search results to the given ``ref``.
@@ -131,8 +133,14 @@ The following querystring parameters are supported.
 - ``flavor``
   Limit the search results to the given ``flavor``.
 
+- ``arch``
+  Limit the search results to the given architecture.
+
+- ``status``
+  Limit the search results to the given ``status``.
+
 For example, to find the latest sha1 built for the jewel branch of ceph for
-all ubuntu distros and centos7 you would do the following: ``?distros=ubuntu,centos.7&ref=jewel&sha1=common``
+all ubuntu distros and centos7 you would do the following: ``?distros=ubuntu,centos.7&ref=jewel&sha1=latest``
 
 GET /api/nodes/
 ---------------
