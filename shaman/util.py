@@ -57,7 +57,7 @@ def is_node_healthy(node):
     return True
 
 
-def parse_distro_release(identifier):
+def parse_distro_release(identifier, distro_name):
     """
     Back and forth translation for a release identifier, falling back to
     ``None`` when an identifier has no existing mapping.
@@ -69,23 +69,55 @@ def parse_distro_release(identifier):
     returns: 2 item tuple (codename, version)
     """
     version_map = {
-        'xenial': '16.04',
-        'yakkety': '16.10',
-        'trusty': '14.04',
+        'ubuntu': {
+            'xenial': '16.04',
+            'yakkety': '16.10',
+            'trusty': '14.04',
+        },
+        'debian': {
+            'jessie': '8',
+            'wheezy': '7',
+        },
     }
 
-    codename_map = dict((v, k) for k, v in version_map.items())
+    codename_map = {
+        'ubuntu': {
+            '16.04': 'xenial',
+            '16.10': 'yakkety',
+            '14.04': 'trusty',
+        },
+        'debian': {
+            '8': 'jessie',
+            '7': 'wheezy'
+        },
+    }
 
     # if identifier is a codename it will exist in version_map, otherwise, if
     # we get a version (e.g. '14.04') get it from codename_map, and finally
-    # fallback to None if it doesn't exist (e.g. '7')
-    codename = identifier if identifier in version_map else codename_map.get(identifier)
+    # fallback to None if it doesn't exist (e.g. '7'). If it is all
+    # alphabetic, we assume it is the codename.
+    if identifier.isalpha():
+        codename = identifier
+        version = version_map.get(distro_name, {}).get(identifier)
+    else:
+        if identifier in version_map.get(distro_name, {}):
+            codename = identifier
+        else:
+            codename = codename_map.get(distro_name, {}).get(identifier)
+        # identifier is not alphabetic, so it certainly has chars that look
+        # like a version, if they are not directly mappable, then fallback to
+        # using the identifier
+        version = version_map.get(distro_name, {}).get(identifier, identifier)
 
-    return (
-        codename,
-        # version, fallback to identifier (e.g. '7' for centos7)
-        version_map.get(identifier, identifier)
-    )
+    if not codename and not version:
+        # this is full overkill, but we want to try and assume the client knows
+        # something this application does not
+        if identifier.isalpha():
+            return identifier, None
+        else:
+            return None, identifier
+
+    return codename, version
 
 
 def parse_distro_query(query):
@@ -101,7 +133,7 @@ def parse_distro_query(query):
     query_parts = query.split(',')
     for part in query_parts:
         distro, identifier = part.split('/')
-        codename, version = parse_distro_release(identifier.strip())
+        codename, version = parse_distro_release(identifier.strip(), distro)
         result.append(
             dict(distro=distro, distro_codename=codename, distro_version=version)
         )
