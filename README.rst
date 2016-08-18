@@ -116,6 +116,45 @@ the date they were built in descending order. For example::
      ...
    ]
 
+Repo Metadata
+^^^^^^^^^^^^^
+
+The following metadata is returned for a Repo object when searching.
+
+- ``ref``
+  The ref or branch the repo was built for.
+
+- ``sha1``
+  The sha1 for the built repo.
+
+- ``distro``
+  The distro the repo was built for.
+
+- ``distro_codename``
+  The codename of the distro the repo was built for.
+
+- ``distro_version``
+  The version of the distro the repo was built for.
+
+- ``url``
+  The url to the actual repo files.
+
+- ``chacra_url``
+  The url that represents this repo in chacra. This is also used as the
+  unique identifer for a repo in shaman.
+
+- ``modified``
+  The date this repo was last modified.
+
+- ``status``
+  The status of the repo in chacra. Available values are: requested, queued, building, and ready.
+
+- ``flavor``
+  The flavor of the binaries in the repo. Available values are:  default, notcmalloc, and blkin.
+
+Search Filters
+^^^^^^^^^^^^^^
+
 The following querystring parameters are supported.
 
 - ``distros``
