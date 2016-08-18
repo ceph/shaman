@@ -112,25 +112,35 @@ class TestParseDistroRelease(object):
 
     @py.test.mark.parametrize('version,codename', [('14.04', 'trusty'), ('16.04', 'xenial'), ('16.10', 'yakkety')])
     def test_ubuntu_version_gets_both_parsed(self, version, codename):
-        c, v = util.parse_distro_release(version)
+        c, v = util.parse_distro_release(version, 'ubuntu')
         assert v == version
         assert c == codename
 
     @py.test.mark.parametrize('version,codename', [('14.04', 'trusty'), ('16.04', 'xenial'), ('16.10', 'yakkety')])
     def test_ubuntu_codename_gets_both_parsed(self, version, codename):
-        c, v = util.parse_distro_release(codename)
+        c, v = util.parse_distro_release(codename, 'ubuntu')
         assert v == version
         assert c == codename
 
     def test_centos_gets_version_parsed(self):
-        codename, version = util.parse_distro_release('7')
+        codename, version = util.parse_distro_release('7', 'centos')
         assert version == '7'
         assert codename is None
 
     def test_debian_gets_version_parsed(self):
-        codename, version = util.parse_distro_release('wheezy')
+        codename, version = util.parse_distro_release('wheezy', 'debian')
         assert version == '7'
         assert codename == 'wheezy'
+
+    def test_unknown_alphabetic_gets_parsed(self):
+        codename, version = util.parse_distro_release('peru', 'linux')
+        assert version is None
+        assert codename == 'peru'
+
+    def test_unknown_numeric_gets_parsed(self):
+        codename, version = util.parse_distro_release('100', 'linux')
+        assert version == '100'
+        assert codename is None
 
 
 class TestParseDistroQuery(object):
