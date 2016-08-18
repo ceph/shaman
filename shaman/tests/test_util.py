@@ -127,6 +127,11 @@ class TestParseDistroRelease(object):
         assert version == '7'
         assert codename is None
 
+    def test_debian_gets_version_parsed(self):
+        codename, version = util.parse_distro_release('wheezy')
+        assert version == '7'
+        assert codename == 'wheezy'
+
 
 class TestParseDistroQuery(object):
 
