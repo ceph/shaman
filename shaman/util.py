@@ -55,3 +55,54 @@ def is_node_healthy(node):
     node.down_count = 0
     models.commit()
     return True
+
+
+def parse_distro_release(identifier):
+    """
+    Back and forth translation for a release identifier, falling back to
+    ``None`` when an identifier has no existing mapping.
+
+    For CentOS, an identifier of '7' will return: None, '7'.
+
+    For an identifier of 'xenial', will return: 'xenial', '16.04'
+
+    returns: 2 item tuple (codename, version)
+    """
+    version_map = {
+        'xenial': '16.04',
+        'yakkety': '16.10',
+        'trusty': '14.04',
+    }
+
+    codename_map = dict((v, k) for k, v in version_map.items())
+
+    # if identifier is a codename it will exist in version_map, otherwise, if
+    # we get a version (e.g. '14.04') get it from codename_map, and finally
+    # fallback to None if it doesn't exist (e.g. '7')
+    codename = identifier if identifier in version_map else codename_map.get(identifier)
+
+    return (
+        codename,
+        # version, fallback to identifier (e.g. '7' for centos7)
+        version_map.get(identifier, identifier)
+    )
+
+
+def parse_distro_query(query):
+    """
+    The search API allows a very specific syntax to refine the search given
+    certain distributions. This utility will attempt to get the distinct
+    distribution name and release (or version).
+
+    On error, the controller should return an error http status with
+    information about the invalid input provided by this utility.
+    """
+    result = []
+    query_parts = query.split(',')
+    for part in query_parts:
+        distro, identifier = part.split('/')
+        codename, version = parse_distro_release(identifier.strip())
+        result.append(
+            dict(distro=distro, distro_codename=codename, distro_version=version)
+        )
+    return result
