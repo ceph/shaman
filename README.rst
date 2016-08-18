@@ -93,7 +93,8 @@ the date they were built in descending order. For example::
        "ref": "master",
        "sha1": "8d48f5413564b418a8016b6a344b517282a0f0fa",
        "distro": "ubuntu",
-       "distro_version": "trusty",
+       "distro_codename": "trusty",
+       "distro_version": "14.04",
        "url": "https://chacra.ceph.com/r/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
        "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
        "modified" "2016-06-15 14:04:54.671504",
@@ -104,7 +105,8 @@ the date they were built in descending order. For example::
        "ref": "master",
        "sha1": "8d48f5413564b418a8016b6a344b517282a0f0fa",
        "distro": "ubuntu",
-       "distro_version": "xenial",
+       "distro_codename": "xenial",
+       "distro_version": "16.04",
        "url": "",
        "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/xenial/"
        "modified" "2016-06-15 14:04:54.671504",
@@ -117,15 +119,16 @@ the date they were built in descending order. For example::
 The following querystring parameters are supported.
 
 - ``distros``
-  A list of distros in ``distro.distro_version`` or ``distro`` format.
-  i.e. ``?distros=ubuntu, centos.7``
+  A list of distros in ``distro/distro_version`` or ``distro/distro_codename`` format.
+  i.e. ``?distros=ubuntu/xenial,centos/7``
 
 - ``sha1``
   Pass a sha1 to limit the results by that sha1. Optionally, you can use
   the special keyword ``latest`` to only return Repo objects that are built
   for the latest built ``sha1``. If you provide multiple ``distros`` and also
   use ``?sha1=latest`` it will be the latest ``sha1`` that is common across
-  all of the provided distros.
+  all of the provided distros. If there is no latest common ``sha1`` for the
+  given distros then no results will be returned.
 
 - ``ref``
   Limit the search results to the given ``ref``.
@@ -133,14 +136,11 @@ The following querystring parameters are supported.
 - ``flavor``
   Limit the search results to the given ``flavor``.
 
-- ``arch``
-  Limit the search results to the given architecture.
-
 - ``status``
   Limit the search results to the given ``status``.
 
 For example, to find the latest sha1 built for the jewel branch of ceph for
-all ubuntu distros and centos7 you would do the following: ``?distros=ubuntu,centos.7&ref=jewel&sha1=latest``
+all ubuntu xenial and centos7 you would do the following: ``?distros=ubuntu/xenial,centos/7&ref=jewel&sha1=latest``
 
 GET /api/nodes/
 ---------------
