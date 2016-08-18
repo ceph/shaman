@@ -1,6 +1,7 @@
 from pecan import expose
 
 from shaman.controllers import repos, nodes, health
+from shaman.controllers import search as _search
 from shaman.models import Project
 
 description = "shaman is the source of truth for the state of repositories on chacra nodes."
@@ -15,6 +16,7 @@ class APIController(object):
 
     repos = repos.ProjectsController()
     nodes = nodes.NodesController()
+    search = _search.SearchController()
 
 
 class RootController(object):
