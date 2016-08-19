@@ -42,6 +42,24 @@ class TestNodesContoller(object):
         n = Node.get(1)
         assert n.last_check.time() > last_check
 
+    def test_updates_down_count(self, session):
+        session.app.post("/api/nodes/chacra.ceph.com/")
+        n = Node.get(1)
+        n.down_count = 2
+        session.commit()
+        session.app.post("/api/nodes/chacra.ceph.com/")
+        n = Node.get(1)
+        assert n.down_count == 0
+
+    def test_updates_healthy(self, session):
+        session.app.post("/api/nodes/chacra.ceph.com/")
+        n = Node.get(1)
+        n.healthy = False
+        session.commit()
+        session.app.post("/api/nodes/chacra.ceph.com/")
+        n = Node.get(1)
+        assert n.healthy
+
     def test_get_next_node_succeeds(self, session, monkeypatch):
         Node("chacra.ceph.com")
         session.commit()

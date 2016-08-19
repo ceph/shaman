@@ -32,6 +32,8 @@ class NodeController(object):
         if not self.node:
             self.node = models.get_or_create(Node, host=self.host)
         self.node.last_check = datetime.datetime.utcnow()
+        self.node.down_count = 0
+        self.node.healthy = True
         return {}
 
 
