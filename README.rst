@@ -99,7 +99,8 @@ the date they were built in descending order. For example::
        "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
        "modified" "2016-06-15 14:04:54.671504",
        "status": "building",
-       "flavor": "default"
+       "flavor": "default",
+       "project": "ceph"
      },
      {
        "ref": "master",
@@ -111,7 +112,8 @@ the date they were built in descending order. For example::
        "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/xenial/"
        "modified" "2016-06-15 14:04:54.671504",
        "status": "queued",
-       "flavor": "notcmalloc"
+       "flavor": "notcmalloc",
+       "project": "ceph"
      },
      ...
    ]
@@ -152,6 +154,9 @@ The following metadata is returned for a Repo object when searching.
 - ``flavor``
   The flavor of the binaries in the repo. Available values are:  default, notcmalloc, and blkin.
 
+- ``project``
+  The name of the project in this repo.
+
 Search Filters
 ++++++++++++++
 
@@ -178,8 +183,11 @@ The following querystring parameters are supported.
 - ``status``
   Limit the search results to the given ``status``.
 
+- ``project``
+  Limit the search results to the given ``project``.
+
 For example, to find the latest sha1 built for the jewel branch of ceph for
-all ubuntu xenial and centos7 you would do the following: ``?distros=ubuntu/xenial,centos/7&ref=jewel&sha1=latest``
+all ubuntu xenial and centos7 you would do the following: ``?project=ceph&distros=ubuntu/xenial,centos/7&ref=jewel&sha1=latest``
 
 GET /api/nodes/
 ---------------
