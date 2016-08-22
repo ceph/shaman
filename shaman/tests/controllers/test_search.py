@@ -58,3 +58,8 @@ class TestSearchController(object):
         assert result.json[0]["distro_version"] == "7"
         assert result.json[1]["distro"] == "ubuntu"
         assert result.json[1]["distro_codename"] == "xenial"
+
+    def test_filter_no_matching_distro(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        result = session.app.get('/api/search/', params={'distros': 'centos/7'})
+        assert result.json == []
