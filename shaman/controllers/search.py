@@ -29,7 +29,18 @@ class SearchController(object):
         query = self.apply_filters(kw)
         if not query:
             return []
-        return query.order_by(desc(Repo.modified)).all()
+        filtered_repos = query.order_by(desc(Repo.modified))
+        if kw.get('sha1', '') == 'latest':
+            # get all the sha1s, latest first:
+            sha1s = set([r.sha1 for r in filtered_repos])
+            matching_repo_count = filtered_repos.count()
+            # find the sha1 that is available for all the other repos
+            for sha1 in sha1s:
+                common_repos = filtered_repos.filter_by(sha1=sha1)
+                if common_repos.count() == matching_repo_count:
+                    return common_repos.all()
+            return []
+        return filtered_repos.all()
 
     def apply_filters(self, filters):
         # TODO: allow operators
@@ -63,12 +74,8 @@ class SearchController(object):
         filter_obj = self.filters[key]
 
         if key == 'sha1' and value == 'latest':
-            # TODO:
-            # recurse with the latest 50 (?) known built sha1s to find a common
-            # one that exists for all.
-            # return query.filter()
-            # stub:
-            pass
+            # we parse this elsewhere
+            return query
         # query will exist if multiple filters are being applied, e.g. by name
         # and by distro but otherwise it will be None
         if query:
