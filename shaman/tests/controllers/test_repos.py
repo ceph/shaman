@@ -190,6 +190,7 @@ class TestFlavorController(object):
         result = session.app.get('/api/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/xenial/flavors/default/')
         assert result.json[0]['distro_codename'] == 'xenial'
         assert result.json[0]['distro_version'] == '16.04'
+        assert result.json[0]['project'] == 'ceph'
         assert result.json[0]['status'] == 'requested'
         assert result.json[0]['distro'] == 'ubuntu'
         assert result.json[0]['ref'] == 'jewel'

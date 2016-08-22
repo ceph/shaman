@@ -68,6 +68,7 @@ class Repo(Base):
             modified=self.modified,
             status=self.status,
             flavor=self.flavor,
+            project=self.project.name,
         )
 
 
