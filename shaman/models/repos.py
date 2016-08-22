@@ -52,13 +52,19 @@ class Repo(Base):
             return '<Repo detached>'
 
     def __json__(self):
+        from shaman.util import parse_distro_release
+        codename, version = parse_distro_release(
+            self.distro_version,
+            self.distro
+        )
         return dict(
             url=self.url,
             chacra_url=self.chacra_url,
             ref=self.ref,
             sha1=self.sha1,
             distro=self.distro,
-            distro_version=self.distro_version,
+            distro_version=version,
+            distro_codename=codename,
             modified=self.modified,
             status=self.status,
             flavor=self.flavor,
