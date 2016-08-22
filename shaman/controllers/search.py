@@ -1,20 +1,19 @@
 from pecan import expose, abort
 from shaman.models import Repo, Project
-from sqlalchemy import desc
+from shaman import util
+from sqlalchemy import desc, or_, and_
 
 
 class SearchController(object):
 
     def __init__(self):
         self.filters = {
-                'distro': Repo.distro,
-                'distro_version': Repo.distro_version,
-                # TODO: figure out archs
-                #'arch': Repo.arch,
-                'ref': Repo.ref,
-                'sha1': Repo.sha1,
-                'flavor': Repo.flavor,
-                'status': Repo.status,
+            # TODO: figure out archs
+            # 'arch': Repo.arch,
+            'ref': Repo.ref,
+            'sha1': Repo.sha1,
+            'flavor': Repo.flavor,
+            'status': Repo.status,
         }
 
     @expose('json')
@@ -39,6 +38,18 @@ class SearchController(object):
             query = Repo.filter_by(project=project)
         except KeyError:
             query = Repo.query
+        if filters.get("distros", None):
+            # TODO: we'll need some sort of schema validation here
+            distro_list = util.parse_distro_query(filters.pop("distros"))
+            distro_filter_list = []
+            for distro in distro_list:
+                # for deb-based distros we store codename in the db as version
+                version_filter = distro["distro_codename"]
+                if not distro["distro_codename"]:
+                    # we do not use codenames for rpm-based distros
+                    version_filter = distro["distro_version"]
+                distro_filter_list.append(and_(Repo.distro == distro["distro"], Repo.distro_version == version_filter))
+            query = query.filter(or_(*distro_filter_list))
         for k, v in filters.items():
             if k not in self.filters:
                 # TODO: improve error reporting
