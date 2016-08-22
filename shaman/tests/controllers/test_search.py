@@ -1,15 +1,22 @@
 def base_repo_data(**kw):
+    ref = kw.get('ref', "jewel")
+    sha1 = kw.get('sha1', "45107e21c568dd033c2f0a3107dec8f0b0e58374")
+    distro = kw.get('distro', "ubuntu")
+    distro_version = kw.get('distro_version', "xenial")
     return dict(
-        ref="jewel",
-        sha1="45107e21c568dd033c2f0a3107dec8f0b0e58374",
-        flavor="default",
-        distro=kw.get("distro", "ubuntu"),
-        distro_version=kw.get("distro_version", "xenial"),
-        chacra_url="chacra.ceph.com/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/{}/{}/".format(
-            kw.get("distro", "ubuntu"),
-            kw.get("distro_version", "xenial"),
+        ref=ref,
+        sha1=sha1,
+        flavor=kw.get('flavor', "default"),
+        distro=distro,
+        distro_version=distro_version,
+        chacra_url=kw.get(
+            'chacra_url',
+            "chacra.ceph.com/repos/ceph/%s/%s/%s/%s/" % (
+                ref, sha1, distro, distro_version
+            )
         ),
-        status="requested",
+        status=kw.get('status', "requested"),
+
     )
 
 
@@ -63,3 +70,45 @@ class TestSearchController(object):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data())
         result = session.app.get('/api/search/', params={'distros': 'centos/7'})
         assert result.json == []
+
+
+class TestLatestSha1(object):
+
+    def test_single_repo_is_returned(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        result = session.app.get(
+            '/api/search/',
+            params={'project': 'ceph', 'sha1': 'latest'},
+        )
+        assert result.json[0]['sha1'] == "45107e21c568dd033c2f0a3107dec8f0b0e58374"
+
+    def test_one_repo_does_not_match(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(sha1='111000'))
+        result = session.app.get(
+            '/api/search/',
+            params={'project': 'ceph', 'sha1': 'latest'},
+        )
+        # this is fully enforcing, so we expect to get an empty list back
+        assert result.json == []
+
+    def test_all_repos_match(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(distro_version='trusty'))
+        result = session.app.get(
+            '/api/search/',
+            params={'project': 'ceph', 'sha1': 'latest'},
+        )
+        # this is fully enforcing, so we expect to get an empty list back
+        assert len(result.json) == 2
+
+    def test_distinct_repos_match(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(ref='master'))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(distro='jessie'))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        result = session.app.get(
+            '/api/search/',
+            params={'project': 'ceph', 'distros': 'ubuntu/xenial', 'sha1': 'latest', },
+        )
+        # this is fully enforcing, so we expect to get an empty list back
+        assert len(result.json) == 2
