@@ -130,6 +130,8 @@ def parse_distro_query(query):
     information about the invalid input provided by this utility.
     """
     result = []
+    if not query:
+        return result
     query_parts = query.split(',')
     for part in query_parts:
         distro, identifier = part.split('/')
