@@ -56,20 +56,10 @@ class SearchController(object):
                     ).order_by(desc(Repo.modified)).first()
                     if latest_repo:
                         latest.append(latest_repo)
-                if latest:
+                # only return if the sha1 is found in all distros
+                if len(latest) == len(distro_list):
                     return latest
             return []
-        elif kw.get('sha1'):
-            common = []
-            for distro in distro_list:
-                version_filter = distro["distro_codename"] or distro['distro_version']
-                common_repo = latest_modified_repos.filter_by(
-                    sha1=kw.get('sha1'),
-                    distro_version=version_filter
-                ).order_by(desc(Repo.modified)).first()
-                if common_repo:
-                    common.append(common_repo)
-            return common
 
         return latest_modified_repos.all()
 

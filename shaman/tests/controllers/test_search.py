@@ -144,3 +144,14 @@ class TestLatestSha1(object):
             params={'project': 'ceph', 'distros': 'ubuntu/xenial,centos/7', 'sha1': 'latest'},
         )
         assert len(result.json) == 2
+        assert result.json[0]["sha1"] == '2'
+
+    def test_does_not_find_common_sha1_across_distros(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(ref='master'))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(distro='centos', distro_version="7"))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(sha1="aaa"))
+        result = session.app.get(
+            '/api/search/',
+            params={'project': 'ceph', 'distros': 'ubuntu/xenial,centos/7', 'sha1': 'latest', 'ref': 'jewel'},
+        )
+        assert result.json == []
