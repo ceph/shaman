@@ -1,3 +1,4 @@
+from copy import deepcopy
 from pecan import expose, abort
 from shaman.models import Repo, Project
 from shaman import util
@@ -29,10 +30,49 @@ class SearchController(object):
         query = self.apply_filters(kw)
         if not query:
             return []
-        return query.order_by(desc(Repo.modified)).all()
+        # order all the results by their modified time, descending (newest first)
+        latest_modified_repos = query.order_by(desc(Repo.modified))
+        distro_list = util.parse_distro_query(kw.get("distros"))
+        if kw.get('sha1', '') == 'latest':
+            seen_sha1s = []
+
+            # go through all the sha1s in the repositories left from the
+            # filtering, skipping the ones already queried for. We don't use
+            # `set` here because it alters the ordering on `modified` from the
+            # initial query
+            for r in latest_modified_repos:
+                if r.sha1 in seen_sha1s:
+                    continue
+                seen_sha1s.append(r.sha1)
+                latest = []
+                if not distro_list:
+                    return latest_modified_repos.filter_by(sha1=r.sha1).all()
+
+                for distro in distro_list:
+                    version_filter = distro["distro_codename"] or distro['distro_version']
+                    latest_repo = latest_modified_repos.filter_by(
+                        sha1=r.sha1,
+                        distro_version=version_filter
+                    ).order_by(desc(Repo.modified)).first()
+                    if not latest_repo:
+                        # a required repo that matches the sha1 and the distro
+                        # version was not found, so break out of this inner
+                        # loop, reset `latest` so that it doesn't return with
+                        # the items found so that the outer loop can continue
+                        # looking at the next sha1
+                        latest = []
+                        break
+                    latest.append(latest_repo)
+                # only return if the sha1 is found in all distros
+                if latest:
+                    return latest
+            return []
+
+        return latest_modified_repos.all()
 
     def apply_filters(self, filters):
         # TODO: allow operators
+        filters = deepcopy(filters)
         try:
             project = Project.filter_by(name=filters.pop('project')).first()
             query = Repo.filter_by(project=project)
@@ -43,12 +83,13 @@ class SearchController(object):
             distro_list = util.parse_distro_query(filters.pop("distros"))
             distro_filter_list = []
             for distro in distro_list:
-                # for deb-based distros we store codename in the db as version
-                version_filter = distro["distro_codename"]
-                if not distro["distro_codename"]:
-                    # we do not use codenames for rpm-based distros
-                    version_filter = distro["distro_version"]
-                distro_filter_list.append(and_(Repo.distro == distro["distro"], Repo.distro_version == version_filter))
+                # for deb-based distros we store codename in the db as version,
+                # so try first with the codename, but fallback to
+                # distro_version otherwise
+                version_filter = distro["distro_codename"] or distro['distro_version']
+                distro_filter_list.append(
+                    and_(Repo.distro == distro["distro"], Repo.distro_version == version_filter)
+                )
             query = query.filter(or_(*distro_filter_list))
         for k, v in filters.items():
             if k not in self.filters:
@@ -63,12 +104,8 @@ class SearchController(object):
         filter_obj = self.filters[key]
 
         if key == 'sha1' and value == 'latest':
-            # TODO:
-            # recurse with the latest 50 (?) known built sha1s to find a common
-            # one that exists for all.
-            # return query.filter()
-            # stub:
-            pass
+            # we parse this elsewhere
+            return query
         # query will exist if multiple filters are being applied, e.g. by name
         # and by distro but otherwise it will be None
         if query:
