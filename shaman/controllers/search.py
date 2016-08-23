@@ -29,18 +29,48 @@ class SearchController(object):
         query = self.apply_filters(kw)
         if not query:
             return []
-        filtered_repos = query.order_by(desc(Repo.modified))
+        # order all the results by their modified time, descending (newest first)
+        latest_modified_repos = query.order_by(desc(Repo.modified))
+        distro_list = util.parse_distro_query(kw.get("distros"))
         if kw.get('sha1', '') == 'latest':
-            # get all the sha1s, latest first:
-            sha1s = set([r.sha1 for r in filtered_repos])
-            matching_repo_count = filtered_repos.count()
-            # find the sha1 that is available for all the other repos
-            for sha1 in sha1s:
-                common_repos = filtered_repos.filter_by(sha1=sha1)
-                if common_repos.count() == matching_repo_count:
-                    return common_repos.all()
+            seen_sha1s = []
+
+            # go through all the sha1s in the repositories left from the
+            # filtering, skipping the ones already queried for. We don't use
+            # `set` here because it alters the ordering on `modified` from the
+            # initial query
+            for r in latest_modified_repos:
+                if r.sha1 in seen_sha1s:
+                    continue
+                seen_sha1s.append(r.sha1)
+                latest = []
+                if not distro_list:
+                    return latest_modified_repos.filter_by(sha1=r.sha1).all()
+
+                for distro in distro_list:
+                    version_filter = distro["distro_codename"] or distro['distro_version']
+                    latest_repo = latest_modified_repos.filter_by(
+                        sha1=r.sha1,
+                        distro_version=version_filter
+                    ).order_by(desc(Repo.modified)).first()
+                    if latest_repo:
+                        latest.append(latest_repo)
+                if latest:
+                    return latest
             return []
-        return filtered_repos.all()
+        elif kw.get('sha1'):
+            common = []
+            for distro in distro_list:
+                version_filter = distro["distro_codename"] or distro['distro_version']
+                common_repo = latest_modified_repos.filter_by(
+                    sha1=kw.get('sha1'),
+                    distro_version=version_filter
+                ).order_by(desc(Repo.modified)).first()
+                if common_repo:
+                    common.append(common_repo)
+            return common
+
+        return latest_modified_repos.all()
 
     def apply_filters(self, filters):
         # TODO: allow operators
@@ -59,7 +89,9 @@ class SearchController(object):
                 if not distro["distro_codename"]:
                     # we do not use codenames for rpm-based distros
                     version_filter = distro["distro_version"]
-                distro_filter_list.append(and_(Repo.distro == distro["distro"], Repo.distro_version == version_filter))
+                distro_filter_list.append(
+                    and_(Repo.distro == distro["distro"], Repo.distro_version == version_filter)
+                )
             query = query.filter(or_(*distro_filter_list))
         for k, v in filters.items():
             if k not in self.filters:
