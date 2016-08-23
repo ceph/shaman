@@ -71,6 +71,11 @@ class TestSearchController(object):
         result = session.app.get('/api/search/', params={'distros': 'centos/7'})
         assert result.json == []
 
+    def test_invalid_distros_query(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        result = session.app.get('/api/search/', params={'distros': 'centos7,frufru'}, expect_errors=True)
+        assert "Invalid version or codename for distro: centos7" in result.text
+
 
 class TestLatestSha1(object):
 
