@@ -87,6 +87,8 @@ class SearchController(object):
                 # so try first with the codename, but fallback to
                 # distro_version otherwise
                 version_filter = distro["distro_codename"] or distro['distro_version']
+                if not version_filter:
+                    abort(400, "Invalid version or codename for distro: %s" % distro["distro"])
                 distro_filter_list.append(
                     and_(Repo.distro == distro["distro"], Repo.distro_version == version_filter)
                 )
