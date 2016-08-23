@@ -1,3 +1,4 @@
+from copy import deepcopy
 from pecan import expose, abort
 from shaman.models import Repo, Project
 from shaman import util
@@ -74,6 +75,7 @@ class SearchController(object):
 
     def apply_filters(self, filters):
         # TODO: allow operators
+        filters = deepcopy(filters)
         try:
             project = Project.filter_by(name=filters.pop('project')).first()
             query = Repo.filter_by(project=project)
