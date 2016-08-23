@@ -91,7 +91,8 @@ def parse_distro_release(identifier, distro_name):
             '7': 'wheezy'
         },
     }
-
+    if not identifier:
+        return None, None
     # if identifier is a codename it will exist in version_map, otherwise, if
     # we get a version (e.g. '14.04') get it from codename_map, and finally
     # fallback to None if it doesn't exist (e.g. '7'). If it is all
@@ -134,7 +135,10 @@ def parse_distro_query(query):
         return result
     query_parts = query.split(',')
     for part in query_parts:
-        distro, identifier = part.split('/')
+        try:
+            distro, identifier = part.split('/')
+        except ValueError:
+            distro, identifier = part, ''
         codename, version = parse_distro_release(identifier.strip(), distro)
         result.append(
             dict(distro=distro, distro_codename=codename, distro_version=version)
