@@ -172,3 +172,13 @@ class TestParseDistroQuery(object):
         assert result[1]['distro'] == 'centos'
         assert result[1]['distro_codename'] is None
         assert result[1]['distro_version'] == '7'
+
+    def test_barfs_when_no_slash(self):
+        result = util.parse_distro_query('ubuntu/xenial,centos7')
+        assert result[0]['distro'] == 'ubuntu'
+        assert result[0]['distro_codename'] == 'xenial'
+        assert result[0]['distro_version'] == '16.04'
+
+        assert result[1]['distro'] == 'centos7'
+        assert result[1]['distro_codename'] is None
+        assert result[1]['distro_version'] is None
