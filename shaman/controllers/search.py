@@ -86,11 +86,10 @@ class SearchController(object):
             distro_list = util.parse_distro_query(filters.pop("distros"))
             distro_filter_list = []
             for distro in distro_list:
-                # for deb-based distros we store codename in the db as version
-                version_filter = distro["distro_codename"]
-                if not distro["distro_codename"]:
-                    # we do not use codenames for rpm-based distros
-                    version_filter = distro["distro_version"]
+                # for deb-based distros we store codename in the db as version,
+                # so try first with the codename, but fallback to
+                # distro_version otherwise
+                version_filter = distro["distro_codename"] or distro['distro_version']
                 distro_filter_list.append(
                     and_(Repo.distro == distro["distro"], Repo.distro_version == version_filter)
                 )
