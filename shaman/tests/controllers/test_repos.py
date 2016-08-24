@@ -113,6 +113,17 @@ class TestProjectController(object):
         repo = Repo.get(1)
         assert len(repo.archs) == 2
 
+    def test_update_repo_with_archs(self, session):
+        data = self.repo_data.copy()
+        data["archs"] = ["x86_64"]
+        session.app.post_json('/api/repos/ceph/', params=data)
+        repo = Repo.get(1)
+        assert len(repo.archs) == 1
+        data["archs"] = ["x86_64", "arm64"]
+        session.app.post_json('/api/repos/ceph/', params=data)
+        repo = Repo.get(1)
+        assert len(repo.archs) == 2
+
 
 def base_repo_data():
     return dict(
@@ -123,6 +134,7 @@ def base_repo_data():
         distro_version="xenial",
         chacra_url="chacra.ceph.com/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/xenial/",
         status="requested",
+        archs=["x86_64", "arm64"]
     )
 
 
@@ -202,3 +214,4 @@ class TestFlavorController(object):
         assert result.json[0]['distro'] == 'ubuntu'
         assert result.json[0]['ref'] == 'jewel'
         assert result.json[0]['sha1'] == '45107e21c568dd033c2f0a3107dec8f0b0e58374'
+        assert sorted(result.json[0]['archs']) == sorted(["arm64", "x86_64"])
