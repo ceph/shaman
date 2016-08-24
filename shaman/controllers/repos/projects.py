@@ -57,8 +57,7 @@ class ProjectController(object):
         repo.update_from_json(update_data)
         archs = request.json.get("archs", [])
         for arch in archs:
-            data = dict(name=arch, repo=repo)
-            models.get_or_create(Arch, **data)
+            models.get_or_create(Arch, name=arch, repo=repo)
         return {}
 
     @expose()
