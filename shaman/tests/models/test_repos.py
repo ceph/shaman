@@ -47,3 +47,13 @@ class TestRepo(object):
         repo = Repo.get(1)
         assert arch1 in repo.archs
         assert arch2 in repo.archs
+
+    def test_delete_will_delete_arch(self, session):
+        repo = Repo(self.p, **self.data)
+        Arch(name="x86_64", repo=repo)
+        session.commit()
+        repo = Repo.get(1)
+        repo.delete()
+        session.commit()
+        assert not Repo.query.first()
+        assert not Arch.query.first()
