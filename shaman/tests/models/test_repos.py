@@ -1,4 +1,4 @@
-from shaman.models import Repo, Project
+from shaman.models import Repo, Project, Arch
 
 
 class TestRepo(object):
@@ -31,3 +31,19 @@ class TestRepo(object):
         repo.distro = "centos"
         session.commit()
         assert initial_timestamp < repo.modified.time()
+
+    def test_can_create_with_arch(self, session):
+        repo = Repo(self.p, **self.data)
+        arch = Arch(name="x86_64", repo=repo)
+        session.commit()
+        repo = Repo.get(1)
+        assert arch in repo.archs
+
+    def test_can_create_with_many_archs(self, session):
+        repo = Repo(self.p, **self.data)
+        arch1 = Arch(name="x86_64", repo=repo)
+        arch2 = Arch(name="arm64", repo=repo)
+        session.commit()
+        repo = Repo.get(1)
+        assert arch1 in repo.archs
+        assert arch2 in repo.archs
