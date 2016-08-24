@@ -71,6 +71,7 @@ class Repo(Base):
             status=self.status,
             flavor=self.flavor,
             project=self.project.name,
+            archs=[arch.name for arch in self.archs]
         )
 
 
