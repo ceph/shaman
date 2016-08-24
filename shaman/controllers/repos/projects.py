@@ -1,7 +1,7 @@
 from pecan import expose, abort, request
 from pecan.secure import secure
 
-from shaman.models import Project, Repo
+from shaman.models import Project, Repo, Arch
 from shaman.controllers.repos import refs
 from shaman.auth import basic_auth
 from shaman import models
@@ -55,11 +55,16 @@ class ProjectController(object):
             url=request.json.get("url", ""),
         )
         repo.update_from_json(update_data)
+        archs = request.json.get("archs", [])
+        for arch in archs:
+            data = dict(name=arch, repo=repo)
+            models.get_or_create(Arch, **data)
         return {}
 
     @expose()
     def _lookup(self, ref_name, *remainder):
         return refs.RefController(ref_name), remainder
+
 
 class ProjectsController(object):
 

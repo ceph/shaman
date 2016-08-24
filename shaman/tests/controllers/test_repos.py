@@ -106,6 +106,13 @@ class TestProjectController(object):
         result = session.app.post_json('/api/repos/ceph/', params=new_data)
         assert Repo.get(1).url == "chacra.ceph.com/r/ceph/jewel/"
 
+    def test_add_repo_with_archs(self, session):
+        data = self.repo_data.copy()
+        data["archs"] = ["x86_64", "arm64"]
+        session.app.post_json('/api/repos/ceph/', params=data)
+        repo = Repo.get(1)
+        assert len(repo.archs) == 2
+
 
 def base_repo_data():
     return dict(
