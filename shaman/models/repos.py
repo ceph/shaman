@@ -23,6 +23,8 @@ class Repo(Base):
     project_id = Column(Integer, ForeignKey('projects.id'))
     project = relationship('Project', backref=backref('repos', lazy='dynamic'))
 
+    archs = relationship("Arch", cascade="all, delete")
+
     allowed_keys = [
         'url',
         'chacra_url',
@@ -69,6 +71,7 @@ class Repo(Base):
             status=self.status,
             flavor=self.flavor,
             project=self.project.name,
+            archs=[arch.name for arch in self.archs]
         )
 
 
