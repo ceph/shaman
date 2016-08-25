@@ -151,6 +151,14 @@ class TestParseDistroQuery(object):
         assert result[0]['distro_codename'] == 'xenial'
         assert result[0]['distro_version'] == '16.04'
 
+    def test_parses_with_arch(self):
+        result = util.parse_distro_query('ubuntu/xenial/x86_64')
+        assert result[0]['arch'] == "x86_64"
+
+    def test_parses_without_arch(self):
+        result = util.parse_distro_query('ubuntu/xenial')
+        assert result[0]['arch'] is None
+
     def test_parses_ubuntu_with_version(self):
         result = util.parse_distro_query('ubuntu/14.04')
         assert result[0]['distro'] == 'ubuntu'
