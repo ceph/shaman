@@ -1,6 +1,6 @@
 from copy import deepcopy
 from pecan import expose, abort
-from shaman.models import Repo, Project
+from shaman.models import Repo, Project, Arch
 from shaman import util
 from sqlalchemy import desc, or_, and_
 
@@ -9,8 +9,6 @@ class SearchController(object):
 
     def __init__(self):
         self.filters = {
-            # TODO: figure out archs
-            # 'arch': Repo.arch,
             'ref': Repo.ref,
             'sha1': Repo.sha1,
             'flavor': Repo.flavor,
@@ -89,8 +87,11 @@ class SearchController(object):
                 version_filter = distro["distro_codename"] or distro['distro_version']
                 if not version_filter:
                     abort(400, "Invalid version or codename for distro: %s" % distro["distro"])
+                repo_filters = [Repo.distro == distro["distro"], Repo.distro_version == version_filter]
+                if distro["arch"]:
+                    repo_filters.append(Arch.name == distro["arch"])
                 distro_filter_list.append(
-                    and_(Repo.distro == distro["distro"], Repo.distro_version == version_filter)
+                    and_(*repo_filters)
                 )
             query = query.filter(or_(*distro_filter_list))
         for k, v in filters.items():
