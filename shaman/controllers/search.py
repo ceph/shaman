@@ -51,7 +51,10 @@ class SearchController(object):
                     latest_repo = latest_modified_repos.filter_by(
                         sha1=r.sha1,
                         distro_version=version_filter
-                    ).order_by(desc(Repo.modified)).first()
+                    )
+                    if distro["arch"]:
+                        latest_repo = latest_repo.filter(Arch.name == distro["arch"])
+                    latest_repo = latest_repo.order_by(desc(Repo.modified)).first()
                     if not latest_repo:
                         # a required repo that matches the sha1 and the distro
                         # version was not found, so break out of this inner
