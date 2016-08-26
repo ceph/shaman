@@ -135,12 +135,16 @@ def parse_distro_query(query):
         return result
     query_parts = query.split(',')
     for part in query_parts:
+        arch = None
         try:
-            distro, identifier = part.split('/')
+            distro, identifier = part.split('/', 1)
         except ValueError:
             distro, identifier = part, ''
+        # an arch was included
+        if "/" in identifier:
+            identifier, arch = identifier.split('/')
         codename, version = parse_distro_release(identifier.strip(), distro)
         result.append(
-            dict(distro=distro, distro_codename=codename, distro_version=version)
+            dict(distro=distro, distro_codename=codename, distro_version=version, arch=arch)
         )
     return result

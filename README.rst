@@ -100,7 +100,8 @@ the date they were built in descending order. For example::
        "modified" "2016-06-15 14:04:54.671504",
        "status": "building",
        "flavor": "default",
-       "project": "ceph"
+       "project": "ceph",
+       "archs": ["x86_64"]
      },
      {
        "ref": "master",
@@ -113,7 +114,8 @@ the date they were built in descending order. For example::
        "modified" "2016-06-15 14:04:54.671504",
        "status": "queued",
        "flavor": "notcmalloc",
-       "project": "ceph"
+       "project": "ceph",
+       "archs": ["x86_64", "arm64"]
      },
      ...
    ]
@@ -157,14 +159,18 @@ The following metadata is returned for a Repo object when searching.
 - ``project``
   The name of the project in this repo.
 
+- ``archs``
+  A list of architectures that the repo supports.
+
 Search Filters
 ++++++++++++++
 
 The following querystring parameters are supported.
 
 - ``distros``
-  A list of distros in ``distro/distro_version`` or ``distro/distro_codename`` format.
-  i.e. ``?distros=ubuntu/xenial,centos/7``
+  A list of distros in ``distro/distro_version`` or ``distro/distro_codename`` format. You
+  can optionally filter by ``arch`` by adding it to the end.
+  i.e. ``?distros=ubuntu/xenial/x86_64,centos/7``
 
 - ``sha1``
   Pass a sha1 to limit the results by that sha1. Optionally, you can use
