@@ -65,6 +65,15 @@ class TestSearchController(object):
         assert result.json[0]["distro_codename"] == "xenial"
         assert result.json[0]["archs"] == ["x86_64"]
 
+    def test_filter_by_same_distro_with_different_archs(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(archs=["arm64"], chacra_url="1"))
+        result = session.app.get('/api/search/', params={'distros': 'ubuntu/xenial/x86_64'})
+        assert len(result.json) == 1
+        assert result.json[0]["distro"] == "ubuntu"
+        assert result.json[0]["distro_codename"] == "xenial"
+        assert result.json[0]["archs"] == ["x86_64"]
+
     def test_filter_by_single_distro_with_multiple_archs(self, session):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(archs=["x86_64", "arm64"]))
         centos_data = base_repo_data(distro="centos", distro_version="7")

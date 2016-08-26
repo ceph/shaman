@@ -48,12 +48,12 @@ class SearchController(object):
 
                 for distro in distro_list:
                     version_filter = distro["distro_codename"] or distro['distro_version']
-                    latest_repo = latest_modified_repos.filter_by(
-                        sha1=r.sha1,
-                        distro_version=version_filter
+                    latest_repo = latest_modified_repos.filter(
+                        Repo.sha1 == r.sha1,
+                        Repo.distro_version == version_filter
                     )
                     if distro["arch"]:
-                        latest_repo = latest_repo.join(Repo.archs).filter(Arch.name == distro["arch"])
+                        latest_repo = latest_repo.filter(Arch.name == distro["arch"])
                     latest_repo = latest_repo.order_by(desc(Repo.modified)).first()
                     if not latest_repo:
                         # a required repo that matches the sha1 and the distro
@@ -83,6 +83,7 @@ class SearchController(object):
             # TODO: we'll need some sort of schema validation here
             distro_list = util.parse_distro_query(filters.pop("distros"))
             distro_filter_list = []
+            has_arch_filter = False
             for distro in distro_list:
                 # for deb-based distros we store codename in the db as version,
                 # so try first with the codename, but fallback to
@@ -93,10 +94,14 @@ class SearchController(object):
                 repo_filters = [Repo.distro == distro["distro"], Repo.distro_version == version_filter]
                 if distro["arch"]:
                     repo_filters.append(Arch.name == distro["arch"])
+                    has_arch_filter = True
                 distro_filter_list.append(
                     and_(*repo_filters)
                 )
-            query = query.filter(or_(*distro_filter_list))
+            if has_arch_filter:
+                query = query.join(Repo.archs).filter(or_(*distro_filter_list))
+            else:
+                query = query.filter(or_(*distro_filter_list))
         for k, v in filters.items():
             if k not in self.filters:
                 # TODO: improve error reporting
