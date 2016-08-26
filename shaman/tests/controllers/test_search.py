@@ -155,6 +155,17 @@ class TestLatestSha1(object):
         assert len(result.json) == 1
         assert result.json[0]['ref'] == 'jewel'
 
+    def test_distinct_repos_match_with_arch(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(archs=["x86_64"]))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(archs=["arm64"], chacra_url="1"))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(archs=["foo"], chacra_url="2"))
+        result = session.app.get(
+            '/api/search/',
+            params={'project': 'ceph', 'distros': 'ubuntu/xenial/x86_64', 'sha1': 'latest'},
+        )
+        assert len(result.json) == 1
+        assert result.json[0]['archs'] == ['x86_64']
+
     def test_distinct_repos_match_actual_sha1(self, session):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(ref='master'))
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(distro='jessie'))
