@@ -3,6 +3,7 @@ def base_repo_data(**kw):
     sha1 = kw.get('sha1', "45107e21c568dd033c2f0a3107dec8f0b0e58374")
     distro = kw.get('distro', "ubuntu")
     distro_version = kw.get('distro_version', "xenial")
+    archs = kw.get('archs', ["x86_64"])
     return dict(
         ref=ref,
         sha1=sha1,
@@ -16,7 +17,7 @@ def base_repo_data(**kw):
             )
         ),
         status=kw.get('status', "requested"),
-
+        archs=archs,
     )
 
 
