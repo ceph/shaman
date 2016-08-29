@@ -1,9 +1,10 @@
 import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship, backref, deferred
 from sqlalchemy.event import listen
 from sqlalchemy.orm.exc import DetachedInstanceError
 from shaman.models import Base, update_timestamp
+from shaman.models.types import JSONType
 
 
 class Repo(Base):
@@ -19,6 +20,7 @@ class Repo(Base):
     distro_version = Column(String(256), nullable=False, index=True)
     modified = Column(DateTime, index=True)
     status = Column(String(256), index=True)
+    extra = deferred(Column(JSONType()))
 
     project_id = Column(Integer, ForeignKey('projects.id'))
     project = relationship('Project', backref=backref('repos', lazy='dynamic'))
@@ -34,6 +36,7 @@ class Repo(Base):
         'distro_version',
         'status',
         'flavor',
+        'extra',
     ]
 
     def __init__(self, project, **kwargs):
@@ -71,7 +74,8 @@ class Repo(Base):
             status=self.status,
             flavor=self.flavor,
             project=self.project.name,
-            archs=[arch.name for arch in self.archs]
+            archs=[arch.name for arch in self.archs],
+            extra=self.extra
         )
 
 

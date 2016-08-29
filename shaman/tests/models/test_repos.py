@@ -19,6 +19,13 @@ class TestRepo(object):
         assert repo.distro_version == "trusty"
         assert repo.flavor == "default"
 
+    def test_can_create_with_extra(self, session):
+        r = Repo(self.p, **self.data)
+        r.extra = dict(version="10.2.2")
+        session.commit()
+        repo = Repo.get(1)
+        assert repo.extra['version'] == "10.2.2"
+
     def test_sets_modified(self, session):
         repo = Repo(self.p, **self.data)
         session.commit()
