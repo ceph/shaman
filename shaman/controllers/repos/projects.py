@@ -53,6 +53,7 @@ class ProjectController(object):
         update_data = dict(
             status=request.json["status"],
             url=request.json.get("url", ""),
+            extra=request.json.get("extra", dict()),
         )
         repo.update_from_json(update_data)
         archs = request.json.get("archs", [])

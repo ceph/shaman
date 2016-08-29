@@ -58,6 +58,7 @@ class TestProjectController(object):
             distro_version="xenial",
             chacra_url="chacra.ceph.com/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/xenial/",
             status="requested",
+            extra=dict(version="10.2.2"),
         )
 
     def test_get_project_repos_is_empty(self, session):
@@ -78,6 +79,7 @@ class TestProjectController(object):
         assert repo.ref == "jewel"
         assert repo.project.name == "ceph"
         assert repo.flavor == "default"
+        assert repo.extra["version"] == "10.2.2"
 
     def test_update_a_repo_status(self, session):
         result = session.app.post_json('/api/repos/ceph/', params=self.repo_data)
