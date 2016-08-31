@@ -95,6 +95,7 @@ the date they were built in descending order. For example::
        "distro": "ubuntu",
        "distro_codename": "trusty",
        "distro_version": "14.04",
+       "extra": {},
        "url": "https://chacra.ceph.com/r/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
        "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
        "modified" "2016-06-15 14:04:54.671504",
@@ -109,6 +110,7 @@ the date they were built in descending order. For example::
        "distro": "ubuntu",
        "distro_codename": "xenial",
        "distro_version": "16.04",
+       "extra": {},
        "url": "",
        "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/xenial/"
        "modified" "2016-06-15 14:04:54.671504",
@@ -139,6 +141,27 @@ The following metadata is returned for a Repo object when searching.
 
 - ``distro_version``
   The version of the distro the repo was built for.
+
+- ``extra``
+  Extra metadata for a specific repo based on the build. At the end of a build,
+  the job will post build information (as a JSON object) that will contain the
+  following keys:
+
+    - ``node_name``
+    - ``build_url``
+    - ``root_build_cause``
+    - ``version``
+    - ``job_name``
+
+  The actual object would contain information similar to::
+
+    {
+      "node_name": "158.69.92.26+centos7_huge__540a47bf-c1cf-4852-a8e0-e841b5370ddd",
+      "build_url": "https://jenkins.ceph.com/job/ceph-dev-build/ARCH=x86_64,AVAILABLE_ARCH=x86_64,AVAILABLE_DIST=centos7,DIST=centos7,MACHINE_SIZE=huge/67/",
+      "root_build_cause": "MANUALTRIGGER",
+      "version": "10.2.2-508-g9bfc0cf",
+      "job_name": "ceph-dev-build/ARCH=x86_64,AVAILABLE_ARCH=x86_64,AVAILABLE_DIST=centos7,DIST=centos7,MACHINE_SIZE=huge"
+    }
 
 - ``url``
   The url to the actual repo files.
