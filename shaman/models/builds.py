@@ -17,16 +17,14 @@ class Build(Base):
     ref = Column(String(256), index=True)
     sha1 = Column(String(256), index=True)
     flavor = Column(String(256), nullable=False, index=True, default="default")
-    distro = Column(String(256), nullable=False, index=True)
-    distro_version = Column(String(256), nullable=False, index=True)
+    started = Column(DateTime, index=True)
+    completed = Column(DateTime, index=True)
     modified = Column(DateTime, index=True)
     status = Column(String(256), index=True)
-    arch = Column(String(256), index=True)
     extra = deferred(Column(JSONType()))
 
     project_id = Column(Integer, ForeignKey('projects.id'))
     project = relationship('Project', backref=backref('builds', lazy='dynamic'))
-
 
     allowed_keys = [
         'url',
@@ -35,10 +33,7 @@ class Build(Base):
         'ref',
         'sha1',
         'flavor',
-        'distro',
-        'distro_version',
         'status',
-        'arch',
         'extra',
     ]
 
@@ -46,25 +41,19 @@ class Build(Base):
         self.project = project
         self.modified = datetime.datetime.utcnow()
         self.update_from_json(kwargs)
+        self.started = datetime.datetime.utcnow()
 
     def __repr__(self):
         try:
-            return "<Build {}/{}/{}/{}/{}>".format(
+            return "<Build {}/{}/{}>".format(
                 self.project.name,
                 self.ref,
                 self.sha1,
-                self.distro,
-                self.distro_version,
             )
         except DetachedInstanceError:
             return '<Build detached>'
 
     def __json__(self):
-        from shaman.util import parse_distro_release
-        codename, version = parse_distro_release(
-            self.distro_version,
-            self.distro
-        )
         return dict(
             url=self.url,
             log_url=self.log_url,
@@ -72,14 +61,25 @@ class Build(Base):
             ref=self.ref,
             sha1=self.sha1,
             flavor=self.flavor,
-            distro=self.distro,
-            distro_version=version,
-            distro_codename=codename,
             status=self.status,
-            arch=self.arch,
-            extra=self.extra
+            extra=self.extra,
             modified=self.modified,
             project=self.project.name,
+        )
+
+    def get_url(self):
+        """
+        This model object is mainly consumed by the UI. Since the template will
+        not always have a full concept of what a url part means, this helper
+        method will construct what the (full) relative URL to this object is.
+        """
+        url = "/builds/{project}/{ref}/{sha1}/{flavor}/{build_id}/"
+        return url.format(
+            project=self.project.name,
+            ref=self.ref,
+            sha1=self.sha1,
+            flavor=self.flavor or 'default',
+            build_id=self.build_id
         )
 
 
