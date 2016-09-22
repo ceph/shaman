@@ -1,0 +1,127 @@
+{% extends "layout.html" %}
+
+{% block pagejavascript %}
+  <script id="source" language="javascript" type="text/javascript">
+      $(function() {
+
+          Morris.Area({
+              element: 'morris-area-chart',
+              data: {{ area_data }},
+              xkey: 'period',
+              ykeys: {{ projects }},
+              labels: {{ projects }},
+              pointSize: 2,
+              hideHover: 'auto',
+              resize: true
+          });
+
+
+      });
+  </script>
+
+
+  <!-- Custom Theme JavaScript -->
+  <script src="/static/js/sb-admin-2.js"></script>
+  <!-- Morris Charts JavaScript -->
+  <script src="/static/js/raphael/raphael.min.js"></script>
+  <script src="/static/js/morrisjs/morris.min.js"></script>
+{% endblock %}
+
+{% block body %}
+  <div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Projects</h1>
+    </div>
+  </div>
+      <!-- /.col-lg-12 -->
+  <!-- /.row -->
+  <div class="row">
+    {% for p in projects %}
+      <div class="col-lg-3 col-md-6">
+          <div class="panel panel-primary">
+              <div class="panel-heading">
+                  <div class="row">
+                      <div class="col-xs-3">
+                          <i class="fa fa-tasks fa-5x"></i>
+                      </div>
+                      <div class="col-xs-9 text-right">
+                        <div class="huge">{{ p }}</div>
+                          <div>Building: 3</div>
+                      </div>
+                  </div>
+              </div>
+              <a href="/builds/{{ p }}/">
+                  <div class="panel-footer">
+                      <span class="pull-left">Builds</span>
+                      <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                      <div class="clearfix"></div>
+                  </div>
+              </a>
+          </div>
+      </div>
+      {% endfor %}
+  </div>
+  <!-- /.row -->
+  <div class="row">
+      <!-- /.col-lg-8 -->
+      <div class="col-lg-12">
+          <div class="panel panel-default">
+              <div class="panel-heading">
+                  <i class="fa fa-bell fa-fw"></i> Latest Completed Builds
+              </div>
+              <!-- /.panel-heading -->
+              <div class="panel-body">
+                  <div class="list-group">
+                      {% for build in latest_builds %}
+                      <a href="#" class="list-group-item">
+                          <i class="fa fa-institution fa-fw"></i> {{ build.project.name }}/{{ build.ref }} :: {{ build.distro }} {{ build.distro_version }}
+                          <span class="pull-right text-muted small"><em>{{ build.modified }}</em>
+                          </span>
+                      </a>
+                      {% endfor %}
+                  </div>
+                  <!-- /.list-group -->
+                  <a href="/builds/" class="btn btn-default btn-block">View All Recent Builds</a>
+              </div>
+              <!-- /.panel-body -->
+          </div>
+      </div>
+      <div class="col-lg-12">
+          <div class="panel panel-default">
+              <div class="panel-heading">
+                  <i class="fa fa-bell fa-fw"></i> Latest Available Repositories
+              </div>
+              <!-- /.panel-heading -->
+              <div class="panel-body">
+                  <div class="list-group">
+                      {% for repo in latest_repos %}
+                      <a href="#" class="list-group-item">
+                          <i class="fa fa-folder-open fa-fw"></i> what {{ repo.project.name }}/{{ repo.ref }} :: {{ repo.distro }} {{ repo.distro_version }}
+                          <span class="pull-right text-muted small"><em>{{ repo.modified }}</em>
+                          </span>
+                      </a>
+                      {% endfor %}
+                  </div>
+                  <!-- /.list-group -->
+                  <a href="/builds/" class="btn btn-default btn-block">View All Recent Repositories</a>
+              </div>
+              <!-- /.panel-body -->
+          </div>
+      </div>
+      <!-- /.col-lg-4 -->
+      <div class="col-lg-12">
+          <div class="panel panel-default">
+              <div class="panel-heading">
+                  <i class="fa fa-bar-chart-o fa-fw"></i> Build Processing Volume
+              </div>
+              <!-- /.panel-heading -->
+              <div class="panel-body">
+                  <div id="morris-area-chart"></div>
+              </div>
+              <!-- /.panel-body -->
+          </div>
+          <!-- /.panel -->
+
+  </div>
+  <!-- /.row -->
+{% endblock %}
