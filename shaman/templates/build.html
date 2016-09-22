@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+
+{% block body %}
+            <div class="row">
+                <div class="col-lg-12">
+                    {% if project_name %}
+                    <h1 class="page-header">{{ project_name }}</h1>
+                    {% else %}
+                    <h1 class="page-header">Projects</h1>
+                    {% endif %}
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <!-- /.col-lg-8 -->
+                <div class="col-lg-8">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <i class="fa fa-gears fa-fw"></i> Build {{ build.build_id }}
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+
+                        <!-- /.panel-heading -->
+                                    <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-striped">
+                                <tbody>
+                                 <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                {% for k, v in build.__json__().items() %}
+                                {% if not "url" in k %}
+                                <tr>
+                                <td>{{ k.replace('_', ' ')|capitalize() }}</td>
+                                <td>{{ v }}</td>
+                                </tr>
+
+                                {% endif %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <!-- /.list-group -->
+                            <a href="{{ build.log_url }}" class="btn btn-default btn-block">Log Output</a>
+                            <a href="{{ build.url }}" class="btn btn-default btn-block">Jenkins Build</a>
+                        </div>
+                        </div>
+                        </div>
+
+                        <!-- /.panel-body -->
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+{% endblock %}
