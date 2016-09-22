@@ -73,7 +73,7 @@
               <div class="panel-body">
                   <div class="list-group">
                       {% for build in latest_builds %}
-                      <a href="#" class="list-group-item">
+                      <a href="{{ build.get_url() }}" class="list-group-item">
                           <i class="fa fa-institution fa-fw"></i> {{ build.project.name }}/{{ build.ref }} :: {{ build.distro }} {{ build.distro_version }}
                           <span class="pull-right text-muted small"><em>{{ h.last_seen(build.modified) }}</em>
                           </span>
@@ -96,7 +96,7 @@
                   <div class="list-group">
                       {% for repo in latest_repos %}
                       <a href="#" class="list-group-item">
-                          <i class="fa fa-folder-open fa-fw"></i> what {{ repo.project.name }}/{{ repo.ref }} :: {{ repo.distro }} {{ repo.distro_version }}
+                          <i class="fa fa-folder-open fa-fw"></i> {{ repo.project.name }}/{{ repo.ref }} :: {{ repo.distro }} {{ repo.distro_version }}
                           <span class="pull-right text-muted small"><em>{{ h.last_seen(repo.modified) }}</em>
                           </span>
                       </a>
