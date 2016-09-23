@@ -14,6 +14,7 @@ app = {
     'modules': ['shaman'],
     'default_renderer': 'json',
     'guess_content_type_from_ext': False,
+    'template_path': '%(confdir)s/../shaman/templates',
     'hooks': [
         TransactionHook(
             models.start,

@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+
+{% block body %}
+            <div class="row">
+                <div class="col-lg-12">
+                    {% if project_name %}
+                    <h1 class="page-header">{{ project_name }}</h1>
+                    {% else %}
+                    <h1 class="page-header">Projects</h1>
+                    {% endif %}
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <!-- /.col-lg-8 -->
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bell fa-fw"></i> Latest Builds Available
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="list-group">
+                                {% for b in builds %}
+                                <a href="{{ b.get_url() }}" class="list-group-item">
+                                    <i class="fa fa-comment fa-fw"></i> {{ b.project.name }}/{{ b.ref }} :: {{ b.distro }} {{  b.distro_version }}
+                                    <span class="pull-right text-muted small"><em>{{ h.last_seen(b.modified) }}</em>
+                                    </span>
+                                </a>
+                                {% endfor %}
+                            </div>
+                            <!-- /.list-group -->
+                            {% if not project_name %}
+                            <a href="#" class="btn btn-default btn-block">View All Recent Repos</a>
+                            {% endif %}
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    {% if distinct %}
+                    {% for name, value in distinct.items() %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bell fa-fw"></i> {{ name }} Available
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="list-group">
+                                {% for v in value %}
+                                <a href="{{ v }}" class="list-group-item">
+                                    <i class="fa fa-comment fa-fw"></i> {{ v }}
+                                    <span class="pull-right text-muted small"><em>0 (maybe add count here)</em>
+                                    </span>
+                                </a>
+                                {% endfor %}
+                            </div>
+                            <!-- /.list-group -->
+                            {% if not project_name %}
+                            <a href="#" class="btn btn-default btn-block">View All Recent Builds</a>
+                            {% endif %}
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+{% endblock %}

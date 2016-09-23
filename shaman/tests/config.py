@@ -13,6 +13,7 @@ app = {
     'root': 'shaman.controllers.root.RootController',
     'modules': ['shaman'],
     'static_root': '%(confdir)s/public',
+    'template_path': '%(confdir)s/../templates',
     'guess_content_type_from_ext': False,
     'default_renderer': 'json',
     'hooks': [
