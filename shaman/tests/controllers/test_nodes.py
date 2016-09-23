@@ -1,5 +1,5 @@
 from shaman.models import Node
-from shaman.controllers import nodes
+from shaman.controllers.api import nodes
 
 
 class TestNodeController(object):
