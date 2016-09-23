@@ -1,7 +1,7 @@
 import datetime
 from pecan import expose
 
-from shaman.controllers import nodes, health
+from shaman.controllers import health
 from shaman.controllers import builds as _builds
 from shaman.controllers import search as _search
 
@@ -20,7 +20,7 @@ class APIController(object):
         )
 
     repos = api.repos.ProjectsController()
-    nodes = nodes.NodesController()
+    nodes = api.nodes.NodesController()
     search = _search.SearchController()
     builds = _builds.ProjectsAPIController()
 
