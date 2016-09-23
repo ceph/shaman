@@ -1,6 +1,6 @@
 from pecan import request, expose, abort
 from shaman.models import Project, Repo
-from shaman.controllers.repos import distros
+from shaman.controllers.api.repos import distros
 
 
 class SHA1Controller(object):
