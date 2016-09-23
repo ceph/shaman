@@ -62,8 +62,9 @@
   when: "'postgresql_master' in group_names"
 
 - name: populate the database for {{ app_name }}
-  when: "database_is_populated.rc == 1"
   command: "{{ app_home }}/bin/pecan populate {{ app_home }}/src/{{ app_name }}/prod.py"
   environment:
     ALEMBIC_CONFIG: "{{ app_home }}/src/{{ app_name }}/alembic-prod.ini"
-  when: "'postgresql_master' in group_names"
+  when:
+    - "'postgresql_master' in group_names"
+    - "database_is_populated.rc == 1"
