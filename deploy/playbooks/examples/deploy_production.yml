@@ -46,6 +46,8 @@
     - postgresql
   vars:
      postgresql_replication: true
+     # this is required the first time around
+     #postgresql_init_replication: true
      app_name: "shaman"
      use_ssl: true
      ansible_ssh_port: 2222
