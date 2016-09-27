@@ -20,7 +20,7 @@ class SHA1Controller(object):
 
     @index.when(method='GET', template='json')
     def index_get(self):
-        return [r.distro for r in self.repos]
+        return list(set([r.distro for r in self.repos]))
 
     @expose()
     def _lookup(self, distro_name, *remainder):
