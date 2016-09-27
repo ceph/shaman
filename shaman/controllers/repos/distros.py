@@ -1,6 +1,7 @@
 from pecan import request, expose, abort
 from shaman.models import Project, Repo
 from shaman.controllers.repos import flavors as _flavors
+from sqlalchemy import desc
 
 
 class DistroVersionController(object):
@@ -15,7 +16,7 @@ class DistroVersionController(object):
             sha1=request.context['sha1'],
             distro=request.context['distro'],
             distro_version=distro_version_name,
-            flavor='default').all()
+            flavor='default').order_by(desc(Repo.modified)).all()
 
     @expose(generic=True, template='json')
     def index(self):

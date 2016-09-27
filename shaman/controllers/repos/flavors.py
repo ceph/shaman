@@ -1,5 +1,6 @@
 from pecan import request, expose, abort
 from shaman.models import Project, Repo
+from sqlalchemy import desc
 
 
 class FlavorController(object):
@@ -13,7 +14,7 @@ class FlavorController(object):
             sha1=request.context['sha1'],
             distro=request.context['distro'],
             distro_version=request.context['distro_version'],
-            flavor=flavor_name).all()
+            flavor=flavor_name).order_by(desc(Repo.modified)).all()
 
     @expose(generic=True, template='json')
     def index(self):
