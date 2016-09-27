@@ -1,9 +1,11 @@
 import datetime
 from pecan import expose
 
-from shaman.controllers import repos, nodes, health
+from shaman.controllers import health
 from shaman.controllers import builds as _builds
 from shaman.controllers import search as _search
+
+from shaman.controllers import api
 from shaman.models import Project, Repo, Build
 from sqlalchemy import and_
 
@@ -17,10 +19,10 @@ class APIController(object):
             repos=[p.name for p in Project.query.all()],
         )
 
-    repos = repos.ProjectsController()
-    nodes = nodes.NodesController()
+    repos = api.repos.ProjectsController()
+    nodes = api.nodes.NodesController()
     search = _search.SearchController()
-    builds = _builds.ProjectsAPIController()
+    builds = api.builds.ProjectsAPIController()
 
 
 class RootController(object):

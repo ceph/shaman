@@ -1,7 +1,7 @@
 from pecan import request, expose, abort
 from shaman.models import Project, Repo
-from shaman.controllers.repos import flavors as _flavors
 from sqlalchemy import desc
+from shaman.controllers.api.repos import flavors as _flavors
 
 
 class DistroVersionController(object):

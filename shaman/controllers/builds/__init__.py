@@ -1,4 +1,3 @@
-from projects import ProjectsAPIController # noqa
 from pecan import expose, request, abort
 from shaman.models import Build, Project
 from sqlalchemy import desc

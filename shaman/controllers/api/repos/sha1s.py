@@ -1,6 +1,6 @@
 from pecan import request, expose, abort
 from shaman.models import Project, Repo
-from shaman.controllers.repos import distros
+from shaman.controllers.api.repos import distros
 
 
 class SHA1Controller(object):
@@ -20,7 +20,7 @@ class SHA1Controller(object):
 
     @index.when(method='GET', template='json')
     def index_get(self):
-        return [r.distro for r in self.repos]
+        return list(set([r.distro for r in self.repos]))
 
     @expose()
     def _lookup(self, distro_name, *remainder):

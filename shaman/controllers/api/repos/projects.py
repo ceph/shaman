@@ -2,7 +2,7 @@ from pecan import expose, abort, request
 from pecan.secure import secure
 
 from shaman.models import Project, Repo, Arch
-from shaman.controllers.repos import refs
+from shaman.controllers.api.repos import refs
 from shaman.auth import basic_auth
 from shaman import models
 
