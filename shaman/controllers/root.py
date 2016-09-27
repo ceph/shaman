@@ -22,7 +22,7 @@ class APIController(object):
     repos = api.repos.ProjectsController()
     nodes = api.nodes.NodesController()
     search = _search.SearchController()
-    builds = _builds.ProjectsAPIController()
+    builds = api.builds.ProjectsAPIController()
 
 
 class RootController(object):
