@@ -47,6 +47,7 @@ class ProjectAPIController(object):
             log_url=request.json.get("log_url"),
             build_id=request.json.get("build_id"),
             status=request.json.get("status"),
+            distro_arch=request.json.get("distro_arch"),
         )
         models.get_or_create(Build, **data)
         return {}
