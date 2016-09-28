@@ -33,22 +33,20 @@ class ProjectAPIController(object):
     def index_post(self):
         if not self.project:
             self.project = models.get_or_create(Project, name=self.project_name)
-        build_url = request.json["build_url"]
-        repo = Build.query.filter_by(build_url=build_url).first()
-        if not repo:
-            data = dict(
-                project=self.project,
-                ref=request.json["ref"],
-                sha1=request.json["sha1"],
-                flavor=request.json["flavor"],
-            )
-            repo = models.get_or_create(Build, **data)
-        update_data = dict(
-            status=request.json["status"],
-            url=request.json.get("url", ""),
-            extra=request.json.get("extra", dict()),
+        data = dict(
+            project=self.project,
+            ref=request.json["ref"],
+            sha1=request.json["sha1"],
+            flavor=request.json.get("flavor", "default"),
+            extra=request.json.get('extra', dict()),
+            distro=request.json.get('distro'),
+            distro_version=request.json.get('distro_version'),
+            url=request.json.get("url"),
+            log_url=request.json.get("log_url"),
+            build_id=request.json.get("build_id"),
+            status=request.json.get("status"),
         )
-        repo.update_from_json(update_data)
+        models.get_or_create(Build, **data)
         return {}
 
 
