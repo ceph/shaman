@@ -169,6 +169,7 @@ class TestApp(object):
             'GET': self.app.get,
             'POST': self.app.post,
             'POSTJ': self.app.post_json,
+            'PUTJ': self.app.put_json,
             'PUT': self.app.put,
             'HEAD': self.app.head,
             'DELETE': self.app.delete
@@ -213,6 +214,16 @@ class TestApp(object):
         if not kwargs.get('headers'):
             kwargs['headers'] = {'Authorization': util.make_credentials()}
         return self._do_request(url, 'PUT', **kwargs)
+
+    def put_json(self, url, **kwargs):
+        """
+        @param (string) url - The URL to emulate a PUT request to
+        @returns (paste.fixture.TestResponse)
+        """
+        # support automatic, correct authentication if not specified otherwise
+        if not kwargs.get('headers'):
+            kwargs['headers'] = {'Authorization': util.make_credentials()}
+        return self._do_request(url, 'PUTJ', **kwargs)
 
     def delete(self, url, **kwargs):
         """

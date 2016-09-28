@@ -1,4 +1,4 @@
-from shaman.models import Project, Build
+from shaman.models import Build
 
 
 class TestProjectController(object):
@@ -26,3 +26,15 @@ class TestProjectController(object):
         assert build.log_url == "jenkins.ceph.com/build/console"
         assert build.extra["version"] == "10.2.2"
         assert not build.distro
+
+    def test_update_build(self, session):
+        session.app.post_json('/api/builds/ceph/', params=self.data)
+        data = dict(
+            url="jenkins.ceph.com/build",
+            status="completed",
+        )
+        result = session.app.put_json('/api/builds/ceph/', params=data)
+        assert result.status_int == 200
+        build = Build.get(1)
+        assert build.status == "completed"
+        assert build.completed

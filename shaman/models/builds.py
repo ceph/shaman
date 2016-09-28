@@ -41,6 +41,7 @@ class Build(Base):
         'extra',
         'distro',
         'distro_version',
+        'completed',
     ]
 
     def __init__(self, project, **kwargs):

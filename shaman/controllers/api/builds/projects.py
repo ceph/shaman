@@ -1,3 +1,5 @@
+import datetime
+
 from pecan import expose, abort, request
 from pecan.secure import secure
 
@@ -47,6 +49,22 @@ class ProjectAPIController(object):
             status=request.json.get("status"),
         )
         models.get_or_create(Build, **data)
+        return {}
+
+    #TODO: we need schema validation on this method
+    @secure(basic_auth)
+    @index.when(method='PUT', template='json')
+    def index_put(self):
+        build = Build.query.filter_by(url=request.json["url"]).first()
+        if not build:
+            abort(404)
+        status = request.json["status"]
+        data = dict(
+            status=status,
+        )
+        if status == "completed":
+            data["completed"] = datetime.datetime.utcnow()
+        build.update_from_json(data)
         return {}
 
 
