@@ -93,13 +93,13 @@ class Build(Base):
         not always have a full concept of what a url part means, this helper
         method will construct what the (full) relative URL to this object is.
         """
-        url = "/builds/{project}/{ref}/{sha1}/{flavor}/{build_id}/"
+        url = "/builds/{project}/{ref}/{sha1}/{flavor}/{_id}/"
         return url.format(
             project=self.project.name,
             ref=self.ref,
             sha1=self.sha1,
             flavor=self.flavor or 'default',
-            build_id=self.build_id
+            _id=self.id
         )
 
 
