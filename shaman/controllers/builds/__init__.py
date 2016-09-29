@@ -5,29 +5,21 @@ from sqlalchemy import desc
 
 class BuildController(object):
 
-    def __init__(self, build_id):
-        self.build_id = build_id
+    def __init__(self, _id):
         self.project = Project.get(request.context['project_id'])
+        self.build = Build.get(_id)
         if not self.project:
             # TODO: nice project not found error template
             abort(404, 'project not found')
-
-    @expose('jinja:build.html')
-    def index(self):
-        build = Build.filter_by(
-            project=self.project,
-            ref=request.context['ref'],
-            sha1=request.context['sha1'],
-            flavor=request.context['flavor'],
-            build_id=self.build_id
-        ).first()
-        if not build:
+        if not self.build:
             # TODO: nice project not found error template
             abort(404, 'build not found')
 
+    @expose('jinja:build.html')
+    def index(self):
         return dict(
             project_name=self.project.name,
-            build=build
+            build=self.build
         )
 
 
