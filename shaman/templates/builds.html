@@ -22,14 +22,46 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <div class="list-group">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>project</th>
+                                            <th>ref</th>
+                                            <th>distro</th>
+                                            <th>release</th>
+                                            <th>modified</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                 {% for b in builds %}
-                                <a href="{{ b.get_url() }}" class="list-group-item">
-                                    <i class="fa fa-comment fa-fw"></i> {{ b.project.name }}/{{ b.ref }} :: {{ b.distro }} {{  b.distro_version }}
-                                    <span class="pull-right text-muted small"><em>{{ h.last_seen(b.modified) }}</em>
-                                    </span>
-                                </a>
+                                {% if b.completed %}
+                                <tr class="success"href="{{ b.get_url() }}" >
+                                {% elif b.status == "failed" %}
+                                <tr class="danger">
+                                {% elif b.status == "started" %}
+                                <tr class="warning">
+                                {% endif %}
+                                    <td>
+                                      <a href="{{ b.get_url() }}">{{ b.project.name }}</a>
+                                    </td>
+                                    <td>
+                                      <a href="{{ b.get_url() }}">{{ b.ref }}</a>
+                                    </td>
+                                    <td>
+                                      <a href="{{ b.get_url() }}">{{ b.distro }}</a>
+                                    </td>
+                                    <td>
+                                      <a href="{{ b.get_url() }}">{{ b.distro_version }}</a>
+                                    </td>
+                                    <td>
+                                      <a href="{{ b.get_url() }}">
+                                      <span class="text-muted small"><em>{{ h.last_seen(b.modified) }}</em></a>
+                                    </td>
+                                </tr>
                                 {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
                             <!-- /.list-group -->
                             {% if not project_name %}

@@ -16,7 +16,13 @@
             <div class="row">
                 <!-- /.col-lg-8 -->
                 <div class="col-lg-8">
+                    {% if build.completed %}
                     <div class="panel panel-success">
+                    {% elif build.status == "failed" %}
+                    <div class="panel panel-danger">
+                    {% elif build.status == "started" %}
+                    <div class="panel panel-warning">
+                    {% endif %}
                         <div class="panel-heading">
                             <i class="fa fa-gears fa-fw"></i> Build {{ build.build_id }}
                         </div>
