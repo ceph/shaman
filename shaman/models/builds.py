@@ -17,6 +17,11 @@ class Build(Base):
     ref = Column(String(256), index=True)
     sha1 = Column(String(256), index=True)
     flavor = Column(String(256), nullable=False, index=True, default="default")
+    # disto and distro_version are nullable because we might
+    # report on a jenkins job that did no building yet, for example: ceph-dev-setup
+    distro = Column(String(256), nullable=True, index=True)
+    distro_version = Column(String(256), nullable=True, index=True)
+    distro_arch = Column(String(256), nullable=True, index=True)
     started = Column(DateTime, index=True)
     completed = Column(DateTime, index=True)
     modified = Column(DateTime, index=True)
@@ -35,6 +40,10 @@ class Build(Base):
         'flavor',
         'status',
         'extra',
+        'distro',
+        'distro_version',
+        'completed',
+        'distro_arch',
     ]
 
     def __init__(self, project, **kwargs):
@@ -54,6 +63,13 @@ class Build(Base):
             return '<Build detached>'
 
     def __json__(self):
+        from shaman.util import parse_distro_release
+        codename, version = None, self.distro_version
+        if self.distro and self.distro_version:
+            codename, version = parse_distro_release(
+                self.distro_version,
+                self.distro
+            )
         return dict(
             url=self.url,
             log_url=self.log_url,
@@ -65,6 +81,10 @@ class Build(Base):
             extra=self.extra,
             modified=self.modified,
             project=self.project.name,
+            distro_version=version,
+            distro_codename=codename,
+            distro=self.distro,
+            distro_arch=self.distro_arch,
         )
 
     def get_url(self):
