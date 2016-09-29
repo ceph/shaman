@@ -5,7 +5,7 @@ from pecan.secure import secure
 
 from shaman.models import Project, Build
 from shaman.auth import basic_auth
-from shaman.controllers.api import refs
+from shaman.controllers.api.builds import refs
 from shaman import models
 
 
