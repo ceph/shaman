@@ -69,7 +69,7 @@ class ProjectAPIController(object):
 
     @expose()
     def _lookup(self, ref_name, *remainder):
-        return refs.RefsAPIController(ref_name), remainder
+        return refs.RefAPIController(ref_name), remainder
 
 
 class ProjectsAPIController(object):
