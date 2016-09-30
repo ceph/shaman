@@ -80,6 +80,8 @@ class Build(Base):
             status=self.status,
             extra=self.extra,
             modified=self.modified,
+            started=self.started,
+            completed=self.completed,
             project=self.project.name,
             distro_version=version,
             distro_codename=codename,
