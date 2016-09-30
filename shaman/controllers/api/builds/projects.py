@@ -5,6 +5,7 @@ from pecan.secure import secure
 
 from shaman.models import Project, Build
 from shaman.auth import basic_auth
+from shaman.controllers.api.builds import refs
 from shaman import models
 
 
@@ -25,9 +26,7 @@ class ProjectAPIController(object):
 
     @index.when(method='GET', template='json')
     def index_get(self):
-        return list(
-            set([r.ref for r in self.project.repos])
-        )
+        return self.project.build_refs
 
     #TODO: we need schema validation on this method
     @secure(basic_auth)
@@ -68,6 +67,10 @@ class ProjectAPIController(object):
         build.update_from_json(data)
         return {}
 
+    @expose()
+    def _lookup(self, ref_name, *remainder):
+        return refs.RefAPIController(ref_name), remainder
+
 
 class ProjectsAPIController(object):
 
@@ -75,10 +78,7 @@ class ProjectsAPIController(object):
     def index(self):
         resp = {}
         for project in Project.query.all():
-            resp[project.name] = dict(
-                refs=project.refs,
-                sha1s=project.sha1s,
-            )
+            resp[project.name] = project.build_refs
         return resp
 
     @expose()

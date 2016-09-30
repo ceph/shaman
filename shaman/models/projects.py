@@ -30,3 +30,11 @@ class Project(Base):
     @property
     def sha1s(self):
         return list(set([r.sha1 for r in self.repos.all()]))
+
+    @property
+    def build_refs(self):
+        return list(set([r.ref for r in self.builds.all()]))
+
+    @property
+    def build_sha1s(self):
+        return list(set([r.sha1 for r in self.builds.all()]))
