@@ -73,7 +73,6 @@ class Build(Base):
         return dict(
             url=self.url,
             log_url=self.log_url,
-            build_id=self.build_id,
             ref=self.ref,
             sha1=self.sha1,
             flavor=self.flavor,
