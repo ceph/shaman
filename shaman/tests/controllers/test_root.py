@@ -8,7 +8,7 @@ class TestRootController(object):
         result = session.app.get('/')
         # this is super naive but the list is really all a string
         # so JS can consume it
-        assert len(result.namespace['area_data'].split(',')) == 5
+        assert len(result.namespace['area_data'].split(',')) == 10
 
     def test_gets_no_projects_by_defaut(self, session):
         result = session.app.get('/')
