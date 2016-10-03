@@ -34,6 +34,8 @@ class ProjectAPIController(object):
     def index_post(self):
         if not self.project:
             self.project = models.get_or_create(Project, name=self.project_name)
+        url = request.json["url"]
+        build = models.Build.query.filter_by(url=url).first()
         data = dict(
             project=self.project,
             ref=request.json["ref"],
@@ -48,23 +50,12 @@ class ProjectAPIController(object):
             status=request.json.get("status"),
             distro_arch=request.json.get("distro_arch"),
         )
-        models.get_or_create(Build, **data)
-        return {}
-
-    #TODO: we need schema validation on this method
-    @secure(basic_auth)
-    @index.when(method='PUT', template='json')
-    def index_put(self):
-        build = Build.query.filter_by(url=request.json["url"]).first()
-        if not build:
-            abort(404)
-        status = request.json["status"]
-        data = dict(
-            status=status,
-        )
-        if status == "completed":
+        if request.json["status"] == "completed":
             data["completed"] = datetime.datetime.utcnow()
-        build.update_from_json(data)
+        if not build:
+            build = models.get_or_create(Build, **data)
+        else:
+            build.update_from_json(data)
         return {}
 
     @expose()
