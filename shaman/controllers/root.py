@@ -48,7 +48,7 @@ class RootController(object):
                         and_(Repo.modified > lower_range),
                         and_(Repo.modified < upper_range)
                     ).count()
-                day_data[str(project.name)] = repository_count
+                day_data[str(project.name)] = int(repository_count)
             area_data.append(day_data)
 
         latest_repos = Repo.query.limit(10).all()
