@@ -33,11 +33,9 @@ class TestProjectController(object):
 
     def test_update_build(self, session):
         session.app.post_json('/api/builds/ceph/', params=self.data)
-        data = dict(
-            url="jenkins.ceph.com/build",
-            status="completed",
-        )
-        result = session.app.put_json('/api/builds/ceph/', params=data)
+        data = self.data.copy()
+        data['status'] = "completed"
+        result = session.app.post_json('/api/builds/ceph/', params=data)
         assert result.status_int == 200
         build = Build.get(1)
         assert build.status == "completed"
