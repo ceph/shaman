@@ -55,3 +55,41 @@ class TestBuild(object):
         build.distro = "centos"
         session.commit()
         assert initial_timestamp < build.modified.time()
+
+
+class TestBuildUrl(object):
+
+    def setup(self):
+        self.p = Project("ceph")
+        self.data = dict(
+            ref="master",
+            sha1="sha1",
+            url="jenkins.ceph.com/build",
+            log_url="jenkins.ceph.com/build/console",
+            build_id="250",
+            status="failed",
+        )
+
+    def test_default_gives_full_url(self, session):
+        Build(self.p, **self.data)
+        session.commit()
+        result = Build.get(1).get_url()
+        assert result == '/builds/ceph/master/sha1/1/'
+
+    def test_by_ref(self, session):
+        build = Build(self.p, **self.data)
+        session.commit()
+        result = build.get_url('ref')
+        assert result == '/builds/ceph/master/'
+
+    def test_by_sha1(self, session):
+        build = Build(self.p, **self.data)
+        session.commit()
+        result = build.get_url('sha1')
+        assert result == '/builds/ceph/master/sha1/'
+
+    def test_up_to_project(self, session):
+        build = Build(self.p, **self.data)
+        session.commit()
+        result = build.get_url('project')
+        assert result == '/builds/ceph/'
