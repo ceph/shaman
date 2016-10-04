@@ -3,6 +3,7 @@ from pecan import expose
 
 from shaman.controllers import health
 from shaman.controllers import builds as _builds
+from shaman.controllers import repos as _repos
 from shaman.controllers import search as _search
 
 from shaman.controllers import api
@@ -65,4 +66,5 @@ class RootController(object):
 
     api = APIController()
     builds = _builds.BuildsController()
+    repos = _repos.ReposController()
     _health = health.HealthController()

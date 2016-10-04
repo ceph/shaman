@@ -18,7 +18,7 @@
                 <div class="col-md-8">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bell fa-fw"></i> Latest Builds Available
+                            <i class="fa fa-bell fa-fw"></i> Latest {{ section }} Available
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -37,19 +37,19 @@
                                     </thead>
                                     <tbody>
                                 {% for b in builds %}
-                                {% if b.completed %}
+                                {% if b.completed or b.status == "ready" %}
                                 <tr class="success"href="{{ b.get_url() }}" >
                                 {% elif b.status == "failed" %}
                                 <tr class="danger">
-                                {% elif b.status == "started" %}
+                                {% elif b.status in ["started", "queued", "building", "requested"] %}
                                 <tr class="warning">
                                 {% endif %}
                                     <td>
-                                      {% if b.completed %}
+                                      {% if b.completed or b.status == "ready"%}
                                       <i class="fa fa-check fa-fw"></i>
                                       {% elif b.status == "failed" %}
                                       <i class="fa fa-times-circle fa-fw"></i>
-                                      {% elif b.status == "started" %}
+                                      {% elif b.status in ["started", "queued", "building", "requested"] %}
                                       <i class="fa fa-gear fa-fw"></i>
                                       {% endif %}
                                     </td>
