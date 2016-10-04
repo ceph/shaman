@@ -76,17 +76,20 @@ class TestBuildUrl(object):
         result = Build.get(1).get_url()
         assert result == '/builds/ceph/master/sha1/1/'
 
-    def test_by_ref(self):
+    def test_by_ref(self, session):
         build = Build(self.p, **self.data)
+        session.commit()
         result = build.get_url('ref')
         assert result == '/builds/ceph/master/'
 
-    def test_by_sha1(self):
+    def test_by_sha1(self, session):
         build = Build(self.p, **self.data)
+        session.commit()
         result = build.get_url('sha1')
         assert result == '/builds/ceph/master/sha1/'
 
-    def test_up_to_project(self):
+    def test_up_to_project(self, session):
         build = Build(self.p, **self.data)
+        session.commit()
         result = build.get_url('project')
         assert result == '/builds/ceph/'
