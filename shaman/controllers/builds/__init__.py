@@ -154,8 +154,12 @@ class BuildsController(object):
     @expose('jinja:builds.html')
     def index(self):
         builds = Build.query.order_by(desc(Build.modified)).all()
+        distinct = {
+            "projects": list(set([b.project.name for b in builds]))
+        }
         return dict(
-            builds=builds
+            builds=builds,
+            distinct=distinct,
         )
 
     @expose()
