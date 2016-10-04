@@ -24,7 +24,14 @@
                     <div class="panel panel-warning">
                     {% endif %}
                         <div class="panel-heading">
-                            <i class="fa fa-gears fa-fw"></i> {{ section }} {{ build.id }}
+                            {% if build.completed or build.status == "ready"%}
+                            <i class="fa fa-check fa-fw"></i>
+                            {% elif build.status == "failed" %}
+                            <i class="fa fa-times-circle fa-fw"></i>
+                            {% elif build.status in ["started", "queued", "building", "requested"] %}
+                            <i class="fa fa-gear fa-fw"></i>
+                            {% endif %}
+                            {% if build.log_url %}Build{%else%}Repo{%endif%} {{ build.id }}
                         </div>
                         <div class="panel-body">
                             <div class="row">
@@ -34,6 +41,8 @@
                             {% if not build.log_url %}
                             <a href="{{ build.url }}" class="btn btn-default btn-block">Repo URL</a>
                             <a href="{{ build.chacra_url }}" class="btn btn-default btn-block">Chacra URL</a>
+                            {% else %}
+                            <a href="/repos/{{build.project.name}}/{{build.ref}}/{{build.sha1}}/" class="btn btn-default btn-block">View Repos built for {{build.project.name}} > {{build.ref}} > {{build.sha1}}</a>
                             {% endif %}
                             <br/>
                             <table class="table table-bordered table-hover table-striped">
