@@ -78,6 +78,21 @@ class Repo(Base):
             extra=self.extra
         )
 
+    def get_url(self):
+        """
+        This model object is mainly consumed by the UI. Since the template will
+        not always have a full concept of what a url part means, this helper
+        method will construct what the (full) relative URL to this object is.
+        """
+        url = "/repos/{project}/{ref}/{sha1}/{flavor}/{_id}/"
+        return url.format(
+            project=self.project.name,
+            ref=self.ref,
+            sha1=self.sha1,
+            flavor=self.flavor or 'default',
+            _id=self.id
+        )
+
 
 # listen for timestamp modifications
 listen(Repo, 'before_insert', update_timestamp)

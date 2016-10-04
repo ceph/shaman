@@ -1,17 +1,17 @@
 from pecan import expose, request, abort
-from shaman.models import Build, Project
+from shaman.models import Repo, Project
 from sqlalchemy import desc
 
 
-class BuildController(object):
+class RepoController(object):
 
     def __init__(self, _id):
         self.project = Project.get(request.context['project_id'])
-        self.build = Build.get(_id)
+        self.repo = Repo.get(_id)
         if not self.project:
             # TODO: nice project not found error template
             abort(404, 'project not found')
-        if not self.build:
+        if not self.repo:
             # TODO: nice project not found error template
             abort(404, 'build not found')
 
@@ -19,9 +19,9 @@ class BuildController(object):
     def index(self):
         return dict(
             project_name=self.project.name,
-            build=self.build,
-            section="Builds",
-            breadcrumb="> {} > {} > {}".format(self.build.ref, self.build.sha1, self.build.flavor),
+            build=self.repo,
+            section="Repos",
+            breadcrumb="> {} > {} > {}".format(self.repo.ref, self.repo.sha1, self.repo.flavor),
         )
 
 
@@ -37,23 +37,23 @@ class FlavorController(object):
 
     @expose('jinja:builds.html')
     def index(self):
-        builds = Build.filter_by(
+        repos = Repo.filter_by(
             project=self.project,
             ref=request.context['ref'],
             sha1=request.context['sha1'],
             flavor=self.flavor_name
-        ).order_by(desc(Build.modified)).all()
+        ).order_by(desc(Repo.modified)).all()
 
         return dict(
             project_name=self.project.name,
-            builds=builds,
+            builds=repos,
             breadcrumb="> {} > {} > {}".format(request.context['ref'], request.context['sha1'], self.flavor_name),
-            section="Builds",
+            section="Repos",
         )
 
     @expose()
     def _lookup(self, build_id, *remainder):
-        return BuildController(build_id), remainder
+        return RepoController(build_id), remainder
 
 
 class SHA1Controller(object):
@@ -68,22 +68,22 @@ class SHA1Controller(object):
 
     @expose('jinja:builds.html')
     def index(self):
-        builds = Build.filter_by(
+        repos = Repo.filter_by(
             project=self.project,
             ref=request.context['ref'],
             sha1=self.sha1_name
-        ).order_by(desc(Build.modified)).all()
+        ).order_by(desc(Repo.modified)).all()
 
         distinct = {
-            "flavors": list(set([b.flavor for b in builds]))
+            "flavors": list(set([r.flavor for r in repos]))
         }
 
         return dict(
             project_name=self.project.name,
             distinct=distinct,
-            builds=builds,
+            builds=repos,
             breadcrumb="> {} > {}".format(request.context['ref'], self.sha1_name),
-            section="Builds",
+            section="Repos",
         )
 
     @expose()
@@ -103,21 +103,21 @@ class RefController(object):
 
     @expose('jinja:builds.html')
     def index(self):
-        builds = Build.filter_by(
+        repos = Repo.filter_by(
             project=self.project,
             ref=self.ref_name
-        ).order_by(desc(Build.modified)).all()
+        ).order_by(desc(Repo.modified)).all()
 
         distinct = {
-            "sha1s": list(set([b.sha1 for b in builds]))
+            "sha1s": list(set([r.sha1 for r in repos]))
         }
 
         return dict(
             project_name=self.project.name,
             distinct=distinct,
-            builds=builds,
+            builds=repos,
             breadcrumb="> {}".format(self.ref_name),
-            section="Builds",
+            section="Repos",
         )
 
     @expose()
@@ -138,16 +138,16 @@ class ProjectController(object):
 
     @expose('jinja:builds.html')
     def index(self):
-        builds = Build.filter_by(project=self.project).order_by(desc(Build.modified)).all()
+        repos = Repo.filter_by(project=self.project).order_by(desc(Repo.modified)).all()
         distinct = {
-            "refs": list(set([b.ref for b in builds]))
+            "refs": list(set([b.ref for b in repos]))
         }
 
         return dict(
             project_name=self.project_name,
             distinct=distinct,
-            builds=builds,
-            section="Builds",
+            builds=repos,
+            section="Repos",
         )
 
     @expose()
@@ -155,18 +155,18 @@ class ProjectController(object):
         return RefController(ref_name), remainder
 
 
-class BuildsController(object):
+class ReposController(object):
 
     @expose('jinja:builds.html')
     def index(self):
-        builds = Build.query.order_by(desc(Build.modified)).all()
+        repos = Repo.query.order_by(desc(Repo.modified)).all()
         distinct = {
-            "projects": list(set([b.project.name for b in builds]))
+            "projects": list(set([r.project.name for r in repos]))
         }
         return dict(
-            builds=builds,
+            builds=repos,
             distinct=distinct,
-            section="Builds",
+            section="Repos",
         )
 
     @expose()

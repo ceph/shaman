@@ -4,21 +4,21 @@
 {% block body %}
             <div class="row">
                 <div class="col-lg-12">
-                    {% if project_name %}
-                    <h1 class="page-header">{{ project_name }}</h1>
-                    {% else %}
-                    <h1 class="page-header">Projects</h1>
+                    <h1 class="page-header">{{ section }}
+                    {% if project_name %} 
+                    <small>{{ project_name }} {{ breadcrumb }}</small>
                     {% endif %}
+                    </h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
             <div class="row">
                 <!-- /.col-lg-8 -->
-                <div class="col-lg-12">
+                <div class="col-md-8">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bell fa-fw"></i> Latest Builds Available
+                            <i class="fa fa-bell fa-fw"></i> Latest {{ section }} Available
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -26,6 +26,8 @@
                                 <table class="table">
                                     <thead>
                                         <tr>
+                                            <th></th>
+                                            <th>id</th>
                                             <th>project</th>
                                             <th>ref</th>
                                             <th>distro</th>
@@ -35,13 +37,25 @@
                                     </thead>
                                     <tbody>
                                 {% for b in builds %}
-                                {% if b.completed %}
+                                {% if b.completed or b.status == "ready" %}
                                 <tr class="success"href="{{ b.get_url() }}" >
                                 {% elif b.status == "failed" %}
                                 <tr class="danger">
-                                {% elif b.status == "started" %}
+                                {% elif b.status in ["started", "queued", "building", "requested"] %}
                                 <tr class="warning">
                                 {% endif %}
+                                    <td>
+                                      {% if b.completed or b.status == "ready"%}
+                                      <i class="fa fa-check fa-fw"></i>
+                                      {% elif b.status == "failed" %}
+                                      <i class="fa fa-times-circle fa-fw"></i>
+                                      {% elif b.status in ["started", "queued", "building", "requested"] %}
+                                      <i class="fa fa-gear fa-fw"></i>
+                                      {% endif %}
+                                    </td>
+                                    <td>
+                                      <a href="{{ b.get_url() }}">{{ b.id }}</a>
+                                    </td>
                                     <td>
                                       <a href="{{ b.get_url() }}">{{ b.project.name }}</a>
                                     </td>
@@ -64,39 +78,34 @@
                                 </table>
                             </div>
                             <!-- /.list-group -->
-                            {% if not project_name %}
-                            <a href="#" class="btn btn-default btn-block">View All Recent Repos</a>
-                            {% endif %}
                         </div>
                         <!-- /.panel-body -->
                     </div>
-                    {% if distinct %}
-                    {% for name, value in distinct.items() %}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bell fa-fw"></i> {{ name }} Available
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div class="list-group">
-                                {% for v in value %}
-                                <a href="{{ v }}" class="list-group-item">
-                                    <i class="fa fa-comment fa-fw"></i> {{ v }}
-                                    <span class="pull-right text-muted small"><em>0 (maybe add count here)</em>
-                                    </span>
-                                </a>
-                                {% endfor %}
-                            </div>
-                            <!-- /.list-group -->
-                            {% if not project_name %}
-                            <a href="#" class="btn btn-default btn-block">View All Recent Builds</a>
-                            {% endif %}
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    {% endfor %}
-                    {% endif %}
+
                 </div>
+                {% if distinct %}
+                {% for name, value in distinct.items() %}
+                <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bell fa-fw"></i> {{ name }} Available
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="list-group">
+                            {% for v in value %}
+                            <a href="{{ v }}" class="list-group-item">
+                                <i class="fa fa-arrow-circle-right fa-fw"></i> {{ v }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                        <!-- /.list-group -->
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                </div>
+                {% endfor %}
+                {% endif %}
             </div>
             <!-- /.row -->
         </div>

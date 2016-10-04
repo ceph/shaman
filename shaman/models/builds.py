@@ -102,7 +102,7 @@ class Build(Base):
             >>> "/builds/ceph/master/"
 
         """
-        url_tmpl = "/builds/{project}/{ref}/{sha1}/{_id}/"
+        url_tmpl = "/builds/{project}/{ref}/{sha1}/{flavor}/{_id}/"
         if up_to_part:
             part = "{%s}" % up_to_part
             # split on that part, join it again so it trims the leftover, and
@@ -112,6 +112,7 @@ class Build(Base):
             project=self.project.name,
             ref=self.ref,
             sha1=self.sha1,
+            flavor=self.flavor or 'default',
             _id=self.id
         )
         return url
