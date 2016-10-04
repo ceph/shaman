@@ -26,6 +26,8 @@
                                 <table class="table">
                                     <thead>
                                         <tr>
+                                            <th></th>
+                                            <th>id</th>
                                             <th>project</th>
                                             <th>ref</th>
                                             <th>distro</th>
@@ -42,6 +44,18 @@
                                 {% elif b.status == "started" %}
                                 <tr class="warning">
                                 {% endif %}
+                                    <td>
+                                      {% if b.completed %}
+                                      <i class="fa fa-check fa-fw"></i>
+                                      {% elif b.status == "failed" %}
+                                      <i class="fa fa-times-circle fa-fw"></i>
+                                      {% elif b.status == "started" %}
+                                      <i class="fa fa-gear fa-fw"></i>
+                                      {% endif %}
+                                    </td>
+                                    <td>
+                                      <a href="{{ b.get_url() }}">{{ b.id }}</a>
+                                    </td>
                                     <td>
                                       <a href="{{ b.get_url() }}">{{ b.project.name }}</a>
                                     </td>
