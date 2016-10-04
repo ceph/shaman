@@ -16,29 +16,29 @@
             <div class="row">
                 <!-- /.col-lg-8 -->
                 <div class="col-lg-8">
-                    {% if build.completed %}
+                    {% if build.completed or build.status == "ready"%}
                     <div class="panel panel-success">
                     {% elif build.status == "failed" %}
                     <div class="panel panel-danger">
-                    {% elif build.status == "started" %}
+                    {% elif build.status in ["started", "queued", "requested", "building"] %}
                     <div class="panel panel-warning">
                     {% endif %}
                         <div class="panel-heading">
-                            <i class="fa fa-gears fa-fw"></i> Build {{ build.id }}
+                            <i class="fa fa-gears fa-fw"></i> {{ section }} {{ build.id }}
                         </div>
                         <div class="panel-body">
                             <div class="row">
 
                         <!-- /.panel-heading -->
                                     <div class="table-responsive">
+                            {% if not build.log_url %}
+                            <a href="{{ build.url }}" class="btn btn-default btn-block">Repo URL</a>
+                            <a href="{{ build.chacra_url }}" class="btn btn-default btn-block">Chacra URL</a>
+                            {% endif %}
+                            <br/>
                             <table class="table table-bordered table-hover table-striped">
                                 <tbody>
-                                 <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                    </tr>
-                                </thead>
+                                 <tr><td>ID</td><td>{{ build.id }}</td></tr>
                                 {% for k, v in build.__json__().items() %}
                                 {% if not "url" in k %}
                                 <tr>
@@ -51,8 +51,13 @@
                                 </tbody>
                             </table>
                             <!-- /.list-group -->
+                            {% if build.log_url %}
                             <a href="{{ build.log_url }}" class="btn btn-default btn-block">Log Output</a>
                             <a href="{{ build.url }}" class="btn btn-default btn-block">Jenkins Build</a>
+                            {% else %}
+                            <a href="{{ build.url }}" class="btn btn-default btn-block">Repo URL</a>
+                            <a href="{{ build.chacra_url }}" class="btn btn-default btn-block">Chacra URL</a>
+                            {% endif %}
                         </div>
                         </div>
                         </div>
