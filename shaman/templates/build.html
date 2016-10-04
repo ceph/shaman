@@ -4,11 +4,11 @@
 {% block body %}
             <div class="row">
                 <div class="col-lg-12">
-                    {% if project_name %}
-                    <h1 class="page-header">{{ project_name }}</h1>
-                    {% else %}
-                    <h1 class="page-header">Projects</h1>
+                    <h1 class="page-header">{{ section }}
+                    {% if project_name %} 
+                    <small>{{ project_name }} {{ breadcrumb }}</small>
                     {% endif %}
+                    </h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>

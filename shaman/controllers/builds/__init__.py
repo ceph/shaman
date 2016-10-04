@@ -19,7 +19,9 @@ class BuildController(object):
     def index(self):
         return dict(
             project_name=self.project.name,
-            build=self.build
+            build=self.build,
+            section="Builds",
+            breadcrumb="> {} > {} > {}".format(self.build.ref, self.build.sha1, self.build.flavor),
         )
 
 
@@ -45,7 +47,8 @@ class FlavorController(object):
         return dict(
             project_name=self.project.name,
             builds=builds,
-            breadcrumb="{} > {} > {}".format(request.context['ref'], request.context['sha1'], self.flavor_name),
+            breadcrumb="> {} > {} > {}".format(request.context['ref'], request.context['sha1'], self.flavor_name),
+            section="Builds",
         )
 
     @expose()
@@ -79,7 +82,8 @@ class SHA1Controller(object):
             project_name=self.project.name,
             distinct=distinct,
             builds=builds,
-            breadcrumb="{} > {}".format(request.context['ref'], self.sha1_name),
+            breadcrumb="> {} > {}".format(request.context['ref'], self.sha1_name),
+            section="Builds",
         )
 
     @expose()
@@ -112,7 +116,8 @@ class RefController(object):
             project_name=self.project.name,
             distinct=distinct,
             builds=builds,
-            breadcrumb="{}".format(self.ref_name),
+            breadcrumb="> {}".format(self.ref_name),
+            section="Builds",
         )
 
     @expose()
@@ -141,7 +146,8 @@ class ProjectController(object):
         return dict(
             project_name=self.project_name,
             distinct=distinct,
-            builds=builds
+            builds=builds,
+            section="Builds",
         )
 
     @expose()
@@ -160,6 +166,7 @@ class BuildsController(object):
         return dict(
             builds=builds,
             distinct=distinct,
+            section="Builds",
         )
 
     @expose()
