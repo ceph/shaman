@@ -74,7 +74,7 @@ class TestBuildUrl(object):
         Build(self.p, **self.data)
         session.commit()
         result = Build.get(1).get_url()
-        assert result == '/builds/ceph/master/sha1/1/'
+        assert result == '/builds/ceph/master/sha1/default/1/'
 
     def test_by_ref(self, session):
         build = Build(self.p, **self.data)
