@@ -7,7 +7,7 @@ from shaman.controllers import search as _search
 
 from shaman.controllers import api
 from shaman.models import Project, Repo, Build
-from sqlalchemy import and_
+from sqlalchemy import and_, desc
 
 description = "shaman is the source of truth for the state of repositories on chacra nodes."
 
@@ -47,12 +47,12 @@ class RootController(object):
                     project=project).filter(Repo.status == "ready").filter(
                         and_(Repo.modified > lower_range),
                         and_(Repo.modified < upper_range)
-                    ).count()
+                ).count()
                 day_data[str(project.name)] = int(repository_count)
             area_data.append(day_data)
 
-        latest_repos = Repo.query.limit(10).all()
-        latest_builds = Build.query.limit(10).all()
+        latest_repos = Repo.query.order_by(desc(Repo.modified)).limit(10).all()
+        latest_builds = Build.query.order_by(desc(Build.modified)).limit(10).all()
 
         return dict(
             description=description,
