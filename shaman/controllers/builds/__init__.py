@@ -44,7 +44,8 @@ class FlavorController(object):
 
         return dict(
             project_name=self.project.name,
-            builds=builds
+            builds=builds,
+            breadcrumb="{} > {} > {}".format(request.context['ref'], request.context['sha1'], self.flavor_name),
         )
 
     @expose()
@@ -77,7 +78,8 @@ class SHA1Controller(object):
         return dict(
             project_name=self.project.name,
             distinct=distinct,
-            builds=builds
+            builds=builds,
+            breadcrumb="{} > {}".format(request.context['ref'], self.sha1_name),
         )
 
     @expose()
@@ -109,7 +111,8 @@ class RefController(object):
         return dict(
             project_name=self.project.name,
             distinct=distinct,
-            builds=builds
+            builds=builds,
+            breadcrumb="{}".format(self.ref_name),
         )
 
     @expose()
