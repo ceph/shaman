@@ -97,7 +97,7 @@
               <div class="panel-body">
                   <div class="list-group">
                       {% for repo in latest_repos %}
-                      <a href="#" class="list-group-item">
+                      <a href="{{ repo.get_url() }}" class="list-group-item">
                           <i class="fa fa-folder-open fa-fw"></i> {{ repo.project.name }}/{{ repo.ref }} :: {{ repo.distro }} {{ repo.distro_version }}
                           <span class="pull-right text-muted small"><em>{{ h.last_seen(repo.modified) }}</em>
                           </span>
