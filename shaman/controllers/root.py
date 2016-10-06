@@ -52,8 +52,8 @@ class RootController(object):
                 day_data[str(project.name)] = int(repository_count)
             area_data.append(day_data)
 
-        latest_repos = Repo.query.order_by(desc(Repo.modified)).limit(10).all()
-        latest_builds = Build.query.order_by(desc(Build.modified)).limit(10).all()
+        latest_repos = Repo.query.filter_by(status="ready").order_by(desc(Repo.modified)).limit(10).all()
+        latest_builds = Build.query.filter_by(status="completed").order_by(desc(Build.modified)).limit(10).all()
 
         return dict(
             description=description,
