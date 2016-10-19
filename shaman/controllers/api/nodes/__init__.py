@@ -6,7 +6,7 @@ from pecan.decorators import transactional
 
 from shaman.models import Node
 from shaman.auth import basic_auth
-from shaman.util import get_next_node
+from shaman.util import get_next_node, check_node_health
 from shaman import models
 
 
@@ -32,8 +32,11 @@ class NodeController(object):
         if not self.node:
             self.node = models.get_or_create(Node, host=self.host)
         self.node.last_check = datetime.datetime.utcnow()
-        self.node.down_count = 0
-        self.node.healthy = True
+        if not check_node_health(self.node):
+            self.node.healthy = False
+        else:
+            self.node.down_count = 0
+            self.node.healthy = True
         return {}
 
 

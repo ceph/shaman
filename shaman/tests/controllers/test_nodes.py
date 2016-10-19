@@ -23,18 +23,34 @@ class TestNodeController(object):
         assert set(result.json.keys()) == set(["chacra01.ceph.com", "chacra02.ceph.com"])
 
 
+def mock_check_node_health(healthy):
+    def _check_node_health(node):
+        return healthy
+
+    return _check_node_health
+
+
 class TestNodesContoller(object):
 
     def test_node_not_created(self, session):
         result = session.app.get("/api/nodes/chacra.ceph.com/", expect_errors=True)
         assert result.status_int == 404
 
-    def test_create_node(self, session):
+    def test_create_node(self, session, monkeypatch):
+        monkeypatch.setattr(nodes, "check_node_health", mock_check_node_health(True))
         session.app.post("/api/nodes/chacra.ceph.com/")
         n = Node.get(1)
         assert n.host == "chacra.ceph.com"
 
-    def test_updates_last_check_time(self, session):
+    def test_node_fails_initial_check(self, session, monkeypatch):
+        monkeypatch.setattr(nodes, "check_node_health", mock_check_node_health(False))
+        session.app.post("/api/nodes/chacra.ceph.com/")
+        n = Node.get(1)
+        assert n.host == "chacra.ceph.com"
+        assert not n.healthy
+
+    def test_updates_last_check_time(self, session, monkeypatch):
+        monkeypatch.setattr(nodes, "check_node_health", mock_check_node_health(True))
         session.app.post("/api/nodes/chacra.ceph.com/")
         n = Node.get(1)
         last_check = n.last_check.time()
@@ -42,7 +58,8 @@ class TestNodesContoller(object):
         n = Node.get(1)
         assert n.last_check.time() > last_check
 
-    def test_updates_down_count(self, session):
+    def test_updates_down_count(self, session, monkeypatch):
+        monkeypatch.setattr(nodes, "check_node_health", mock_check_node_health(True))
         session.app.post("/api/nodes/chacra.ceph.com/")
         n = Node.get(1)
         n.down_count = 2
@@ -51,7 +68,8 @@ class TestNodesContoller(object):
         n = Node.get(1)
         assert n.down_count == 0
 
-    def test_updates_healthy(self, session):
+    def test_updates_healthy(self, session, monkeypatch):
+        monkeypatch.setattr(nodes, "check_node_health", mock_check_node_health(True))
         session.app.post("/api/nodes/chacra.ceph.com/")
         n = Node.get(1)
         n.healthy = False
@@ -61,6 +79,7 @@ class TestNodesContoller(object):
         assert n.healthy
 
     def test_get_next_node_succeeds(self, session, monkeypatch):
+        monkeypatch.setattr(nodes, "check_node_health", mock_check_node_health(True))
         Node("chacra.ceph.com")
         session.commit()
 
@@ -73,6 +92,7 @@ class TestNodesContoller(object):
         assert result.body == "https://chacra.ceph.com/"
 
     def test_get_next_node_fails(self, session, monkeypatch):
+        monkeypatch.setattr(nodes, "check_node_health", mock_check_node_health(True))
         Node("chacra.ceph.com")
         session.commit()
 
