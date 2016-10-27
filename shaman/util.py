@@ -28,21 +28,28 @@ def get_next_node():
     return None
 
 
-def is_node_healthy(node):
+def check_node_health(node):
     """
-    Pings the chacra node's health check endpoint
-    to verify it is healthy and ready for use.
-
-    If it fails the health check, the node's ``down_count``
-    will be incremented. If the ``down_count`` reaches the
-    value set for ``health_check_retries`` it will be
-    marked down and removed from the pool.
+    Pings the node's healthcheck url and if it's healthy
+    returns True, otherwise False.
     """
     check_url = "https://{}/health/".format(node.host)
     verify_ssl = getattr(conf, "chacra_verify_ssl", False)
     r = requests.get(check_url, verify=verify_ssl)
-    node.last_check = datetime.datetime.utcnow()
-    if not r.ok:
+    return r.ok
+
+
+def is_node_healthy(node, only_check=False):
+    """
+    Pings the chacra node's health check endpoint
+    to verify it is healthy and ready for use.
+
+    If it fails the health, the node's ``down_count``
+    will be incremented. If the ``down_count`` reaches
+    the value set for ``health_check_retries`` it will
+    be marked down and removed from the pool.
+    """
+    if not check_node_health(node):
         node.down_count = node.down_count + 1
         logger.warning("node: %s has failed a health check. current count: %s", node.host, node.down_count)
         if node.down_count == getattr(conf, 'health_check_retries', 3):
