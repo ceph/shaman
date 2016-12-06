@@ -1,4 +1,5 @@
-from pecan import request, expose, abort
+import os
+from pecan import request, expose, abort, redirect
 from shaman.models import Project, Repo
 from sqlalchemy import desc
 from shaman.controllers.api.repos import flavors as _flavors
@@ -10,13 +11,14 @@ class DistroVersionController(object):
         self.distro_version_name = distro_version_name
         request.context['distro_version'] = distro_version_name
         self.project = Project.query.get(request.context['project_id'])
-        self.repos = Repo.query.filter_by(
+        self.repo_query = Repo.query.filter_by(
             project=self.project,
             ref=request.context['ref'],
             sha1=request.context['sha1'],
             distro=request.context['distro'],
             distro_version=distro_version_name,
-            flavor='default').order_by(desc(Repo.modified)).all()
+            flavor='default').order_by(desc(Repo.modified))
+        self.repos = self.repo_query.all()
 
     @expose(generic=True, template='json')
     def index(self):
@@ -25,6 +27,17 @@ class DistroVersionController(object):
     @index.when(method='GET', template='json')
     def index_get(self):
         return [r for r in self.repos]
+
+    @expose()
+    def repo(self):
+        # requires the repository to be fully available on a remote chacra
+        # instance for a proper redirect. Otherwise it will fail explicitly
+        repo = self.repo_query.filter_by(status='ready').first()
+        if not repo:
+            abort(504, detail="no repository is available yet")
+        redirect(
+            os.path.join(repo.chacra_url, 'repo')
+        )
 
     flavors = _flavors.FlavorsController()
 
