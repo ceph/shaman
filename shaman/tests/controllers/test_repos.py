@@ -127,15 +127,18 @@ class TestProjectController(object):
         assert len(repo.archs) == 2
 
 
-def base_repo_data():
+def base_repo_data(**kw):
+    distro = kw.get('distro', 'ubuntu')
+    sha1 = kw.get('sha1', '45107e21c568dd033c2f0a3107dec8f0b0e58374')
+    status = kw.get('status', 'requested')
     return dict(
         ref="jewel",
-        sha1="45107e21c568dd033c2f0a3107dec8f0b0e58374",
+        sha1=sha1,
         flavor="default",
-        distro="ubuntu",
+        distro=distro,
         distro_version="xenial",
-        chacra_url="chacra.ceph.com/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/xenial/",
-        status="requested",
+        chacra_url="chacra.ceph.com/repos/ceph/jewel/{sha1}/{distro}/xenial/".format(sha1=sha1, distro=distro),
+        status=status,
         archs=["x86_64", "arm64"]
     )
 
@@ -163,6 +166,20 @@ class TestSHA1Controller(object):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data())
         result = session.app.get('/api/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/')
         assert result.json == ["ubuntu"]
+
+    def test_get_latest_sha1(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        result = session.app.get('/api/repos/ceph/jewel/latest/')
+        assert result.json == ["ubuntu"]
+
+    def test_get_one_latest_sha1(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        session.app.post_json(
+            '/api/repos/ceph/',
+            params=base_repo_data(distro='centos', sha1='aaaaa')
+        )
+        result = session.app.get('/api/repos/ceph/jewel/latest/')
+        assert result.json == ["centos"]
 
 
 class TestDistroController(object):
@@ -195,6 +212,15 @@ class TestDistroVersionController(object):
         assert result.json[0]['distro_codename'] == 'xenial'
         assert result.json[0]['flavor'] == 'default'
 
+    def test_get_latest_repo_unavailable(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/', expect_errors=True)
+        assert result.status_int == 504
+
+    def test_get_latest_repo_ready(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/', expect_errors=True)
+        assert result.status_int == 302
 
 class TestFlavorsController(object):
 
@@ -217,3 +243,16 @@ class TestFlavorController(object):
         assert result.json[0]['ref'] == 'jewel'
         assert result.json[0]['sha1'] == '45107e21c568dd033c2f0a3107dec8f0b0e58374'
         assert sorted(result.json[0]['archs']) == sorted(["arm64", "x86_64"])
+
+    def test_get_latest_repo_unavailable(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data())
+        result = session.app.get(
+            '/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/repo/',
+            expect_errors=True
+        )
+        assert result.status_int == 504
+
+    def test_get_latest_repo_ready(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/repo/', expect_errors=True)
+        assert result.status_int == 302
