@@ -1,6 +1,6 @@
 import os
 from pecan import request, expose, abort, redirect
-from shaman.models import Project, Repo
+from shaman.models import Project, Repo, Arch
 from sqlalchemy import desc
 from shaman.controllers.api.repos import flavors as _flavors
 
@@ -29,10 +29,11 @@ class DistroVersionController(object):
         return [r for r in self.repos]
 
     @expose()
-    def repo(self):
+    def repo(self, **kw):
+        arch = kw.get('arch', 'x86_64')
         # requires the repository to be fully available on a remote chacra
         # instance for a proper redirect. Otherwise it will fail explicitly
-        repo = self.repo_query.filter_by(status='ready').first()
+        repo = self.repo_query.filter_by(status='ready').join(Arch).filter(Arch.name == arch).first()
         if not repo:
             abort(504, detail="no repository is available yet")
         redirect(

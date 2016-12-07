@@ -222,6 +222,22 @@ class TestDistroVersionController(object):
         result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/', expect_errors=True)
         assert result.status_int == 302
 
+    def test_get_latest_repo_valid_arch_ready(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/?arch=arm64', expect_errors=True)
+        assert result.status_int == 302
+
+    def test_get_latest_repo_valid_extra_arch_ready(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/?arch=x86_64', expect_errors=True)
+        assert result.status_int == 302
+
+    def test_get_latest_repo_invalid_extra_arch_ready(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/?arch=aarch64', expect_errors=True)
+        assert result.status_int == 504
+
+
 class TestFlavorsController(object):
 
     def test_get_existing_sha1(self, session):
@@ -256,3 +272,19 @@ class TestFlavorController(object):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
         result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/repo/', expect_errors=True)
         assert result.status_int == 302
+
+    def test_get_latest_repo_valid_arch_ready(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/repo/?arch=arm64', expect_errors=True)
+        assert result.status_int == 302
+
+    def test_get_latest_repo_valid_extra_arch_ready(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/repo/?arch=x86_64', expect_errors=True)
+        assert result.status_int == 302
+
+    def test_get_latest_repo_invalid_extra_arch_ready(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/repo/?arch=aarch64', expect_errors=True)
+        assert result.status_int == 504
+
