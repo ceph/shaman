@@ -131,8 +131,9 @@ def base_repo_data(**kw):
     distro = kw.get('distro', 'ubuntu')
     sha1 = kw.get('sha1', '45107e21c568dd033c2f0a3107dec8f0b0e58374')
     status = kw.get('status', 'requested')
+    ref = kw.get('ref', 'jewel')
     return dict(
-        ref="jewel",
+        ref=ref,
         sha1=sha1,
         flavor="default",
         distro=distro,
@@ -201,6 +202,17 @@ class TestDistroController(object):
             '/api/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/'
         )
         assert result.json == ["xenial"]
+
+    def test_repos_are_distinct(self, session):
+        # note the sha1 is different for the only 'ubuntu' build
+        repo_1 = base_repo_data(sha1='aaa', distro='ubuntu')
+        repo_2 = base_repo_data(distro='debian')
+        session.app.post_json('/api/repos/ceph/', params=repo_1)
+        session.app.post_json('/api/repos/ceph/', params=repo_2)
+        result = session.app.get(
+            '/api/repos/ceph/jewel/45107e21c568dd033c2f0a3107dec8f0b0e58374/ubuntu/'
+        )
+        assert result.json == []
 
 
 class TestDistroVersionController(object):

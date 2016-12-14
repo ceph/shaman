@@ -52,6 +52,7 @@ class DistroController(object):
         self.repos = Repo.query.filter_by(
             project=self.project,
             ref=request.context['ref'],
+            sha1=request.context['sha1'],
             distro=distro_name).all()
 
     @expose(generic=True, template='json')
