@@ -11,9 +11,10 @@ class DistroVersionController(object):
         self.distro_version_name = distro_version_name
         request.context['distro_version'] = distro_version_name
         self.project = Project.query.get(request.context['project_id'])
+        self.ref_name = request.context['ref']
         self.repo_query = Repo.query.filter_by(
             project=self.project,
-            ref=request.context['ref'],
+            ref=self.ref_name,
             sha1=request.context['sha1'],
             distro=request.context['distro'],
             distro_version=distro_version_name,
@@ -35,7 +36,7 @@ class DistroVersionController(object):
         # instance for a proper redirect. Otherwise it will fail explicitly
         repo = self.repo_query.filter_by(status='ready').join(Arch).filter(Arch.name == arch).first()
         if not repo:
-            abort(504, detail="no repository is available yet")
+            abort(504, "no repository is ready for: %s/%s" % (self.project.name, self.ref_name))
         redirect(
             os.path.join(repo.chacra_url, 'repo')
         )
