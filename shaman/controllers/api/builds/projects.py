@@ -35,7 +35,18 @@ class ProjectAPIController(object):
         if not self.project:
             self.project = models.get_or_create(Project, name=self.project_name)
         url = request.json["url"]
-        build = models.Build.query.filter_by(url=url).first()
+        # check if there is an existing build that is queued, where the URL
+        # wouldn't match
+        queued_build = models.Build.query.filter_by(
+            project=self.project,
+            sha1=request.json['sha1'],
+            ref=request.json['ref'],
+            status='queued',
+        ).first()
+        if queued_build:
+            build = queued_build
+        else:
+            build = models.Build.query.filter_by(url=url).first()
         data = dict(
             project=self.project,
             ref=request.json["ref"],
