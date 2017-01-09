@@ -4,14 +4,15 @@ from datetime import datetime, timedelta
 def last_seen(date_object):
     now = datetime.utcnow()
     difference = now - date_object
-    formatted = ReadableSeconds(difference.seconds)
+    formatted = ReadableSeconds(difference.seconds, days=difference.days)
     return "%s ago" % formatted
 
 
 class ReadableSeconds(object):
 
-    def __init__(self, seconds):
+    def __init__(self, seconds, days=None):
         self.original_seconds = seconds
+        self.original_days = days
 
     @property
     def relative(self):
@@ -50,8 +51,7 @@ class ReadableSeconds(object):
 
     @property
     def days(self):
-        # Subtract 1 here because the earliest datetime() is 1/1/1
-        days = self.relative.day - 1
+        days = self.original_days
         day_str = 'days' if days > 1 else 'day'
         if days:
             return "%d %s, " % (days, day_str)
