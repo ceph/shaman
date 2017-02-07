@@ -32,7 +32,7 @@
 - name: create nginx site config
   template:
     src: "../templates/nginx_site.conf"
-    dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
+    dest: "/etc/nginx/sites-available/01-{{ app_name }}.conf"
   sudo: true
   notify:
     - restart nginx
