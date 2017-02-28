@@ -31,10 +31,12 @@ class DistroVersionController(object):
 
     @expose()
     def repo(self, **kw):
-        arch = kw.get('arch', 'x86_64')
+        arch = kw.get('arch')
         # requires the repository to be fully available on a remote chacra
         # instance for a proper redirect. Otherwise it will fail explicitly
-        repo = self.repo_query.filter_by(status='ready').join(Arch).filter(Arch.name == arch).first()
+        repo = self.repo_query.filter_by(status='ready').first()
+        if arch:
+            repo = self.repo_query.filter_by(status='ready').join(Arch).filter(Arch.name == arch).first()
         if not repo:
             abort(504, "no repository is ready for: %s/%s" % (self.project.name, self.ref_name))
         redirect(

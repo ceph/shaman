@@ -132,6 +132,7 @@ def base_repo_data(**kw):
     sha1 = kw.get('sha1', '45107e21c568dd033c2f0a3107dec8f0b0e58374')
     status = kw.get('status', 'ready')
     ref = kw.get('ref', 'jewel')
+    archs = kw.get('archs', ["x86_64", "arm64"])
     return dict(
         ref=ref,
         sha1=sha1,
@@ -140,7 +141,7 @@ def base_repo_data(**kw):
         distro_version="xenial",
         chacra_url="chacra.ceph.com/repos/ceph/jewel/{sha1}/{distro}/xenial/".format(sha1=sha1, distro=distro),
         status=status,
-        archs=["x86_64", "arm64"]
+        archs=archs,
     )
 
 
@@ -242,6 +243,11 @@ class TestDistroVersionController(object):
         result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/', expect_errors=True)
         assert result.status_int == 302
 
+    def test_get_latest_repo_ready_noarch(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', archs=["noarch"]))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/', expect_errors=True)
+        assert result.status_int == 302
+
     def test_get_latest_repo_valid_arch_ready(self, session):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
         result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/?arch=arm64', expect_errors=True)
@@ -290,6 +296,11 @@ class TestFlavorController(object):
 
     def test_get_latest_repo_ready(self, session):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/repo/', expect_errors=True)
+        assert result.status_int == 302
+
+    def test_get_latest_repo_ready_noarch(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', archs=["noarch"]))
         result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/repo/', expect_errors=True)
         assert result.status_int == 302
 

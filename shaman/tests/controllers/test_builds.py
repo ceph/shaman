@@ -52,14 +52,14 @@ class TestProjectController(object):
         data = get_build_data(status='queued', url='jenkins.ceph.com/trigger')
         session.app.post_json('/api/builds/ceph/', params=data)
         data = get_build_data(status='completed')
-        result = session.app.post_json('/api/builds/ceph/', params=data)
+        session.app.post_json('/api/builds/ceph/', params=data)
         assert len(Build.query.all()) == 1
 
     def test_update_queued_build_is_completed(self, session):
         data = get_build_data(status='queued', url='jenkins.ceph.com/trigger')
         session.app.post_json('/api/builds/ceph/', params=data)
         data = get_build_data(status='completed')
-        result = session.app.post_json('/api/builds/ceph/', params=data)
+        session.app.post_json('/api/builds/ceph/', params=data)
         assert Build.get(1).status == 'completed'
 
     def test_lists_refs(self, session):

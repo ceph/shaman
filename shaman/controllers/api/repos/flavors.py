@@ -9,9 +9,10 @@ class FlavorController(object):
     def __init__(self, flavor_name):
         self.flavor_name = flavor_name
         self.project = Project.query.get(request.context['project_id'])
+        self.ref_name = request.context['ref']
         self.repo_query = Repo.query.filter_by(
             project=self.project,
-            ref=request.context['ref'],
+            ref=self.ref_name,
             sha1=request.context['sha1'],
             distro=request.context['distro'],
             distro_version=request.context['distro_version'],
@@ -28,12 +29,14 @@ class FlavorController(object):
 
     @expose()
     def repo(self, **kw):
-        arch = kw.get('arch', 'x86_64')
+        arch = kw.get('arch')
         # requires the repository to be fully available on a remote chacra
         # instance for a proper redirect. Otherwise it will fail explicitly
-        repo = self.repo_query.filter_by(status='ready').join(Arch).filter(Arch.name == arch).first()
+        repo = self.repo_query.filter_by(status='ready').first()
+        if arch:
+            repo = self.repo_query.filter_by(status='ready').join(Arch).filter(Arch.name == arch).first()
         if not repo:
-            abort(504, detail="no repository is available yet")
+            abort(504, "no repository is ready for: %s/%s" % (self.project.name, self.ref_name))
         redirect(
             os.path.join(repo.chacra_url, 'repo')
         )
