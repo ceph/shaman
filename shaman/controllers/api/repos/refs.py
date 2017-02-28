@@ -23,4 +23,4 @@ class RefController(object):
 
     @expose()
     def _lookup(self, sha1_name, *remainder):
-        return sha1s.SHA1Controller(sha1_name), remainder
+        return sha1s.SHA1Controller(sha1_name, *remainder), remainder
