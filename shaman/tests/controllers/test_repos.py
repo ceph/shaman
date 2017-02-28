@@ -243,6 +243,15 @@ class TestDistroVersionController(object):
         result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/', expect_errors=True)
         assert result.status_int == 302
 
+    def test_get_latest_repo_sha1_not_ready_for_distro(self, session):
+        # this tests for a regression where the latest sha1 that is picked for a distro does not
+        # have a ready repo and a 504 is eventually given
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', sha1="0"))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', sha1="1", distro="test"))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='building', sha1="1"))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/?arch=x86_64', expect_errors=True)
+        assert result.status_int == 302
+
     def test_get_latest_repo_ready_noarch(self, session):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', archs=["noarch"]))
         result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/', expect_errors=True)
@@ -297,6 +306,15 @@ class TestFlavorController(object):
     def test_get_latest_repo_ready(self, session):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
         result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/repo/', expect_errors=True)
+        assert result.status_int == 302
+
+    def test_get_latest_repo_sha1_not_ready_for_distro(self, session):
+        # this tests for a regression where the latest sha1 that is picked for a distro does not
+        # have a ready repo and a 504 is eventually given
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', sha1="0"))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', sha1="1", distro="test"))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='building', sha1="1"))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/repo/?arch=x86_64', expect_errors=True)
         assert result.status_int == 302
 
     def test_get_latest_repo_ready_noarch(self, session):
