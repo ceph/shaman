@@ -133,13 +133,14 @@ def base_repo_data(**kw):
     status = kw.get('status', 'ready')
     ref = kw.get('ref', 'jewel')
     archs = kw.get('archs', ["x86_64", "arm64"])
+    flavor = kw.get('flavor', 'default')
     return dict(
         ref=ref,
         sha1=sha1,
-        flavor="default",
+        flavor=flavor,
         distro=distro,
         distro_version="xenial",
-        chacra_url="chacra.ceph.com/repos/ceph/jewel/{sha1}/{distro}/xenial/".format(sha1=sha1, distro=distro),
+        chacra_url="chacra.ceph.com/repos/ceph/jewel/{sha1}/{distro}/xenial/flavors/{flavor}".format(sha1=sha1, distro=distro, flavor=flavor),
         status=status,
         archs=archs,
     )
