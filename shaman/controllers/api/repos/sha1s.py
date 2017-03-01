@@ -20,11 +20,15 @@ class SHA1Controller(object):
             # would be used for a distro/distro_version that might not have a
             # ready repo, resulting in the further controllers giving a 504
             if len(args) >= 2:
+                flavor = "default"
+                if 'flavors' in args:
+                    flavor = args[3]
                 self.repos = Repo.query.filter_by(
                     project=self.project,
                     ref=self.ref_name,
                     distro=args[0],
                     distro_version=args[1],
+                    flavor=flavor,
                 )
             latest_repo = self.repos.filter_by(status='ready').order_by(desc(Repo.modified)).first()
             if not latest_repo:

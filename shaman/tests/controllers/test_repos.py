@@ -133,13 +133,14 @@ def base_repo_data(**kw):
     status = kw.get('status', 'ready')
     ref = kw.get('ref', 'jewel')
     archs = kw.get('archs', ["x86_64", "arm64"])
+    flavor = kw.get('flavor', 'default')
     return dict(
         ref=ref,
         sha1=sha1,
-        flavor="default",
+        flavor=flavor,
         distro=distro,
         distro_version="xenial",
-        chacra_url="chacra.ceph.com/repos/ceph/jewel/{sha1}/{distro}/xenial/".format(sha1=sha1, distro=distro),
+        chacra_url="chacra.ceph.com/repos/ceph/jewel/{sha1}/{distro}/xenial/flavors/{flavor}".format(sha1=sha1, distro=distro, flavor=flavor),
         status=status,
         archs=archs,
     )
@@ -252,6 +253,31 @@ class TestDistroVersionController(object):
         result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/?arch=x86_64', expect_errors=True)
         assert result.status_int == 302
 
+    def test_get_latest_repo_sha1_not_ready_for_flavor(self, session):
+        # this tests for a regression where the latest sha1 that is picked for a distro does not
+        # have a ready repo and a 504 is eventually given
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', sha1="1"))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='building', sha1="2"))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', sha1="2", flavor="notcmalloc"))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/', expect_errors=True)
+        assert result.status_int == 302
+
+    def test_get_latest_repo_sha1_not_ready_for_default_flavor(self, session):
+        # this tests for a regression where the latest sha1 that is picked for a distro does not
+        # have a ready repo and a 504 is eventually given
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='building'))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', flavor="notcmalloc"))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/', expect_errors=True)
+        assert result.status_int == 504
+
+    def test_get_latest_repo_sha1_not_ready_for_custom_flavor(self, session):
+        # this tests for a regression where the latest sha1 that is picked for a distro does not
+        # have a ready repo and a 504 is eventually given
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='building', flavor="notcmalloc"))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/', expect_errors=True)
+        assert result.status_int == 302
+
     def test_get_latest_repo_ready_noarch(self, session):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', archs=["noarch"]))
         result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/', expect_errors=True)
@@ -316,6 +342,32 @@ class TestFlavorController(object):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='building', sha1="1"))
         result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/repo/?arch=x86_64', expect_errors=True)
         assert result.status_int == 302
+
+    def test_get_latest_repo_sha1_not_ready_for_flavor(self, session):
+        # this tests for a regression where the latest sha1 that is picked for a distro does not
+        # have a ready repo and a 504 is eventually given
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', sha1="1"))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='building', sha1="2"))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', sha1="2", flavor="notcmalloc"))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/repo/', expect_errors=True)
+        assert result.status_int == 302
+
+    def test_get_latest_repo_sha1_ready_for_non_default_flavor(self, session):
+        # this tests for a regression where the latest sha1 that is picked for a distro does not
+        # have a ready repo and a 504 is eventually given
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', sha1="1", flavor="notcmalloc"))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='building', sha1="2", flavor="notcmalloc"))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', sha1="2"))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/notcmalloc/repo/', expect_errors=True)
+        assert result.status_int == 302
+
+    def test_get_latest_repo_sha1_not_ready_for_non_default_flavor(self, session):
+        # this tests for a regression where the latest sha1 that is picked for a distro does not
+        # have a ready repo and a 504 is eventually given
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='building', flavor="notcmalloc"))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/notcmalloc/repo/', expect_errors=True)
+        assert result.status_int == 504
 
     def test_get_latest_repo_ready_noarch(self, session):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', archs=["noarch"]))
