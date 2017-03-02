@@ -1,8 +1,9 @@
+import os
 import requests
 import datetime
 import logging
 
-from pecan import conf
+from pecan import conf, abort, redirect
 from sqlalchemy import asc
 
 from shaman import models
@@ -155,3 +156,17 @@ def parse_distro_query(query):
             dict(distro=distro, distro_codename=codename, distro_version=version, arch=arch)
         )
     return result
+
+
+def redirect_to_repo(query, project_name, ref, **kw):
+    arch = kw.get('arch')
+    # requires the repository to be fully available on a remote chacra
+    # instance for a proper redirect. Otherwise it will fail explicitly
+    repo = query.filter_by(status='ready').first()
+    if arch:
+        repo = query.filter_by(status='ready').join(models.Arch).filter(models.Arch.name == arch).first()
+    if not repo:
+        abort(504, "no repository is ready for: %s/%s" % (project_name, ref))
+    redirect(
+        os.path.join(repo.chacra_url, 'repo')
+    )
