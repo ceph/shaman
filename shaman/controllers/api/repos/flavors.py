@@ -1,6 +1,6 @@
-from pecan import request, expose, abort
+from pecan import request, expose, abort, redirect
 from shaman.models import Project, Repo
-from shaman.util import redirect_to_repo
+from shaman.util import get_repo_url
 from sqlalchemy import desc
 
 
@@ -29,12 +29,28 @@ class FlavorController(object):
 
     @expose()
     def repo(self, **kw):
-        redirect_to_repo(
+        repo_url = get_repo_url(
             self.repo_query,
-            self.project.name,
-            self.ref_name,
-            **kw
+            kw.get('arch'),
         )
+        if not repo_url:
+            abort(504, "no repository is ready for: %s/%s" % (self.project.name, self.ref_name))
+        redirect(repo_url)
+
+    @expose()
+    def _default(self, arch, *args):
+        directory = None
+        if args:
+            directory = args[0]
+        repo_url = get_repo_url(
+            self.repo_query,
+            arch,
+            directory=directory,
+            repo_file=False,
+        )
+        if not repo_url:
+            abort(504, "no repository is ready for: %s/%s" % (self.project.name, self.ref_name))
+        redirect(repo_url)
 
 
 class FlavorsController(object):

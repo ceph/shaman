@@ -1,7 +1,7 @@
 import datetime
 
 from shaman import util
-from shaman.models import Node
+from shaman.models import Node, Repo, Project, Arch
 
 import py.test
 from mock import patch
@@ -190,3 +190,73 @@ class TestParseDistroQuery(object):
         assert result[1]['distro'] == 'centos7'
         assert result[1]['distro_codename'] is None
         assert result[1]['distro_version'] is None
+
+
+def base_repo_data(**kw):
+    distro = kw.get('distro', 'ubuntu')
+    distro_version = kw.get('distro_version', 'xenial')
+    sha1 = kw.get('sha1', '45107e21c568dd033c2f0a3107dec8f0b0e58374')
+    status = kw.get('status', 'ready')
+    ref = kw.get('ref', 'jewel')
+    flavor = kw.get('flavor', 'default')
+    return dict(
+        ref=ref,
+        sha1=sha1,
+        flavor=flavor,
+        distro=distro,
+        distro_version=distro_version,
+        chacra_url="chacra.ceph.com/repos/ceph/{ref}/{sha1}/{distro}/{distro_version}/flavors/{flavor}".format(
+            sha1=sha1,
+            distro=distro,
+            distro_version=distro_version,
+            flavor=flavor,
+            ref=ref,
+        ),
+        url="chacra.ceph.com/r/ceph/{ref}/{sha1}/{distro}/{distro_version}/flavors/{flavor}".format(
+            sha1=sha1,
+            distro=distro,
+            distro_version=distro_version,
+            flavor=flavor,
+            ref=ref,
+        ),
+        status=status,
+    )
+
+
+class TestGetRepoUrl(object):
+
+    def setup(self):
+        self.p = Project("ceph")
+        self.data = base_repo_data()
+        self.repo = Repo(self.p, **self.data)
+        Arch(name="x86_64", repo=self.repo)
+
+    def test_repo_file_is_true(self, session):
+        session.commit()
+        query = Repo.query.filter_by(status='ready')
+        result = util.get_repo_url(query, 'x86_64', repo_file=True)
+        assert result.endswith("/repo")
+
+    def test_repo_file_is_false(self, session):
+        session.commit()
+        query = Repo.query.filter_by(status='ready')
+        result = util.get_repo_url(query, 'x86_64', repo_file=False)
+        assert result.startswith("chacra.ceph.com/r/")
+
+    def test_arch_is_none(self, session):
+        session.commit()
+        query = Repo.query.filter_by(status='ready')
+        result = util.get_repo_url(query, None, repo_file=False)
+        assert result.startswith("chacra.ceph.com/r/")
+
+    def test_repo_not_found(self, session):
+        session.commit()
+        query = Repo.query.filter_by(status='queued')
+        result = util.get_repo_url(query, None, repo_file=False)
+        assert not result
+
+    def test_redirect_to_a_directory(self, session):
+        session.commit()
+        query = Repo.query.filter_by(status='ready')
+        result = util.get_repo_url(query, 'x86_64', directory="SRPMS", repo_file=False)
+        assert result.endswith("/SRPMS")

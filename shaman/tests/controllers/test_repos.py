@@ -129,6 +129,7 @@ class TestProjectController(object):
 
 def base_repo_data(**kw):
     distro = kw.get('distro', 'ubuntu')
+    distro_version = kw.get('distro_version', 'xenial')
     sha1 = kw.get('sha1', '45107e21c568dd033c2f0a3107dec8f0b0e58374')
     status = kw.get('status', 'ready')
     ref = kw.get('ref', 'jewel')
@@ -139,8 +140,20 @@ def base_repo_data(**kw):
         sha1=sha1,
         flavor=flavor,
         distro=distro,
-        distro_version="xenial",
-        chacra_url="chacra.ceph.com/repos/ceph/jewel/{sha1}/{distro}/xenial/flavors/{flavor}".format(sha1=sha1, distro=distro, flavor=flavor),
+        distro_version=distro_version,
+        chacra_url="chacra.ceph.com/repos/ceph/jewel/{sha1}/{distro}/{distro_version}/flavors/{flavor}".format(
+            sha1=sha1,
+            distro=distro,
+            distro_version=distro_version,
+            flavor=flavor,
+        ),
+        url="chacra.ceph.com/r/ceph/{ref}/{sha1}/{distro}/{distro_version}/flavors/{flavor}".format(
+            sha1=sha1,
+            distro=distro,
+            distro_version=distro_version,
+            flavor=flavor,
+            ref=ref,
+        ),
         status=status,
         archs=archs,
     )
@@ -244,6 +257,16 @@ class TestDistroVersionController(object):
         result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/repo/', expect_errors=True)
         assert result.status_int == 302
 
+    def test_get_latest_repo_arch(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/x86_64/', expect_errors=True)
+        assert result.status_int == 302
+
+    def test_get_latest_repo_directory_ready(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', distro="centos", distro_version="7"))
+        result = session.app.get('/api/repos/ceph/jewel/latest/centos/7/x86_64/noarch/', expect_errors=True)
+        assert result.status_int == 302
+
     def test_get_latest_repo_sha1_not_ready_for_distro(self, session):
         # this tests for a regression where the latest sha1 that is picked for a distro does not
         # have a ready repo and a 504 is eventually given
@@ -332,6 +355,16 @@ class TestFlavorController(object):
     def test_get_latest_repo_ready(self, session):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
         result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/repo/', expect_errors=True)
+        assert result.status_int == 302
+
+    def test_get_latest_repo_arch(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready'))
+        result = session.app.get('/api/repos/ceph/jewel/latest/ubuntu/xenial/flavors/default/x86_64/', expect_errors=True)
+        assert result.status_int == 302
+
+    def test_get_latest_repo_directory_ready(self, session):
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', distro="centos", distro_version="7"))
+        result = session.app.get('/api/repos/ceph/jewel/latest/centos/7/flavors/default/x86_64/noarch/', expect_errors=True)
         assert result.status_int == 302
 
     def test_get_latest_repo_sha1_not_ready_for_distro(self, session):
