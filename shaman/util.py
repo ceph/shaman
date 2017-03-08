@@ -158,7 +158,7 @@ def parse_distro_query(query):
     return result
 
 
-def get_repo_url(query, arch, directory=None, repo_file=True):
+def get_repo_url(query, arch, path=None, repo_file=True):
     # requires the repository to be fully available on a remote chacra
     # instance for a proper redirect. Otherwise it will fail explicitly
     repo = query.filter_by(status='ready').first()
@@ -167,8 +167,8 @@ def get_repo_url(query, arch, directory=None, repo_file=True):
     if not repo:
         return None
     repo_url = repo.url
-    if directory:
-        repo_url = os.path.join(repo.url, directory)
+    if path:
+        repo_url = os.path.join(repo.url, *path)
     if repo_file:
         # return a url to the chacra endpoint that prints a plain text
         # yum or apt repo file

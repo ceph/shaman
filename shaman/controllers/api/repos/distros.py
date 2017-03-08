@@ -41,13 +41,10 @@ class DistroVersionController(object):
 
     @expose()
     def _default(self, arch, *args):
-        directory = None
-        if args:
-            directory = args[0]
         repo_url = get_repo_url(
             self.repo_query,
             arch,
-            directory=directory,
+            path=args,
             repo_file=False,
         )
         if not repo_url:
