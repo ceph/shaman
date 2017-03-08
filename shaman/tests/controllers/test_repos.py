@@ -264,7 +264,7 @@ class TestDistroVersionController(object):
 
     def test_get_latest_repo_directory_ready(self, session):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', distro="centos", distro_version="7"))
-        result = session.app.get('/api/repos/ceph/jewel/latest/centos/7/x86_64/noarch/', expect_errors=True)
+        result = session.app.get('/api/repos/ceph/jewel/latest/centos/7/x86_64/noarch/repodata/repomd.xml', expect_errors=True)
         assert result.status_int == 302
 
     def test_get_latest_repo_sha1_not_ready_for_distro(self, session):
@@ -364,7 +364,7 @@ class TestFlavorController(object):
 
     def test_get_latest_repo_directory_ready(self, session):
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(status='ready', distro="centos", distro_version="7"))
-        result = session.app.get('/api/repos/ceph/jewel/latest/centos/7/flavors/default/x86_64/noarch/', expect_errors=True)
+        result = session.app.get('/api/repos/ceph/jewel/latest/centos/7/flavors/default/x86_64/noarch/repodata/repomd.xml', expect_errors=True)
         assert result.status_int == 302
 
     def test_get_latest_repo_sha1_not_ready_for_distro(self, session):

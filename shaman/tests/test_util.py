@@ -258,5 +258,11 @@ class TestGetRepoUrl(object):
     def test_redirect_to_a_directory(self, session):
         session.commit()
         query = Repo.query.filter_by(status='ready')
-        result = util.get_repo_url(query, 'x86_64', directory="SRPMS", repo_file=False)
+        result = util.get_repo_url(query, 'x86_64', path=["SRPMS"], repo_file=False)
         assert result.endswith("/SRPMS")
+
+    def test_redirect_to_a_directory_path(self, session):
+        session.commit()
+        query = Repo.query.filter_by(status='ready')
+        result = util.get_repo_url(query, 'x86_64', path=["SRPMS", "repodata", "repomd.xml"], repo_file=False)
+        assert result.endswith("/SRPMS/repodata/repomd.xml")
