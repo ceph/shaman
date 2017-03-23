@@ -1,4 +1,6 @@
 import datetime
+import requests
+from requests.exceptions import BaseHTTPError, RequestException
 
 from shaman import util
 from shaman.models import Node, Repo, Project, Arch
@@ -62,6 +64,37 @@ class TestIsNodeHealthy(object):
         util.is_node_healthy(node)
         node = Node.get(1)
         assert not node.healthy
+
+
+class RequestsResponse(object):
+
+    def __init__(self, ok=True):
+        self.ok = ok
+
+
+def request_exception(exc=RequestException):
+    raise exc
+
+
+class TestCheckNodeHealth(object):
+
+    def test_healthy(self, session, monkeypatch):
+        response = RequestsResponse()
+        monkeypatch.setattr(requests, "get", lambda *a, **kw: response)
+        healthy = util.check_node_health(Node("chacra.ceph.com"))
+        assert healthy is True
+
+    def test_unhealthy(self, session, monkeypatch):
+        response = RequestsResponse(ok=False)
+        monkeypatch.setattr(requests, "get", lambda *a, **kw: response)
+        healthy = util.check_node_health(Node("chacra.ceph.com"))
+        assert healthy is False
+
+    @py.test.mark.parametrize('exc', [BaseHTTPError, RequestException])
+    def test_node_raises_requests_exception(self, exc, session, monkeypatch):
+        monkeypatch.setattr(requests, "get", lambda *a, **kw: request_exception(exc))
+        healthy = util.check_node_health(Node("chacra.ceph.com"))
+        assert healthy is False
 
 
 class TestGetNextNode(object):

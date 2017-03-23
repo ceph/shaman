@@ -1,5 +1,6 @@
 import os
 import requests
+from requests.exceptions import BaseHTTPError, RequestException
 import datetime
 import logging
 
@@ -36,7 +37,10 @@ def check_node_health(node):
     """
     check_url = "https://{}/health/".format(node.host)
     verify_ssl = getattr(conf, "chacra_verify_ssl", False)
-    r = requests.get(check_url, verify=verify_ssl)
+    try:
+        r = requests.get(check_url, verify=verify_ssl, timeout=60)
+    except (RequestException, BaseHTTPError):
+        return False
     return r.ok
 
 
