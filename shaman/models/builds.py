@@ -53,6 +53,10 @@ class Build(Base):
         self.update_from_json(kwargs)
         self.started = datetime.datetime.utcnow()
 
+    @property
+    def arch(self):
+        return self.distro_arch
+
     def __repr__(self):
         try:
             return "<Build {}/{}/{}>".format(

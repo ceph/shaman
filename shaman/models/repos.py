@@ -44,6 +44,10 @@ class Repo(Base):
         self.modified = datetime.datetime.utcnow()
         self.update_from_json(kwargs)
 
+    @property
+    def arch(self):
+        return ", ".join([arch.name for arch in self.archs])
+
     def __repr__(self):
         try:
             return "<Repo {}/{}/{}/{}/{}>".format(

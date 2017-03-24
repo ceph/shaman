@@ -33,6 +33,7 @@
                                             <th>distro</th>
                                             <th>release</th>
                                             <th>flavor</th>
+                                            <th>arch</th>
                                             <th>modified</th>
                                         </tr>
                                     </thead>
@@ -71,6 +72,9 @@
                                     </td>
                                     <td>
                                       <a href="{{ b.get_url() }}">{{ b.flavor }}</a>
+                                    </td>
+                                    <td>
+                                      <a href="{{ b.get_url() }}">{{ b.arch }}</a>
                                     </td>
                                     <td>
                                       <a href="{{ b.get_url() }}">
