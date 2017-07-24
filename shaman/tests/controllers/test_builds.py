@@ -1,4 +1,4 @@
-from shaman.models import Build
+from shaman.models import Build, Project, commit
 
 
 def get_build_data(**kw):
@@ -21,6 +21,56 @@ def get_build_data(**kw):
 
 
 class TestProjectController(object):
+
+    def setup(self):
+        self.data = get_build_data()
+
+    def test_list_ref_by_id(self, session):
+        project = Project(name='ceph')
+        Build(build_id=1, project=project, ref='master')
+        Build(build_id=2, project=project, ref='master')
+        Build(build_id=100, project=project, ref='master')
+        commit()
+        result = session.app.get('/builds/ceph/master/')
+        assert result.namespace['builds'][0].build_id == '100'
+        assert result.namespace['builds'][1].build_id == '2'
+        assert result.namespace['builds'][2].build_id == '1'
+
+    def test_list_builds_by_id(self, session):
+        project = Project(name='ceph')
+        Build(build_id=1, project=project, ref='master')
+        Build(build_id=2, project=project, ref='master')
+        Build(build_id=100, project=project, ref='master')
+        commit()
+        result = session.app.get('/builds/ceph/')
+        assert result.namespace['builds'][0].build_id == '100'
+        assert result.namespace['builds'][1].build_id == '2'
+        assert result.namespace['builds'][2].build_id == '1'
+
+    def test_list_sha1s_by_id(self, session):
+        project = Project(name='ceph')
+        Build(build_id=1, project=project, ref='master', sha1='1234')
+        Build(build_id=2, project=project, ref='master', sha1='1234')
+        Build(build_id=100, project=project, ref='master', sha1='1234')
+        commit()
+        result = session.app.get('/builds/ceph/master/1234/')
+        assert result.namespace['builds'][0].build_id == '100'
+        assert result.namespace['builds'][1].build_id == '2'
+        assert result.namespace['builds'][2].build_id == '1'
+
+    def test_list_flavors_by_id(self, session):
+        project = Project(name='ceph')
+        Build(build_id=1, project=project, ref='master', sha1='1234', flavor='default')
+        Build(build_id=2, project=project, ref='master', sha1='1234', flavor='default')
+        Build(build_id=100, project=project, ref='master', sha1='1234', flavor='default')
+        commit()
+        result = session.app.get('/builds/ceph/master/1234/default/')
+        assert result.namespace['builds'][0].build_id == '100'
+        assert result.namespace['builds'][1].build_id == '2'
+        assert result.namespace['builds'][2].build_id == '1'
+
+
+class TestApiProjectController(object):
 
     def setup(self):
         self.data = get_build_data()
