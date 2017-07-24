@@ -1,6 +1,6 @@
 from pecan import expose, request, abort, conf
 from shaman.models import Build, Project
-from sqlalchemy import desc
+from sqlalchemy import desc, Integer
 
 
 BUILD_LIMIT = getattr(conf, "build_limit", 1000)
@@ -45,7 +45,7 @@ class FlavorController(object):
             ref=request.context['ref'],
             sha1=request.context['sha1'],
             flavor=self.flavor_name
-        ).order_by(desc(Build.modified)).limit(BUILD_LIMIT).all()
+        ).order_by(desc(Build.id)).limit(BUILD_LIMIT).all()
 
         return dict(
             project_name=self.project.name,
@@ -75,7 +75,7 @@ class SHA1Controller(object):
             project=self.project,
             ref=request.context['ref'],
             sha1=self.sha1_name
-        ).order_by(desc(Build.modified)).limit(BUILD_LIMIT).all()
+        ).order_by(desc(Build.id)).limit(BUILD_LIMIT).all()
 
         distinct = {
             "flavors": list(set([b.flavor for b in builds]))
@@ -109,7 +109,7 @@ class RefController(object):
         builds = Build.filter_by(
             project=self.project,
             ref=self.ref_name
-        ).order_by(desc(Build.modified)).limit(BUILD_LIMIT).all()
+        ).order_by(desc(Build.id)).limit(BUILD_LIMIT).all()
 
         distinct = {
             "sha1s": list(set([b.sha1 for b in builds]))
@@ -141,7 +141,8 @@ class ProjectController(object):
 
     @expose('jinja:builds.html')
     def index(self):
-        builds = Build.filter_by(project=self.project).order_by(desc(Build.modified)).limit(BUILD_LIMIT).all()
+        builds = Build.filter_by(project=self.project).order_by(
+            desc(Build.id)).limit(BUILD_LIMIT).all()
         distinct = {
             "refs": list(set([b.ref for b in builds]))
         }
@@ -162,7 +163,7 @@ class BuildsController(object):
 
     @expose('jinja:builds.html')
     def index(self):
-        builds = Build.query.order_by(desc(Build.modified)).limit(BUILD_LIMIT).all()
+        builds = Build.query.order_by(desc(Build.id)).limit(BUILD_LIMIT).all()
         distinct = {
             "projects": list(set([b.project.name for b in builds]))
         }
