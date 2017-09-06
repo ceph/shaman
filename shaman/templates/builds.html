@@ -112,8 +112,11 @@
                                    <div class="col-xs-10">
                                        <a href="{{ v }}" class="list-group-item">
                                            <i class="fa fa-arrow-circle-right fa-fw"></i>
-                                           {{ v }}
-
+                                           {% if name == 'refs' %}
+                                           {{ v if v else ''|truncate(32, True) }}
+                                           {% else %}
+                                           {{ v if v else ''|truncate(10, True) }}
+                                           {% endif %}
                                        </a>
                                    </div>
                                    <div class="col-xs-2">
