@@ -1,7 +1,7 @@
 ---
 
 - name: "Build hosts file"
-  sudo: yes
+  become: yes
   lineinfile:
     dest: /etc/hosts
     regexp: ".*{{ fqdn }}$"
@@ -9,12 +9,12 @@
     state: present
 
 - name: Set Hostname with hostname command
-  sudo: yes
+  become: yes
   hostname:
     name: "{{ fqdn }}"
 
 - name: "ensure a home for {{ app_name }}"
-  sudo: yes
+  become: yes
   file:
     path: "{{ app_home }}"
     owner: "{{ ansible_ssh_user }}"
@@ -26,24 +26,24 @@
   apt:
     update_cache: yes
     cache_valid_time: 3500
-  sudo: yes
+  become: yes
 
 - name: install ssl system requirements
-  sudo: yes
+  become: yes
   apt:
     name: "{{ item }}"
     state: present
-  with_items: ssl_requirements
+  with_items: "{{ ssl_requirements }}"
   when: app_use_ssl
   tags:
     - packages
 
 - name: install system packages
-  sudo: yes
+  become: yes
   apt:
     name: "{{ item }}"
     state: present
-  with_items: system_packages
+  with_items: "{{ system_packages }}"
   tags:
     - packages
 
