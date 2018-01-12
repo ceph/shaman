@@ -40,6 +40,22 @@ class TestIsNodeHealthy(object):
         assert node.down_count == 0
 
     @patch("shaman.util.requests.get")
+    def test_healthy_is_true_when_rejoining_pool(self, m_get, session):
+        """
+        Tests the scenario where a node has been marked down,
+        but is now up again and needs to rejoin the pool.
+        """
+        m_get.return_value.ok = True
+        node = Node("chacra.ceph.com")
+        node.down_count = 3
+        node.healthy = False
+        session.commit()
+        util.is_node_healthy(node)
+        node = Node.get(1)
+        assert node.down_count == 0
+        assert node.healthy
+
+    @patch("shaman.util.requests.get")
     def test_node_is_not_healthy(self, m_get, session):
         m_get.return_value.ok = False
         node = Node("chacra.ceph.com")
