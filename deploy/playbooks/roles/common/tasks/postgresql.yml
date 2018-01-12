@@ -3,7 +3,7 @@
   service:
     name: postgresql
     state: started
-  sudo: yes
+  become: yes
 
 - name: generate pseudo-random password for the postgres {{ app_name }} user
   local_action: shell python -c "exec 'import os; print os.urandom(30).encode(\'base64\')[:${length}]'" | tee {{ playbook_dir }}/tmp/app_user_password
@@ -24,8 +24,8 @@
     state: "present"
     login_user: postgres
     db: "{{ app_name }}"
-  sudo_user: postgres
-  sudo: yes
+  become_user: postgres
+  become: yes
   when: "'postgresql_master' in group_names"
 
 - name: Make {{ app_name }} database
@@ -34,8 +34,8 @@
     owner: "{{ app_name }}"
     state: present
     login_user: postgres
-  sudo_user: postgres
-  sudo: yes
+  become_user: postgres
+  become: yes
   when: "'postgresql_master' in group_names"
 
 - name: create the prod_db config file with the db password
@@ -54,8 +54,8 @@
 - name: check if database for app needs populating
   # this should be configurable/optional in the playbook
   command: psql -t shaman -c "SELECT COUNT(*) FROM projects;"
-  sudo_user: postgres
-  sudo: yes
+  become_user: postgres
+  become: yes
   register: database_is_populated
   ignore_errors: true
   changed_when: "database_is_populated.rc != 0"
