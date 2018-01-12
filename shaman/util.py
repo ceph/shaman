@@ -65,6 +65,7 @@ def is_node_healthy(node, only_check=False):
 
     # reset the down_count when the node is healthy
     node.down_count = 0
+    node.healthy = True
     models.commit()
     return True
 
