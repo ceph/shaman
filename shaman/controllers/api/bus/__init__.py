@@ -1,4 +1,5 @@
 import pika
+import json
 
 from pecan import expose, abort, request, conf
 from pecan.secure import secure
@@ -39,7 +40,7 @@ class BusController(object):
         channel.basic_publish(
             exchange=exchange,
             routing_key=queue,
-            body=request.json,
+            body=json.dumps(request.json),
             properties=properties,
         )
         connection.close()
