@@ -33,6 +33,7 @@ class BusController(object):
             queue,
             auto_delete=True
         )
+        channel.queue_bind(queue, exchange)
 
         properties = pika.BasicProperties(content_type='application/json')
         channel.basic_publish(
