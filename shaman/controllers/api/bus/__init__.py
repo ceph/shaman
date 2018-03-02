@@ -3,7 +3,7 @@ import pika
 from pecan import expose, abort, request, conf
 from pecan.secure import secure
 
-from shaman.auth import basic_auth
+from shaman.auth import github_basic_auth
 
 
 class BusController(object):
@@ -16,7 +16,7 @@ class BusController(object):
     def index_get(self):
         abort(405)
 
-    @secure(basic_auth)
+    @secure(github_basic_auth)
     @index.when(method='POST', template='json')
     def index_post(self, exchange, queue):
         credentials = pika.PlainCredentials(conf.RABBIT_USER, conf.RABBIT_PW)
