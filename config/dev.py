@@ -87,3 +87,5 @@ health_check_retries = 3
 fail_check_trigger_path = "/tmp/fail_check"
 
 RABBIT_HOST = "localhost"
+RABBIT_USER = "guest"
+RABBIT_PW = "guest"
