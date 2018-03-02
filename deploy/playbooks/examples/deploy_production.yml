@@ -98,6 +98,9 @@
      nginx_ssl_key_path: "/etc/letsencrypt/live/{{ fqdn }}/privkey.pem"
      api_user: "admin"
      api_key: "secret"
+     rabbit_host: "localhost"
+     rabbit_user: "guest"
+     rabbit_pw: "guest"
      chacra_verify_ssl: False
   tags:
     - deploy_app
