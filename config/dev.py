@@ -85,3 +85,5 @@ health_check_retries = 3
 
 # if this file exists the check at /_health/ will fail
 fail_check_trigger_path = "/tmp/fail_check"
+
+RABBIT_HOST = "localhost"
