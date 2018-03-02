@@ -26,7 +26,6 @@ class BusController(object):
         ))
         channel = connection.channel()
 
-        channel.queue_bind(queue=channel_name)
         channel.basic_publish(exchange='', routing_key=channel_name, body=request.json)
         connection.close()
         return {}
