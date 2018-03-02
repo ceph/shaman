@@ -20,6 +20,7 @@ setup(
         "pecan-notario",
         "requests",
         "jinja2",
+        "pika",
     ],
     test_suite='shaman',
     zip_safe=False,
