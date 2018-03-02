@@ -7,3 +7,4 @@ alembic
 ipython
 requests
 jinja2
+pika
