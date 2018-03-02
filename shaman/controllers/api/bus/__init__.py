@@ -18,7 +18,7 @@ class BusController(object):
 
     @secure(basic_auth)
     @index.when(method='POST', template='json')
-    def index_post(self, channel_name):
+    def index_post(self, queue):
         credentials = pika.PlainCredentials(conf.RABBIT_USER, conf.RABBIT_PW)
         connection = pika.BlockingConnection(pika.ConnectionParameters(
             host=conf.RABBIT_HOST,
@@ -26,6 +26,12 @@ class BusController(object):
         ))
         channel = connection.channel()
 
-        channel.basic_publish(exchange='', routing_key=channel_name, body=request.json)
+        properties = pika.BasicProperties(content_type='application/json')
+        channel.basic_publish(
+            exchange='',
+            routing_key=queue,
+            body=request.json,
+            properties=properties,
+        )
         connection.close()
         return {}
