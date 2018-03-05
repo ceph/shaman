@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref, deferred
 from sqlalchemy.event import listen
 from sqlalchemy.orm.exc import DetachedInstanceError
-from shaman.models import Base, update_timestamp
+from shaman.models import Base, update_timestamp, publish_repo_message
 from shaman.models.types import JSONType
 
 
@@ -101,3 +101,4 @@ class Repo(Base):
 # listen for timestamp modifications
 listen(Repo, 'before_insert', update_timestamp)
 listen(Repo, 'before_update', update_timestamp)
+listen(Repo, 'after_update', publish_repo_message)

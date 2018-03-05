@@ -72,6 +72,16 @@ def publish_build_message(mapper, connection, target):
     publish_message(routing_key, body)
 
 
+def publish_repo_message(mapper, connection, target):
+    """
+    Send a message to RabbitMQ everytime a Repo
+    is updated
+    """
+    routing_key = "{}.repos".format(target.project.name)
+    body = json.dumps(target.__json__())
+    publish_message(routing_key, body)
+
+
 # Utilities:
 
 def get_or_create(model, **kwargs):
