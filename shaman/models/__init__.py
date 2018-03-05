@@ -61,6 +61,15 @@ def update_timestamp(mapper, connection, target):
     target.modified = datetime.datetime.utcnow()
 
 
+def _date_json_converter(item):
+    """
+    Converts a datetime object to a string so that it
+    can be converted to JSON
+    """
+    if isinstance(item, datetime.datetime):
+        return item.__str__()
+
+
 def publish_build_message(mapper, connection, target):
     """
     Send a message to RabbitMQ everytime a Build
@@ -68,7 +77,7 @@ def publish_build_message(mapper, connection, target):
     """
     from shaman.util import publish_message
     routing_key = "{}.builds".format(target.project.name)
-    body = json.dumps(target.__json__())
+    body = json.dumps(target.__json__(), default=_date_json_converter)
     publish_message(routing_key, body)
 
 
@@ -79,7 +88,7 @@ def publish_repo_message(mapper, connection, target):
     """
     from shaman.util import publish_message
     routing_key = "{}.repos".format(target.project.name)
-    body = json.dumps(target.__json__())
+    body = json.dumps(target.__json__(), default=_date_json_converter)
     publish_message(routing_key, body)
 
 
