@@ -19,22 +19,23 @@ class BusController(object):
 
     @secure(github_basic_auth)
     @index.when(method='POST', template='json')
-    def index_post(self, project, queue):
+    def index_post(self, project, topic):
         credentials = pika.PlainCredentials(conf.RABBIT_USER, conf.RABBIT_PW)
         connection = pika.BlockingConnection(pika.ConnectionParameters(
             host=conf.RABBIT_HOST,
             credentials=credentials
         ))
         channel = connection.channel()
-        queue = "{}/{}".format(project, queue)
-        channel.queue_declare(
-            queue,
-            auto_delete=True,
+        routing_key = "{}.{}".format(project, topic)
+        channel.exchange_declare(
+            exchange="shaman",
+            exchange_type="topic",
         )
 
         properties = pika.BasicProperties(content_type='application/json')
         channel.basic_publish(
-            routing_key=queue,
+            exchange="shaman",
+            routing_key=routing_key,
             body=json.dumps(request.json),
             properties=properties,
         )
