@@ -1,6 +1,6 @@
 from pecan import expose, request, abort, conf
 from shaman.models import Build, Project
-from sqlalchemy import desc, Integer
+from sqlalchemy import desc
 
 
 BUILD_LIMIT = getattr(conf, "build_limit", 1000)

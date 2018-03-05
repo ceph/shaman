@@ -69,3 +69,9 @@ chacra_verify_ssl = {{ chacra_verify_ssl|default(False) }}
 # production Basic HTTP Auth credentials are imported from prod_api_creds.py
 
 # production database configurations are imported from prod_db.py
+
+RABBIT_HOST = "{{ rabbit_host }}"
+RABBIT_USER = "{{ rabbit_user }}"
+RABBIT_PW = "{{ rabbit_pw }}"
+
+github_secret = "{{ github_secret }}"
