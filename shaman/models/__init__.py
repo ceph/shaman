@@ -1,8 +1,10 @@
 import datetime
+import json
 from sqlalchemy import create_engine, MetaData, event
 from sqlalchemy.orm import scoped_session, sessionmaker, object_session, mapper
 from sqlalchemy.ext.declarative import declarative_base
 from pecan import conf
+from shaman.util import publish_message
 
 
 class _EntityBase(object):
@@ -58,6 +60,16 @@ def update_timestamp(mapper, connection, target):
     Automate the 'modified' attribute when a model changes
     """
     target.modified = datetime.datetime.utcnow()
+
+
+def publish_build_message(mapper, connection, target):
+    """
+    Send a message to RabbitMQ everytime a Build
+    is updated
+    """
+    routing_key = "{}.builds".format(target.project.name)
+    body = json.dumps(target.__json__())
+    publish_message(routing_key, body)
 
 
 # Utilities:
