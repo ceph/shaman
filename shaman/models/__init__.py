@@ -70,24 +70,18 @@ def _date_json_converter(item):
         return item.__str__()
 
 
-def publish_build_message(mapper, connection, target):
-    """
-    Send a message to RabbitMQ everytime a Build
-    is updated
-    """
-    from shaman.util import publish_message
-    routing_key = "{}.builds".format(target.project.name)
-    body = json.dumps(target.__json__(), default=_date_json_converter)
-    publish_message(routing_key, body)
-
-
-def publish_repo_message(mapper, connection, target):
+def publish_update_message(mapper, connection, target):
     """
     Send a message to RabbitMQ everytime a Repo
     is updated
     """
     from shaman.util import publish_message
-    routing_key = "{}.repos".format(target.project.name)
+
+    if isinstance(target, Build):
+        topic = "builds"
+    elif isinstance(target, Repo):
+        topic = "repos"
+    routing_key = "{}.{}".format(target.project.name, topic)
     body = json.dumps(target.__json__(), default=_date_json_converter)
     publish_message(routing_key, body)
 
