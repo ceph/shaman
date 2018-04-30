@@ -84,11 +84,13 @@ def parse_distro_release(identifier, distro_name):
     """
     version_map = {
         'ubuntu': {
+            'bionic': '18.04',
             'xenial': '16.04',
             'yakkety': '16.10',
             'trusty': '14.04',
         },
         'debian': {
+            'stretch': '9',
             'jessie': '8',
             'wheezy': '7',
         },
@@ -96,11 +98,13 @@ def parse_distro_release(identifier, distro_name):
 
     codename_map = {
         'ubuntu': {
+            '18.04': 'bionic',
             '16.04': 'xenial',
             '16.10': 'yakkety',
             '14.04': 'trusty',
         },
         'debian': {
+            '9': 'stretch',
             '8': 'jessie',
             '7': 'wheezy'
         },
