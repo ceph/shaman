@@ -33,7 +33,7 @@
   apt:
     name: "{{ item }}"
     state: present
-  with_items: ssl_requirements
+  with_items: "{{ ssl_requirements }}"
   when: app_use_ssl
   tags:
     - packages
@@ -43,7 +43,7 @@
   apt:
     name: "{{ item }}"
     state: present
-  with_items: system_packages
+  with_items: "{{ system_packages }}"
   tags:
     - packages
 
