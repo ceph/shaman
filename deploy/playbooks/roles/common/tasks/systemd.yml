@@ -1,7 +1,7 @@
 ---
 
 - name: ensure /etc/default/ dir exists
-  sudo: true
+  become: true
   file:
     path: /etc/default
     state: directory
@@ -10,12 +10,12 @@
   template:
     src: systemd/shaman.service.j2
     dest: /etc/systemd/system/shaman.service
-  sudo: true
+  become: true
   notify:
      - reload systemd
 
 - name: ensure shaman is enabled and running
-  sudo: true
+  become: true
   service:
     name: shaman
     state: running
