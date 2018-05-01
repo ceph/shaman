@@ -1,7 +1,7 @@
 ---
 
 - name: configure postgresql.conf
-  sudo: yes
+  become: true
   template:
     dest: "/etc/postgresql/{{ postgresql_version }}/{{ postgresql_cluster_name }}/postgresql.conf"
     src: postgresql.conf.j2
@@ -11,7 +11,7 @@
   notify: restart postgresql
 
 - name: configure pg_hba.conf
-  sudo: yes
+  become: true
   template:
     dest: "{{ postgresql_cfg_hba_file }}"
     src: pg_hba.conf.j2
@@ -21,7 +21,7 @@
   notify: reload postgresql
 
 - name: create the archive dir
-  sudo: yes
+  become: true
   file:
     path: "{{ postgresql_archive_dir_path }}"
     state: directory

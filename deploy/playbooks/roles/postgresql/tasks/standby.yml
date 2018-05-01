@@ -1,5 +1,5 @@
 - name: "standby | stop postgresql"
-  sudo: yes
+  become: true
   service:
     name: postgresql
     state: stopped
@@ -7,7 +7,7 @@
 - set_fact: timestamp="{{lookup('pipe','date +%Y-%m-%d-%H-%M-%S')}}"
 
 - name: "standby | move current data directory out"
-  sudo: yes
+  become: true
   command: "mv {{ postgresql_cfg_data_directory }} {{ postgresql_cfg_data_directory }}_{{ timestamp }}"
   ignore_errors: true
   when: postgresql_init_replication
@@ -20,7 +20,7 @@
 - include: configure.yml
 
 - name: "standby | write .pgpass for postgres user"
-  sudo: yes
+  become: true
   template:
     dest: "~{{ postgresql_superuser}}/.pgpass"
     src: pgpass.j2
@@ -30,12 +30,12 @@
 
 - name: "standby | initialize standby postgresql basebackup"
   command: "pg_basebackup --xlog-method=stream -h {{ master_ip }} -U {{ postgresql_replication_user }} -D {{ postgresql_cfg_data_directory }} -Pw"
-  sudo_user: postgres
-  sudo: yes
+  become_user: postgres
+  become: true
   when: postgresql_init_replication
 
 - name: "standby | configure recovery.conf"
-  sudo: yes
+  become: true
   template:
     src: recovery.conf.j2
     dest: "{{ postgresql_cfg_data_directory }}/recovery.conf"
@@ -44,7 +44,7 @@
     mode: 0640
 
 - name: "standby | start postgresql"
-  sudo: yes
+  become: true
   service:
     name: postgresql
     state: started

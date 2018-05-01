@@ -1,7 +1,7 @@
 ---
 
 - name: install postgresql package
-  sudo: yes
+  become: true
   apt:
     pkg: "postgresql-{{ postgresql_version }}"
     state: installed
@@ -15,4 +15,4 @@
     update_cache: yes
     cache_valid_time: 3600
   with_items: common_packages
-  sudo: yes
+  become: true

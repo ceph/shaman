@@ -6,7 +6,7 @@
   service:
     name: postgresql
     state: started
-  sudo: yes
+  become: true
 
 - include: users.yml
   when: "'postgresql_master' in group_names"
@@ -20,8 +20,8 @@
     state: present
     login_user: postgres
   when: "'postgresql_master' in group_names"
-  sudo_user: postgres
-  sudo: yes
+  become_user: postgres
+  become: true
 
 - include: standby.yml
   when: "'postgresql_standby' in group_names"
