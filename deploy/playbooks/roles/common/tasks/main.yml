@@ -57,6 +57,7 @@
   pip:
     name: 'git+https://github.com/ceph/shaman@{{ branch }}#egg=shaman'
     virtualenv: "{{ app_home }}"
+    editable: true
   changed_when: False
 
 - name: create the prod config file
