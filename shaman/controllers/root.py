@@ -59,12 +59,17 @@ class RootController(object):
 
         latest_repos = Repo.query.filter_by(status="ready").order_by(desc(Repo.modified)).limit(10).all()
         latest_builds = Build.query.filter_by(status="completed").order_by(desc(Build.modified)).limit(10).all()
+        labels = []
+        for item in area_data:
+            labels.extend([i for i in item.keys() if i != 'period'])
+        labels = list(set(labels))
 
         return dict(
             description=description,
             documentation=documentation,
             area_data=str(area_data),
             projects=[str(p.name) for p in projects],
+            labels=labels,
             latest_repos=latest_repos,
             latest_builds=latest_builds,
         )
