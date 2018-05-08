@@ -22,10 +22,22 @@ class TestRootController(object):
         result = session.app.get('/')
         assert result.namespace['latest_builds'] == []
 
-    def test_builds_from_today(self, session):
-        models.Build(project=models.Project(name='ceph'), status="ready")
+    def test_repos_from_today(self, session):
+        models.Repo(
+            project=models.Project(name='ceph'),
+            distro="ubuntu",
+            distro_version="xenial",
+            status="ready")
         models.commit()
         result = session.app.get('/')
         now = datetime.datetime.utcnow()
         today_str = now.strftime('%Y-%m-%d')
+        assert "'ceph': 1" in result.namespace['area_data']
         assert today_str in result.namespace['area_data']
+
+    def test_no_builds_from_today(self, session):
+        # create a build, no repos
+        models.Build(project=models.Project(name='ceph'), status="ready")
+        models.commit()
+        result = session.app.get('/')
+        assert "'ceph': 0" not in result.namespace['area_data']

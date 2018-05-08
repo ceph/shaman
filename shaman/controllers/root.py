@@ -50,6 +50,10 @@ class RootController(object):
                         and_(Repo.modified > lower_range),
                         and_(Repo.modified < upper_range)
                 ).count()
+                # Do not add all the projects that haven't built anything for
+                # the day
+                if int(repository_count) == 0:
+                    continue
                 day_data[str(project.name)] = int(repository_count)
             area_data.append(day_data)
 
