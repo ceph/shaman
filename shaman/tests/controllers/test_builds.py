@@ -96,7 +96,17 @@ class TestApiProjectController(object):
         assert result.status_int == 200
         build = Build.get(1)
         assert build.status == "completed"
-        assert build.completed
+
+    def test_update_build_same_url_different_sha1(self, session):
+        # this tests the situation where a new jenkins instance
+        # is spun up at the same URL and the jenkins urls are
+        # now duplicating
+        session.app.post_json('/api/builds/ceph/', params=self.data)
+        data = self.data.copy()
+        data['sha1'] = "new-sha1"
+        result = session.app.post_json('/api/builds/ceph/', params=data)
+        assert result.status_int == 200
+        assert len(Build.query.all()) == 2
 
     def test_update_queued_build_creates_single_object(self, session):
         data = get_build_data(status='queued', url='jenkins.ceph.com/trigger')
