@@ -57,6 +57,8 @@
   pip:
     name: 'git+https://github.com/ceph/shaman@{{ branch }}#egg=shaman'
     virtualenv: "{{ app_home }}"
+    state: forcereinstall
+    editable: yes
   changed_when: False
 
 - name: create the prod config file
