@@ -90,6 +90,7 @@ def parse_distro_release(identifier, distro_name):
             'trusty': '14.04',
         },
         'debian': {
+            'buster': '10',
             'stretch': '9',
             'jessie': '8',
             'wheezy': '7',
