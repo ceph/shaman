@@ -59,7 +59,7 @@
     virtualenv: "{{ app_home }}"
     state: forcereinstall
     editable: yes
-  changed_when: False
+  notify: restart app
 
 - name: create the prod config file
   template:
