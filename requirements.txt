@@ -8,3 +8,4 @@ ipython
 requests
 jinja2
 pika
+enum34
