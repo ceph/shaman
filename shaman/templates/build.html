@@ -44,6 +44,7 @@
                             {% else %}
                             <a href="/repos/{{build.project.name}}/{{build.ref}}/{{build.sha1}}/" class="btn btn-default btn-block">View Repos built for {{build.project.name}} > {{build.ref}} > {{build.sha1}}</a>
                             {% endif %}
+                            <a href="/builds/{{build.project.name}}/{{build.ref}}/{{build.sha1}}/" class="btn btn-default btn-block">View Builds for {{build.project.name}} > {{build.ref}} > {{build.sha1}}</a>
                             <br/>
                             <table class="table table-bordered table-hover table-striped">
                                 <tbody>
