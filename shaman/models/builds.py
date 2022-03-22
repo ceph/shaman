@@ -103,7 +103,7 @@ class Build(Base):
         trailing slash. For example::
 
             >>> self.get_url('ref')
-            >>> "/builds/ceph/master/"
+            >>> "/builds/ceph/main/"
 
         """
         url_tmpl = "/builds/{project}/{ref}/{sha1}/{flavor}/{_id}/"

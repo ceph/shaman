@@ -9,7 +9,7 @@
   local_action: shell python -c "exec 'import os; print os.urandom(30).encode(\'base64\')[:${length}]'" | tee {{ playbook_dir }}/tmp/app_user_password
   register: generated_app_user_password
   changed_when: false
-  when: "'postgresql_master' in group_names"
+  when: "'postgresql_primary' in group_names"
 
 - name: read pseudo-random password for the postgres {{ app_name }} user if it exists
   local_action: command cat {{ playbook_dir }}/tmp/app_user_password
@@ -26,7 +26,7 @@
     db: "{{ app_name }}"
   become_user: postgres
   become: true
-  when: "'postgresql_master' in group_names"
+  when: "'postgresql_primary' in group_names"
 
 - name: Make {{ app_name }} database
   postgresql_db:
@@ -36,7 +36,7 @@
     login_user: postgres
   become_user: postgres
   become: true
-  when: "'postgresql_master' in group_names"
+  when: "'postgresql_primary' in group_names"
 
 - name: create the prod_db config file with the db password
   template:
@@ -59,12 +59,12 @@
   register: database_is_populated
   ignore_errors: true
   changed_when: "database_is_populated.rc != 0"
-  when: "'postgresql_master' in group_names"
+  when: "'postgresql_primary' in group_names"
 
 - name: populate the database for {{ app_name }}
   command: "{{ app_home }}/bin/pecan populate {{ app_home }}/src/{{ app_name }}/prod.py"
   environment:
     ALEMBIC_CONFIG: "{{ app_home }}/src/{{ app_name }}/alembic-prod.ini"
   when:
-    - "'postgresql_master' in group_names"
+    - "'postgresql_primary' in group_names"
     - "database_is_populated.rc == 1"

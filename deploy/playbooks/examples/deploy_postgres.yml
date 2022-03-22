@@ -1,9 +1,9 @@
 ---
-# This playbook requires both the master ip and the standby host ip. For
+# This playbook requires both the primary_ip and the standby (secondary_ip). For
 # example::
-#     ansible-playbook -i hosts --extra-vars="master_ip=192.168.111.100 standby_ip=192.168.111.104" deploy_postgres.yml
+#     ansible-playbook -i hosts --extra-vars="primary_ip=192.168.111.100 secondary_ip=192.168.111.104" deploy_postgres.yml
 
-- hosts: postgresql_master
+- hosts: postgresql_primary
   user: vagrant
   roles:
     - postgresql
@@ -17,8 +17,8 @@
      api_key: "secret"
      # postgres specific
      postgresql_replication: true
-     postgresql_replication_master_ip: "{{ master_ip }}"
-     postgresql_cfg_listen_addresses: "localhost,127.0.0.1,{{ master_ip }}"
+     postgresql_replication_primary_ip: "{{ primary_ip }}"
+     postgresql_cfg_listen_addresses: "localhost,127.0.0.1,{{ primary_ip }}"
      postgresql_cfg_wal_level: 'hot_standby'
      postgresql_cfg_max_wal_senders: 3
      postgresql_cfg_archive_mode: 'on'
@@ -32,18 +32,18 @@
              auth: md5
            - database: "{{ app_name }}"
              type: host
-             address: "{{ standby_ip }}/32"
+             address: "{{ secondary_ip }}/32"
              auth: md5
            - database: "{{ app_name }}"
              type: host
-             address: "{{ master_ip }}/32"
+             address: "{{ primary_ip }}/32"
              auth: md5
 
      postgresql_replication_hosts:
-       - address: "{{ standby_ip }}"
+       - address: "{{ secondary_ip }}"
          auth: md5
 
-- hosts: postgresql_standby
+- hosts: postgresql_secondary
   user: vagrant
   roles:
     - postgresql
@@ -57,8 +57,8 @@
      api_user: "admin"
      api_key: "secret"
      # postgres specific
-     postgresql_cfg_listen_addresses: "localhost,127.0.0.1,{{ standby_ip }}"
-     postgresql_replication_master_ip: "{{ master_ip }}"
+     postgresql_cfg_listen_addresses: "localhost,127.0.0.1,{{ secondary_ip }}"
+     postgresql_replication_primary_ip: "{{ primary_ip }}"
      postgresql_cfg_hot_standby: 'on'
      postgresql_cfg_archive_command: 'test ! -f {{ postgresql_archive_dir_path }}/%f && cp %p {{ postgresql_archive_dir_path }}/%f'
 
@@ -70,13 +70,13 @@
              auth: md5
            - database: "{{ app_name }}"
              type: host
-             address: "{{ master_ip }}/32"
+             address: "{{ primary_ip }}/32"
              auth: md5
            - database: "{{ app_name }}"
              type: host
-             address: "{{ standby_ip }}/32"
+             address: "{{ secondary_ip }}/32"
              auth: md5
 
      postgresql_replication_hosts:
-       - address: "{{ standby_ip }}"
+       - address: "{{ secondary_ip }}"
          auth: md5

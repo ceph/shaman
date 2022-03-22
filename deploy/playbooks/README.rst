@@ -3,7 +3,7 @@ Deploying ``shaman`` applications
 The current (original) architecture of ``shaman`` is meant to have two
 applications running, each with a PostgreSQL database.
 
-One of the app servers will have the master database while the other one will
+One of the app servers will have the primary database while the other one will
 be configured with a *"hot standby"* database.
 
 All playbooks and roles for deployment are meant to accommodate this use case

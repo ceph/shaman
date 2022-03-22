@@ -90,14 +90,14 @@ the date they were built in descending order. For example::
 
    [
      {
-       "ref": "master",
+       "ref": "main",
        "sha1": "8d48f5413564b418a8016b6a344b517282a0f0fa",
        "distro": "ubuntu",
        "distro_codename": "trusty",
        "distro_version": "14.04",
        "extra": {},
-       "url": "https://chacra.ceph.com/r/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
-       "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
+       "url": "https://chacra.ceph.com/r/ceph/main/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
+       "chacra_url": "https://chacra.ceph.com/repos/ceph/main/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/trusty/",
        "modified" "2016-06-15 14:04:54.671504",
        "status": "building",
        "flavor": "default",
@@ -105,14 +105,14 @@ the date they were built in descending order. For example::
        "archs": ["x86_64"]
      },
      {
-       "ref": "master",
+       "ref": "main",
        "sha1": "8d48f5413564b418a8016b6a344b517282a0f0fa",
        "distro": "ubuntu",
        "distro_codename": "xenial",
        "distro_version": "16.04",
        "extra": {},
        "url": "",
-       "chacra_url": "https://chacra.ceph.com/repos/ceph/master/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/xenial/"
+       "chacra_url": "https://chacra.ceph.com/repos/ceph/main/8d48f5413564b418a8016b6a344b517282a0f0fa/ubuntu/xenial/"
        "modified" "2016-06-15 14:04:54.671504",
        "status": "queued",
        "flavor": "notcmalloc",

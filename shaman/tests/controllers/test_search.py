@@ -154,7 +154,7 @@ class TestLatestSha1(object):
         assert len(result.json) == 2
 
     def test_foo_distinct_repos_match(self, session):
-        session.app.post_json('/api/repos/ceph/', params=base_repo_data(ref='master'))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(ref='main'))
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(distro='jessie'))
         session.app.post_json('/api/repos/ceph/', params=base_repo_data())
         result = session.app.get(
@@ -176,7 +176,7 @@ class TestLatestSha1(object):
         assert result.json[0]['archs'] == ['x86_64']
 
     def test_distinct_repos_match_actual_sha1(self, session):
-        session.app.post_json('/api/repos/ceph/', params=base_repo_data(ref='master'))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(ref='main'))
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(distro='jessie'))
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(sha1='aaaa'))
         result = session.app.get(
@@ -209,7 +209,7 @@ class TestLatestSha1(object):
         assert result.json[0]["sha1"] == '2'
 
     def test_does_not_find_common_sha1_across_distros(self, session):
-        session.app.post_json('/api/repos/ceph/', params=base_repo_data(ref='master'))
+        session.app.post_json('/api/repos/ceph/', params=base_repo_data(ref='main'))
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(distro='centos', distro_version="7"))
         session.app.post_json('/api/repos/ceph/', params=base_repo_data(sha1="aaa"))
         result = session.app.get(

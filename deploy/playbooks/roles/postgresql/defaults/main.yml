@@ -9,14 +9,14 @@ postgresql_locale: en_US.UTF-8
 
 postgresql_extensions: [ ]
 
-postgresql_whitelist_extensions: [ ]
+postgresql_allowlist_extensions: [ ]
 
 postgresql_ssl: [ ]
 
 postgresql_replication: false
-postgresql_replication_role: master
+postgresql_replication_role: primary
 postgresql_init_replication: false
-#postgresql_replication_master_ip: 10.0.0.1
+#postgresql_replication_primary_ip: 10.0.0.1
 postgresql_users_replication: [ ]
 postgresql_replication_user_password: "{{ generated_replication_user_password.stdout }}"
 postgresql_replication_user: "repuser"

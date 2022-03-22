@@ -2,8 +2,8 @@
 node1
 node2
 
-[postgresql_master]
+[postgresql_primary]
 node1
 
-[postgresql_standby]
+[postgresql_secondary]
 node2

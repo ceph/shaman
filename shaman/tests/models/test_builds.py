@@ -5,7 +5,7 @@ class TestBuild(object):
     def setup(self):
         self.p = Project("ceph")
         self.data = dict(
-            ref="master",
+            ref="main",
             sha1="sha1",
             url="jenkins.ceph.com/build",
             log_url="jenkins.ceph.com/build/console",
@@ -17,7 +17,7 @@ class TestBuild(object):
         Build(self.p, **self.data)
         session.commit()
         b = Build.get(1)
-        assert b.ref == "master"
+        assert b.ref == "main"
         assert b.sha1 == "sha1"
         assert b.url == "jenkins.ceph.com/build"
         assert b.log_url == "jenkins.ceph.com/build/console"
@@ -62,7 +62,7 @@ class TestBuildUrl(object):
     def setup(self):
         self.p = Project("ceph")
         self.data = dict(
-            ref="master",
+            ref="main",
             sha1="sha1",
             url="jenkins.ceph.com/build",
             log_url="jenkins.ceph.com/build/console",
@@ -74,19 +74,19 @@ class TestBuildUrl(object):
         Build(self.p, **self.data)
         session.commit()
         result = Build.get(1).get_url()
-        assert result == '/builds/ceph/master/sha1/default/1/'
+        assert result == '/builds/ceph/main/sha1/default/1/'
 
     def test_by_ref(self, session):
         build = Build(self.p, **self.data)
         session.commit()
         result = build.get_url('ref')
-        assert result == '/builds/ceph/master/'
+        assert result == '/builds/ceph/main/'
 
     def test_by_sha1(self, session):
         build = Build(self.p, **self.data)
         session.commit()
         result = build.get_url('sha1')
-        assert result == '/builds/ceph/master/sha1/'
+        assert result == '/builds/ceph/main/sha1/'
 
     def test_up_to_project(self, session):
         build = Build(self.p, **self.data)

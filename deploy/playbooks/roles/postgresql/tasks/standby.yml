@@ -29,7 +29,7 @@
     group: "{{ postgresql_superuser }}"
 
 - name: "standby | initialize standby postgresql basebackup"
-  command: "pg_basebackup --xlog-method=stream -h {{ master_ip }} -U {{ postgresql_replication_user }} -D {{ postgresql_cfg_data_directory }} -Pw"
+  command: "pg_basebackup --xlog-method=stream -h {{ primary_ip }} -U {{ postgresql_replication_user }} -D {{ postgresql_cfg_data_directory }} -Pw"
   become_user: postgres
   become: true
   when: postgresql_init_replication

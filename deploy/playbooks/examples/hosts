@@ -2,8 +2,8 @@
 1.node.a
 2.node.a
 
-[postgresql_master]
+[postgresql_primary]
 1.node.a
 
-[postgresql_standby]
+[postgresql_secondary]
 2.node.a

@@ -682,6 +682,6 @@ xmloption = '{{ postgresql_cfg_xmloption }}'
 #------------------------------------------------------------------------------
 # CUSTOMIZED OPTIONS
 #------------------------------------------------------------------------------
-{% if postgresql_whitelist_extensions is defined %}
-extwlist.extensions = '{% for ext in postgresql_whitelist_extensions %}{{ ext }}{% if not loop.last %},{% endif %}{% endfor %}'
+{% if postgresql_allowlist_extensions is defined %}
+extwlist.extensions = '{% for ext in postgresql_allowlist_extensions %}{{ ext }}{% if not loop.last %},{% endif %}{% endfor %}'
 {% endif %}

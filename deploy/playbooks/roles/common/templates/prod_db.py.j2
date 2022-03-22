@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 
 sqlalchemy_w = {
-    'url': 'postgresql+psycopg2://{{ app_name }}:{{ postgresql_app_user_password }}@{{ master_ip }}/{{ app_name }}',
+    'url': 'postgresql+psycopg2://{{ app_name }}:{{ postgresql_app_user_password }}@{{ primary_ip }}/{{ app_name }}',
     'echo':          False,
     'echo_pool':     False,
     'pool_recycle':  3600,
@@ -9,7 +9,7 @@ sqlalchemy_w = {
 }
 
 sqlalchemy_ro = {
-    'url': 'postgresql+psycopg2://{{ app_name }}:{{ postgresql_app_user_password }}@{{ standby_ip }}/{{ app_name }}',
+    'url': 'postgresql+psycopg2://{{ app_name }}:{{ postgresql_app_user_password }}@{{ secondary_ip }}/{{ app_name }}',
     'echo':          False,
     'echo_pool':     False,
     'pool_recycle':  3600,
