@@ -7,6 +7,24 @@ on what branches and sha1's are built and available for ceph.
 It also acts as an orchestration service for a pool of chacra nodes,
 allowing for horizontal scalability.
 
+Setup
+=====
+
+Install python (version 2) and `rabbitmq <https://www.rabbitmq.com/download.html/>`_.
+
+Then install all dependencies::
+
+    pip2 install -r requirements.txt
+    
+Run the setup script and populate the database::
+    
+    python2 setup.py install
+    pecan populate config/dev.py
+    
+Start the REST API server with::
+
+    pecan serve config/dev.py
+
 
 Configuration
 =============
