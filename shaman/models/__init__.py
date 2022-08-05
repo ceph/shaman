@@ -28,7 +28,7 @@ class _EntityBase(object):
         object_session(self).delete(self, *args, **kwargs)
 
     def as_dict(self):
-        return dict((k, v) for k, v in self.__dict__.items()
+        return dict((k, v) for k, v in list(self.__dict__.items())
                     if not k.startswith('_'))
 
     def update_from_json(self, data):
@@ -37,7 +37,7 @@ class _EntityBase(object):
         that needs to update some fields
         """
         for key in self.allowed_keys:
-            for key in data.keys():
+            for key in list(data.keys()):
                 setattr(self, key, data[key])
 
 
@@ -150,8 +150,8 @@ def flush():
     Session.flush()
 
 
-from projects import Project  # noqa
-from repos import Repo  # noqa
-from nodes import Node  # noqa
-from archs import Arch  # noqa
-from builds import Build  # noqa
+from .projects import Project  # noqa
+from .repos import Repo  # noqa
+from .nodes import Node  # noqa
+from .archs import Arch  # noqa
+from .builds import Build  # noqa

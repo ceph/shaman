@@ -30,7 +30,7 @@ def make_static_config(static_dir_name):
             'tools.staticdir.dir': public_path
         }
     }
-    print configuration
+    print(configuration)
     return cherrypy.tree.mount(Root(), '/', config=configuration)
 
 
@@ -46,5 +46,5 @@ server = wsgiserver.CherryPyWSGIServer(('0.0.0.0', 8080), application, server_na
 try:
     server.start()
 except KeyboardInterrupt:
-    print "Terminating server..."
+    print("Terminating server...")
     server.stop()

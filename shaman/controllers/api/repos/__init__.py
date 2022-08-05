@@ -1,3 +1,3 @@
 
 
-from projects import ProjectController, ProjectsController  # noqa
+from .projects import ProjectController, ProjectsController  # noqa

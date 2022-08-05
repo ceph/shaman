@@ -21,7 +21,7 @@ BIND = 'postgresql+psycopg2://localhost'
 class Factory(object):
 
     def __init__(self, **kw):
-        for k, v in kw.items():
+        for k, v in list(kw.items()):
             setattr(self, k, v)
 
 
@@ -102,9 +102,9 @@ def app(request):
 def connection(app, request):
     """Session-wide test database."""
     # Connect and create the temporary database
-    print "=" * 80
-    print "CREATING TEMPORARY DATABASE FOR TESTS"
-    print "=" * 80
+    print("=" * 80)
+    print("CREATING TEMPORARY DATABASE FOR TESTS")
+    print("=" * 80)
     subprocess.call(['dropdb', DBNAME])
     subprocess.call(['createdb', DBNAME])
 

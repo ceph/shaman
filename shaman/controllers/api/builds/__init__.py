@@ -1,1 +1,1 @@
-from projects import ProjectsAPIController # noqa
+from .projects import ProjectsAPIController # noqa
