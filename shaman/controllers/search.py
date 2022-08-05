@@ -102,7 +102,7 @@ class SearchController(object):
                 query = query.join(Repo.archs).filter(or_(*distro_filter_list))
             else:
                 query = query.filter(or_(*distro_filter_list))
-        for k, v in filters.items():
+        for k, v in list(filters.items()):
             if k not in self.filters:
                 # TODO: improve error reporting
                 # 'invalid query params: %s' % k

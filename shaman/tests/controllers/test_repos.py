@@ -28,14 +28,14 @@ class TestProjectsController(object):
         session.commit()
         result = session.app.get('/api/repos/')
         assert result.status_int == 200
-        assert "ceph" in result.json.keys()
+        assert "ceph" in list(result.json.keys())
 
     def test_one_project_list_length(self, session):
         Project("ceph")
         session.commit()
         result = session.app.get('/api/repos/')
         assert result.status_int == 200
-        assert len(result.json.keys()) == 1
+        assert len(list(result.json.keys())) == 1
 
     def test_list_a_few_projects(self, session):
         for p in range(20):

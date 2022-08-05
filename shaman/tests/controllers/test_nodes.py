@@ -13,7 +13,7 @@ class TestNodeController(object):
         Node("chacra.ceph.com")
         session.commit()
         result = session.app.get("/api/nodes/")
-        assert result.json.keys() == ["chacra.ceph.com"]
+        assert list(result.json.keys()) == ["chacra.ceph.com"]
 
     def test_get_multiple_nodes(self, session):
         Node("chacra01.ceph.com")
