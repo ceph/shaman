@@ -1,11 +1,12 @@
 import os
 from os.path import dirname
 import cherrypy
-from cherrypy import wsgiserver
+from cheroot.wsgi import Server as CherryPyWSGIServer
+from cheroot.wsgi import PathInfoDispatcher as WSGIPathInfoDispatcher
 
 from pecan.deploy import deploy
 
-simpleapp_wsgi_app = deploy('dev.py')
+simpleapp_wsgi_app = deploy('config/dev.py')
 
 current_dir = os.path.abspath(dirname(__file__))
 base_dir = dirname(current_dir)
@@ -35,13 +36,13 @@ def make_static_config(static_dir_name):
 
 
 # Assuming your app has media on different paths, like 'css', and 'images'
-application = wsgiserver.WSGIPathInfoDispatcher({
+application = WSGIPathInfoDispatcher({
     '/': simpleapp_wsgi_app,
     '/static': make_static_config('static')
     }
 )
 
-server = wsgiserver.CherryPyWSGIServer(('0.0.0.0', 8080), application, server_name='simpleapp')
+server = CherryPyWSGIServer(('0.0.0.0', 8080), application, server_name='simpleapp')
 
 try:
     server.start()
