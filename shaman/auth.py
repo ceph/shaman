@@ -9,7 +9,8 @@ def basic_auth():
     try:
         auth = request.headers.get('Authorization')
         assert auth
-        decoded = base64.b64decode(auth.split(' ')[1])
+        encoded_auth = auth.split(' ')[1]
+        decoded = base64.b64decode(encoded_auth).decode("ascii")
         username, password = decoded.split(':')
 
         assert username == conf.api_user
@@ -27,7 +28,7 @@ def github_basic_auth():
         # if this isn't github try basic_auth
         return basic_auth()
 
-    github_secret = conf.github_secret
+    github_secret = conf.github_secret.encode("utf-8")
     signature = "sha1={}".format(
         hmac.new(github_secret, request.body, sha1).hexdigest()
     )
