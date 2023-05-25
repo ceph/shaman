@@ -274,7 +274,7 @@ def base_repo_data(**kw):
 
 class TestGetRepoUrl(object):
 
-    def setup(self):
+    def setup_method(self):
         self.p = Project("ceph")
         self.data = base_repo_data()
         self.repo = Repo(self.p, **self.data)

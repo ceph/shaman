@@ -3,7 +3,7 @@ from shaman.models import Repo, Project, Arch
 
 class TestRepo(object):
 
-    def setup(self):
+    def setup_method(self):
         self.p = Project("ceph")
         self.data = dict(
             distro="ubuntu",

@@ -22,7 +22,7 @@ def get_build_data(**kw):
 
 class TestProjectController(object):
 
-    def setup(self):
+    def setup_method(self):
         self.data = get_build_data()
 
     def test_list_ref_by_id(self, session):
@@ -72,7 +72,7 @@ class TestProjectController(object):
 
 class TestApiProjectController(object):
 
-    def setup(self):
+    def setup_method(self):
         self.data = get_build_data()
 
     def test_create_a_build(self, session):
