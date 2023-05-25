@@ -18,7 +18,11 @@ class TestBusApiController(object):
         assert result.status_int == 401
 
     def test_post_index_github_auth_succeeds(self, session):
-        signature = "sha1={}".format(hmac.new('secret', '{}', sha1).hexdigest())
+        signature = "sha1={}".format(hmac.new(
+            "secret".encode("utf-8"),
+            '{}'.encode("utf-8"),
+            digestmod=sha1,
+        ).hexdigest())
         result = session.app.post_json(
             '/api/bus/ceph/test',
             headers={'X-Hub-Signature': signature},
