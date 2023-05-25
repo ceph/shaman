@@ -5,7 +5,7 @@ from requests.exceptions import BaseHTTPError, RequestException
 from shaman import util
 from shaman.models import Node, Repo, Project, Arch
 
-import py.test
+import pytest
 from mock import patch
 
 
@@ -106,7 +106,7 @@ class TestCheckNodeHealth(object):
         healthy = util.check_node_health(Node("chacra.ceph.com"))
         assert healthy is False
 
-    @py.test.mark.parametrize('exc', [BaseHTTPError, RequestException])
+    @pytest.mark.parametrize('exc', [BaseHTTPError, RequestException])
     def test_node_raises_requests_exception(self, exc, session, monkeypatch):
         monkeypatch.setattr(requests, "get", lambda *a, **kw: request_exception(exc))
         healthy = util.check_node_health(Node("chacra.ceph.com"))
@@ -159,13 +159,13 @@ class TestGetNextNode(object):
 
 class TestParseDistroRelease(object):
 
-    @py.test.mark.parametrize('version,codename', [('14.04', 'trusty'), ('16.04', 'xenial'), ('16.10', 'yakkety')])
+    @pytest.mark.parametrize('version,codename', [('14.04', 'trusty'), ('16.04', 'xenial'), ('16.10', 'yakkety')])
     def test_ubuntu_version_gets_both_parsed(self, version, codename):
         c, v = util.parse_distro_release(version, 'ubuntu')
         assert v == version
         assert c == codename
 
-    @py.test.mark.parametrize('version,codename', [('14.04', 'trusty'), ('16.04', 'xenial'), ('16.10', 'yakkety')])
+    @pytest.mark.parametrize('version,codename', [('14.04', 'trusty'), ('16.04', 'xenial'), ('16.10', 'yakkety')])
     def test_ubuntu_codename_gets_both_parsed(self, version, codename):
         c, v = util.parse_distro_release(codename, 'ubuntu')
         assert v == version
