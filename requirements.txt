@@ -9,3 +9,4 @@ requests
 jinja2
 pika
 enum34
+cherrypy>=3.8.0,<9.0.0
