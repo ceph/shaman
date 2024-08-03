@@ -1,16 +1,16 @@
 import os
 from os.path import dirname
 import cherrypy
-from cherrypy import wsgiserver
+from cheroot import wsgi
 
 from pecan.deploy import deploy
 
-simpleapp_wsgi_app = deploy('dev.py')
 
 current_dir = os.path.abspath(dirname(__file__))
 base_dir = dirname(current_dir)
 public_path = os.path.abspath(os.path.join(base_dir, 'public'))
 
+simpleapp_wsgi_app = deploy(f'{current_dir}/dev.py')
 
 # A dummy class for our Root object
 # necessary for some CherryPy machinery
@@ -30,21 +30,21 @@ def make_static_config(static_dir_name):
             'tools.staticdir.dir': public_path
         }
     }
-    print configuration
+    print(configuration)
     return cherrypy.tree.mount(Root(), '/', config=configuration)
 
 
 # Assuming your app has media on different paths, like 'css', and 'images'
-application = wsgiserver.WSGIPathInfoDispatcher({
+application = wsgi.PathInfoDispatcher({
     '/': simpleapp_wsgi_app,
     '/static': make_static_config('static')
     }
 )
 
-server = wsgiserver.CherryPyWSGIServer(('0.0.0.0', 8080), application, server_name='simpleapp')
+server = wsgi.Server(('0.0.0.0', 8080), application, server_name='simpleapp')
 
 try:
     server.start()
 except KeyboardInterrupt:
-    print "Terminating server..."
+    print("Terminating server...")
     server.stop()
