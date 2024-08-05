@@ -2,7 +2,7 @@ from shaman.models import Project, Build
 
 
 class TestBuild(object):
-    def setup(self):
+    def setup_method(self):
         self.p = Project("ceph")
         self.data = dict(
             ref="master",
@@ -59,7 +59,7 @@ class TestBuild(object):
 
 class TestBuildUrl(object):
 
-    def setup(self):
+    def setup_method(self):
         self.p = Project("ceph")
         self.data = dict(
             ref="master",
