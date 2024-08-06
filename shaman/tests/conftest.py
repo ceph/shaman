@@ -102,9 +102,9 @@ def app(request):
 def connection(app, request):
     """Session-wide test database."""
     # Connect and create the temporary database
-    print "=" * 80
-    print "CREATING TEMPORARY DATABASE FOR TESTS"
-    print "=" * 80
+    print("=" * 80)
+    print("CREATING TEMPORARY DATABASE FOR TESTS")
+    print("=" * 80)
     subprocess.call(['dropdb', DBNAME])
     subprocess.call(['createdb', DBNAME])
 
