@@ -24,7 +24,7 @@ def get_next_node():
     )
     for node in nodes:
         if is_node_healthy(node):
-            node.last_used = datetime.datetime.utcnow()
+            node.last_used = datetime.datetime.now(datetime.timezone.utc)
             models.commit()
             logger.info("node: %s was chosen as the next in rotation", node.host)
             return node

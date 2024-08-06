@@ -58,7 +58,7 @@ def update_timestamp(mapper, connection, target):
     """
     Automate the 'modified' attribute when a model changes
     """
-    target.modified = datetime.datetime.utcnow()
+    target.modified = datetime.datetime.now(datetime.timezone.utc)
 
 
 def _date_json_converter(item):

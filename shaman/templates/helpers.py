@@ -1,8 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 
 def last_seen(date_object):
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     difference = now - date_object
     formatted = ReadableSeconds(difference.seconds, days=difference.days)
     return "%s ago" % formatted
@@ -19,7 +19,7 @@ class ReadableSeconds(object):
         """
         Generate a relative datetime object based on current seconds
         """
-        return datetime(1, 1, 1) + timedelta(seconds=self.original_seconds)
+        return datetime(1, 1, 1, tzinfo=timezone.utc) + timedelta(seconds=self.original_seconds)
 
     def __str__(self):
         return "{0}{1}{2}{3}{4}{5}".format(

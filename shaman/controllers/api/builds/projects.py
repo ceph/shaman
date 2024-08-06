@@ -62,7 +62,7 @@ class ProjectAPIController(object):
             distro_arch=request.json.get("distro_arch"),
         )
         if request.json["status"] == "completed":
-            data["completed"] = datetime.datetime.utcnow()
+            data["completed"] = datetime.datetime.now(datetime.timezone.utc)
         if not build:
             build = models.get_or_create(Build, **data)
         else:
