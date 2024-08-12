@@ -27,6 +27,23 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Install tox
         run: pip install tox
+      - name: Install postgresql
+        run: |
+          sudo apt-get install -y postgresql
+      - name: Allow postgresql to trust all
+        run: |
+          sudo sed -i -E '/local\s+all\s+/s/peer/trust/' /etc/postgresql/*/main/pg_hba.conf
+          sudo sed -i -E '/^host\s+all\s+all\s+/s/scram-sha-256/trust/' /etc/postgresql/*/main/pg_hba.conf
+      - name: Start postgresql
+        run: |
+          sudo systemctl restart postgresql
+          pg_isready
+      - name: Add current user as superuser
+        run: |
+          echo "Adding user $USER as superuser"
+          cd /home # postgres user might not have access to current directory
+          sudo -u postgres psql -c "CREATE USER $USER SUPERUSER;"
+          psql -l
       - name: Run unit tests
         run: tox -e py3
 
