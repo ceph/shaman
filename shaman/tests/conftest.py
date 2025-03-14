@@ -13,9 +13,12 @@ from shaman import models as _db
 from shaman.tests import util
 import pytest
 
-
+# needs running postgres, for example: podman run -d --rm -p 5432:5432 --name shamantest -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=shamantest postgres:16
 DBNAME = 'shamantest'
-BIND = 'postgresql+psycopg2://localhost'
+DBHOST = 'localhost'
+DBPORT = '5432'
+DBUSER = 'postgres'
+BIND = f"postgresql+psycopg2://{DBUSER}@{DBHOST}:{DBPORT}"
 
 
 class Factory(object):
@@ -102,11 +105,17 @@ def app(request):
 def connection(app, request):
     """Session-wide test database."""
     # Connect and create the temporary database
-    print "=" * 80
-    print "CREATING TEMPORARY DATABASE FOR TESTS"
-    print "=" * 80
-    subprocess.call(['dropdb', DBNAME])
-    subprocess.call(['createdb', DBNAME])
+    print("=" * 80)
+    print("CREATING TEMPORARY DATABASE FOR TESTS")
+    print("=" * 80)
+    subprocess.call(['dropdb',
+                    '-h', DBHOST,
+                    '-p', DBPORT,
+                    '-U', DBUSER, DBNAME])
+    subprocess.call(['createdb',
+                    '-h', DBHOST,
+                    '-p', DBPORT,
+                    '-U', DBUSER, DBNAME])
 
     # Bind and create the database tables
     _db.clear()

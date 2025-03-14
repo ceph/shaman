@@ -23,9 +23,9 @@ class Build(Base):
     distro = Column(String(256), nullable=True, index=True)
     distro_version = Column(String(256), nullable=True, index=True)
     distro_arch = Column(String(256), nullable=True, index=True)
-    started = Column(DateTime, index=True)
-    completed = Column(DateTime, index=True)
-    modified = Column(DateTime, index=True)
+    started = Column(DateTime(timezone=True), index=True)
+    completed = Column(DateTime(timezone=True), index=True)
+    modified = Column(DateTime(timezone=True), index=True)
     status = Column(String(256), index=True)
     extra = deferred(Column(JSONType()))
 
@@ -49,9 +49,9 @@ class Build(Base):
 
     def __init__(self, project, **kwargs):
         self.project = project
-        self.modified = datetime.datetime.utcnow()
+        self.modified = datetime.datetime.now(datetime.timezone.utc)
         self.update_from_json(kwargs)
-        self.started = datetime.datetime.utcnow()
+        self.started = datetime.datetime.now(datetime.timezone.utc)
 
     @property
     def arch(self):

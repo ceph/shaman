@@ -1,1 +1,1 @@
-from projects import ProjectsAPIController # noqa
+from shaman.controllers.api.builds.projects import ProjectsAPIController # noqa

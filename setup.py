@@ -15,8 +15,8 @@ setup(
     license = "MIT",
     install_requires=[
         "pecan",
-        "sqlalchemy",
-        "psycopg2",
+        "sqlalchemy==1.4.53",
+        "psycopg2-binary==2.9.9",
         "pecan-notario",
         "requests",
         "jinja2",
@@ -33,9 +33,9 @@ setup(
         'Topic :: Utilities',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: POSIX',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
     entry_points="""
         [pecan.command]

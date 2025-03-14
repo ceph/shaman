@@ -58,7 +58,7 @@ def update_timestamp(mapper, connection, target):
     """
     Automate the 'modified' attribute when a model changes
     """
-    target.modified = datetime.datetime.utcnow()
+    target.modified = datetime.datetime.now(datetime.timezone.utc)
 
 
 def _date_json_converter(item):
@@ -67,7 +67,7 @@ def _date_json_converter(item):
     can be converted to JSON
     """
     if isinstance(item, datetime.datetime):
-        return item.__str__()
+        return str(item)
 
 
 def publish_update_message(mapper, connection, target):
@@ -150,8 +150,8 @@ def flush():
     Session.flush()
 
 
-from projects import Project  # noqa
-from repos import Repo  # noqa
-from nodes import Node  # noqa
-from archs import Arch  # noqa
-from builds import Build  # noqa
+from shaman.models.projects import Project  # noqa
+from shaman.models.repos import Repo  # noqa
+from shaman.models.nodes import Node  # noqa
+from shaman.models.archs import Arch  # noqa
+from shaman.models.builds import Build  # noqa

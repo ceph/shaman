@@ -31,7 +31,7 @@ class NodeController(object):
     def index_post(self):
         if not self.node:
             self.node = models.get_or_create(Node, host=self.host)
-        self.node.last_check = datetime.datetime.utcnow()
+        self.node.last_check = datetime.datetime.now(datetime.timezone.utc)
         if not check_node_health(self.node):
             self.node.healthy = False
         else:

@@ -18,7 +18,7 @@ class Repo(Base):
     flavor = Column(String(256), nullable=False, index=True, default="default")
     distro = Column(String(256), nullable=False, index=True)
     distro_version = Column(String(256), nullable=False, index=True)
-    modified = Column(DateTime, index=True)
+    modified = Column(DateTime(timezone=True), index=True)
     status = Column(String(256), index=True)
     extra = deferred(Column(JSONType()))
 
@@ -41,7 +41,7 @@ class Repo(Base):
 
     def __init__(self, project, **kwargs):
         self.project = project
-        self.modified = datetime.datetime.utcnow()
+        self.modified = datetime.datetime.now(datetime.timezone.utc)
         self.update_from_json(kwargs)
 
     @property

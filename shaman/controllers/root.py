@@ -33,7 +33,7 @@ class RootController(object):
     def index(self):
         documentation = "https://github.com/ceph/shaman#shaman"
         projects = Project.query.all()
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         # five days worth of data
         periods = [
             (now - datetime.timedelta(days=day-1), now - datetime.timedelta(days=day+1))
