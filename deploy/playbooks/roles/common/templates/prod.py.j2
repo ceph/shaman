@@ -1,4 +1,11 @@
 # {{ ansible_managed }}
+# the imports of prod_db and prod_api_creds worked in py2
+# because "relative to the current file" imports were
+# permitted.  In py3 they are not, so add the path of
+# the current file (prod.py) to sys.path here
+
+import sys, os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from pecan.hooks import TransactionHook, RequestViewerHook
 from shaman import models
 from prod_db import sqlalchemy_w, sqlalchemy_ro
