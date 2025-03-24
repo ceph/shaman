@@ -30,7 +30,7 @@ class TestRootController(object):
             status="ready")
         models.commit()
         result = session.app.get('/')
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         today_str = now.strftime('%Y-%m-%d')
         assert "'ceph': 1" in result.namespace['area_data']
         assert today_str in result.namespace['area_data']

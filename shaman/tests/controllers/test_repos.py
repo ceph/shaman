@@ -49,7 +49,7 @@ class TestProjectsController(object):
 
 class TestProjectController(object):
 
-    def setup(self):
+    def setup_method(self):
         self.repo_data = dict(
             ref="jewel",
             sha1="45107e21c568dd033c2f0a3107dec8f0b0e58374",

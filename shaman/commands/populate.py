@@ -10,7 +10,7 @@ from shaman import models
 
 
 def out(string):
-    print "==> %s" % string
+    print(f"==> {string}")
 
 
 def get_alembic_config():

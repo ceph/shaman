@@ -13,7 +13,7 @@ class TestNodeController(object):
         Node("chacra.ceph.com")
         session.commit()
         result = session.app.get("/api/nodes/")
-        assert result.json.keys() == ["chacra.ceph.com"]
+        assert list(result.json.keys()) == ["chacra.ceph.com"]
 
     def test_get_multiple_nodes(self, session):
         Node("chacra01.ceph.com")
@@ -89,7 +89,7 @@ class TestNodesContoller(object):
 
         monkeypatch.setattr(nodes, "get_next_node", _get_next_node)
         result = session.app.get("/api/nodes/next/")
-        assert result.body == "https://chacra.ceph.com/"
+        assert result.body.decode() == "https://chacra.ceph.com/"
 
     def test_get_next_node_fails(self, session, monkeypatch):
         monkeypatch.setattr(nodes, "check_node_health", mock_check_node_health(True))

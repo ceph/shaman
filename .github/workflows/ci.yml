@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  pull_request:
+    branches:
+      - main
+      - test
+
+jobs:
+  test:
+    name: CI on python${{ matrix.python }} via ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            python: "3.10"
+          - os: ubuntu-22.04
+            python: "3.11"
+          - os: ubuntu-24.04
+            python: "3.12"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install tox
+        run: pip install tox
+      - name: Install postgresql
+        run: |
+          sudo apt-get install -y postgresql
+      - name: Allow postgresql to trust all
+        run: |
+          sudo sed -i -E '/local\s+all\s+/s/peer/trust/' /etc/postgresql/*/main/pg_hba.conf
+          sudo sed -i -E '/^host\s+all\s+all\s+/s/scram-sha-256/trust/' /etc/postgresql/*/main/pg_hba.conf
+      - name: Start postgresql
+        run: |
+          sudo systemctl restart postgresql
+          pg_isready
+      - name: Run unit tests
+        run: tox -e py3
+

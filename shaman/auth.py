@@ -9,7 +9,7 @@ def basic_auth():
     try:
         auth = request.headers.get('Authorization')
         assert auth
-        decoded = base64.b64decode(auth.split(' ')[1])
+        decoded = base64.b64decode(auth.split(' ')[1]).decode()
         username, password = decoded.split(':')
 
         assert username == conf.api_user
@@ -28,9 +28,8 @@ def github_basic_auth():
         return basic_auth()
 
     github_secret = conf.github_secret
-    signature = "sha1={}".format(
-        hmac.new(github_secret, request.body, sha1).hexdigest()
-    )
+    digest = hmac.new(github_secret.encode(), request.body, sha1).hexdigest()
+    signature = f"sha1={digest}"
     if not hmac.compare_digest(x_hub_signature, signature):
         response.headers['WWW-Authenticate'] = 'Basic realm="Shaman :: API"'
         abort(401)
