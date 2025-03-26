@@ -12,7 +12,7 @@ requires-python = ">=3.10"
 dependencies = [
   "pecan",
   "sqlalchemy==1.4.53",
-  "psycopg2-binary==2.9.9",
+  "psycopg2-binary==2.9.10",
   "pecan-notario",
   "requests",
   "jinja2",
