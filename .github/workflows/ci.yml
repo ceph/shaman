@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - test
+  workflow_dispatch:
 
 jobs:
   test:
@@ -40,4 +41,3 @@ jobs:
           pg_isready
       - name: Run unit tests
         run: tox -e py3
-
