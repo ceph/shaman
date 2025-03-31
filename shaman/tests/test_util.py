@@ -3,7 +3,7 @@ import requests
 from requests.exceptions import BaseHTTPError, RequestException
 
 from shaman import util
-from shaman.models import Node, Repo, Project, Arch
+from shaman.models import Node, Repo, Project, Arch, commit
 
 import pytest
 from mock import patch
@@ -12,35 +12,35 @@ from mock import patch
 class TestIsNodeHealthy(object):
 
     @patch("shaman.util.requests.get")
-    def test_node_is_healthy(self, m_get, session):
+    def test_node_is_healthy(self, m_get, app):
         m_get.return_value.ok = True
         node = Node("chacra.ceph.com")
-        session.commit()
+        commit()
         assert util.is_node_healthy(node)
 
     @patch("shaman.util.requests.get")
-    def test_last_check_is_updated(self, m_get, session):
+    def test_last_check_is_updated(self, m_get, app):
         m_get.return_value.ok = True
         node = Node("chacra.ceph.com")
         last_check = datetime.datetime.now()
         node.last_check = datetime.datetime.now()
-        session.commit()
+        commit()
         util.is_node_healthy(node)
         node = Node.get(1)
         assert node.last_check.time() > last_check.time()
 
     @patch("shaman.util.requests.get")
-    def test_down_count_is_cleared_when_healthy(self, m_get, session):
+    def test_down_count_is_cleared_when_healthy(self, m_get, app):
         m_get.return_value.ok = True
         node = Node("chacra.ceph.com")
         node.down_count = 2
-        session.commit()
+        commit()
         util.is_node_healthy(node)
         node = Node.get(1)
         assert node.down_count == 0
 
     @patch("shaman.util.requests.get")
-    def test_healthy_is_true_when_rejoining_pool(self, m_get, session):
+    def test_healthy_is_true_when_rejoining_pool(self, m_get, app):
         """
         Tests the scenario where a node has been marked down,
         but is now up again and needs to rejoin the pool.
@@ -49,34 +49,34 @@ class TestIsNodeHealthy(object):
         node = Node("chacra.ceph.com")
         node.down_count = 3
         node.healthy = False
-        session.commit()
+        commit()
         util.is_node_healthy(node)
         node = Node.get(1)
         assert node.down_count == 0
         assert node.healthy
 
     @patch("shaman.util.requests.get")
-    def test_node_is_not_healthy(self, m_get, session):
+    def test_node_is_not_healthy(self, m_get, app):
         m_get.return_value.ok = False
         node = Node("chacra.ceph.com")
-        session.commit()
+        commit()
         assert not util.is_node_healthy(node)
 
     @patch("shaman.util.requests.get")
-    def test_down_count_is_incremented(self, m_get, session):
+    def test_down_count_is_incremented(self, m_get, app):
         m_get.return_value.ok = False
         node = Node("chacra.ceph.com")
-        session.commit()
+        commit()
         util.is_node_healthy(node)
         node = Node.get(1)
         assert node.down_count == 1
 
     @patch("shaman.util.requests.get")
-    def test_node_exceeds_down_count_limit(self, m_get, session):
+    def test_node_exceeds_down_count_limit(self, m_get, app):
         m_get.return_value.ok = False
         node = Node("chacra.ceph.com")
         node.down_count = 2
-        session.commit()
+        commit()
         util.is_node_healthy(node)
         node = Node.get(1)
         assert not node.healthy
@@ -94,20 +94,20 @@ def request_exception(exc=RequestException):
 
 class TestCheckNodeHealth(object):
 
-    def test_healthy(self, session, monkeypatch):
+    def test_healthy(self, monkeypatch, app):
         response = RequestsResponse()
         monkeypatch.setattr(requests, "get", lambda *a, **kw: response)
         healthy = util.check_node_health(Node("chacra.ceph.com"))
         assert healthy is True
 
-    def test_unhealthy(self, session, monkeypatch):
+    def test_unhealthy(self, monkeypatch, app):
         response = RequestsResponse(ok=False)
         monkeypatch.setattr(requests, "get", lambda *a, **kw: response)
         healthy = util.check_node_health(Node("chacra.ceph.com"))
         assert healthy is False
 
     @pytest.mark.parametrize('exc', [BaseHTTPError, RequestException])
-    def test_node_raises_requests_exception(self, exc, session, monkeypatch):
+    def test_node_raises_requests_exception(self, exc, monkeypatch, app):
         monkeypatch.setattr(requests, "get", lambda *a, **kw: request_exception(exc))
         healthy = util.check_node_health(Node("chacra.ceph.com"))
         assert healthy is False
@@ -115,45 +115,45 @@ class TestCheckNodeHealth(object):
 
 class TestGetNextNode(object):
 
-    def test_no_nodes(self, session):
+    def test_no_nodes(self, app):
         assert not util.get_next_node()
 
-    def test_finds_a_node(self, session, monkeypatch):
+    def test_finds_a_node(self, monkeypatch, app):
         monkeypatch.setattr(util, "is_node_healthy", lambda node: True)
         node = Node("chacra.ceph.com")
-        session.commit()
+        commit()
         next_node = util.get_next_node()
         assert next_node == node
 
-    def test_sets_last_used_on_selection(self, session, monkeypatch):
+    def test_sets_last_used_on_selection(self, monkeypatch, app):
         monkeypatch.setattr(util, "is_node_healthy", lambda node: True)
         node = Node("chacra.ceph.com")
-        session.commit()
+        commit()
         last_used = node.last_used
         next_node = util.get_next_node()
         assert next_node.last_used.time() > last_used.time()
 
-    def test_no_healthy_nodes(self, session):
+    def test_no_healthy_nodes(self, app):
         node = Node("chacra.ceph.com")
         node.healthy = False
-        session.commit()
+        commit()
         assert not util.get_next_node()
 
-    def test_use_newly_added_node(self, session, monkeypatch):
+    def test_use_newly_added_node(self, monkeypatch, app):
         monkeypatch.setattr(util, "is_node_healthy", lambda node: True)
         n1 = Node("chacra01.ceph.com")
         n1.last_used = datetime.datetime.now()
         n2 = Node("chacra02.ceph.com")
-        session.commit()
+        commit()
         assert n2 == util.get_next_node()
 
-    def test_pick_last_used_node(self, session, monkeypatch):
+    def test_pick_last_used_node(self, monkeypatch, app):
         monkeypatch.setattr(util, "is_node_healthy", lambda node: True)
         n1 = Node("chacra01.ceph.com")
         n1.last_used = datetime.datetime.now() - datetime.timedelta(days=1)
         n2 = Node("chacra02.ceph.com")
         n2.last_used = datetime.datetime.now()
-        session.commit()
+        commit()
         assert n1 == util.get_next_node()
 
 
@@ -274,44 +274,50 @@ def base_repo_data(**kw):
 
 class TestGetRepoUrl(object):
 
-    def setup_method(self):
+    def add_repo(self):
         self.p = Project("ceph")
         self.data = base_repo_data()
         self.repo = Repo(self.p, **self.data)
         Arch(name="x86_64", repo=self.repo)
 
-    def test_repo_file_is_true(self, session):
-        session.commit()
+    def test_repo_file_is_true(self, app):
+        self.add_repo()
+        commit()
         query = Repo.query.filter_by(status='ready')
         result = util.get_repo_url(query, 'x86_64', repo_file=True)
         assert result.endswith("/repo")
 
-    def test_repo_file_is_false(self, session):
-        session.commit()
+    def test_repo_file_is_false(self, app):
+        self.add_repo()
+        commit()
         query = Repo.query.filter_by(status='ready')
         result = util.get_repo_url(query, 'x86_64', repo_file=False)
         assert result.startswith("chacra.ceph.com/r/")
 
-    def test_arch_is_none(self, session):
-        session.commit()
+    def test_arch_is_none(self, app):
+        self.add_repo()
+        commit()
         query = Repo.query.filter_by(status='ready')
         result = util.get_repo_url(query, None, repo_file=False)
         assert result.startswith("chacra.ceph.com/r/")
 
-    def test_repo_not_found(self, session):
-        session.commit()
+    def test_repo_not_found(self, app):
+        self.add_repo()
+        commit()
         query = Repo.query.filter_by(status='queued')
         result = util.get_repo_url(query, None, repo_file=False)
         assert not result
 
-    def test_redirect_to_a_directory(self, session):
-        session.commit()
+    def test_redirect_to_a_directory(self, app):
+        self.add_repo()
+        commit()
         query = Repo.query.filter_by(status='ready')
         result = util.get_repo_url(query, 'x86_64', path=["SRPMS"], repo_file=False)
         assert result.endswith("/SRPMS")
 
-    def test_redirect_to_a_directory_path(self, session):
-        session.commit()
+    def test_redirect_to_a_directory_path(self, app):
+        self.add_repo()
+        commit()
         query = Repo.query.filter_by(status='ready')
         result = util.get_repo_url(query, 'x86_64', path=["SRPMS", "repodata", "repomd.xml"], repo_file=False)
         assert result.endswith("/SRPMS/repodata/repomd.xml")
