@@ -1,4 +1,4 @@
-from shaman.models import Project, Build
+from shaman.models import Project, Build, commit
 
 
 class TestBuild(object):
@@ -13,9 +13,9 @@ class TestBuild(object):
             status="failed",
         )
 
-    def test_can_create(self, session):
+    def test_can_create(self, app):
         Build(self.p, **self.data)
-        session.commit()
+        commit()
         b = Build.get(1)
         assert b.ref == "master"
         assert b.sha1 == "sha1"
@@ -24,36 +24,36 @@ class TestBuild(object):
         assert b.build_id == "250"
         assert b.status == "failed"
 
-    def test_distro_can_be_null(self, session):
+    def test_distro_can_be_null(self, app):
         Build(self.p, **self.data)
-        session.commit()
+        commit()
         b = Build.get(1)
         assert not b.distro
 
-    def test_distro_version_can_be_null(self, session):
+    def test_distro_version_can_be_null(self, app):
         Build(self.p, **self.data)
-        session.commit()
+        commit()
         b = Build.get(1)
         assert not b.distro_version
 
-    def test_can_create_with_extra(self, session):
+    def test_can_create_with_extra(self, app):
         b = Build(self.p, **self.data)
         b.extra = dict(version="10.2.2")
-        session.commit()
+        commit()
         build = Build.get(1)
         assert build.extra['version'] == "10.2.2"
 
-    def test_sets_modified(self, session):
+    def test_sets_modified(self, app):
         build = Build(self.p, **self.data)
-        session.commit()
+        commit()
         assert build.modified.timetuple()
 
-    def test_update_changes_modified(self, session):
+    def test_update_changes_modified(self, app):
         build = Build(self.p, **self.data)
         initial_timestamp = build.modified.time()
-        session.commit()
+        commit()
         build.distro = "centos"
-        session.commit()
+        commit()
         assert initial_timestamp < build.modified.time()
 
 
@@ -70,26 +70,26 @@ class TestBuildUrl(object):
             status="failed",
         )
 
-    def test_default_gives_full_url(self, session):
+    def test_default_gives_full_url(self, app):
         Build(self.p, **self.data)
-        session.commit()
+        commit()
         result = Build.get(1).get_url()
         assert result == '/builds/ceph/master/sha1/default/1/'
 
-    def test_by_ref(self, session):
+    def test_by_ref(self, app):
         build = Build(self.p, **self.data)
-        session.commit()
+        commit()
         result = build.get_url('ref')
         assert result == '/builds/ceph/master/'
 
-    def test_by_sha1(self, session):
+    def test_by_sha1(self, app):
         build = Build(self.p, **self.data)
-        session.commit()
+        commit()
         result = build.get_url('sha1')
         assert result == '/builds/ceph/master/sha1/'
 
-    def test_up_to_project(self, session):
+    def test_up_to_project(self, app):
         build = Build(self.p, **self.data)
-        session.commit()
+        commit()
         result = build.get_url('project')
         assert result == '/builds/ceph/'

@@ -1,4 +1,4 @@
-from shaman.models import Repo, Project, Arch
+from shaman.models import Repo, Project, Arch, commit
 
 
 class TestRepo(object):
@@ -10,57 +10,57 @@ class TestRepo(object):
             distro_version="trusty",
         )
 
-    def test_can_create(self, session):
+    def test_can_create(self, app):
         Repo(self.p, **self.data)
-        session.commit()
+        commit()
         repo = Repo.get(1)
         assert repo.project.name == "ceph"
         assert repo.distro == "ubuntu"
         assert repo.distro_version == "trusty"
         assert repo.flavor == "default"
 
-    def test_can_create_with_extra(self, session):
+    def test_can_create_with_extra(self, app):
         r = Repo(self.p, **self.data)
         r.extra = dict(version="10.2.2")
-        session.commit()
+        commit()
         repo = Repo.get(1)
         assert repo.extra['version'] == "10.2.2"
 
-    def test_sets_modified(self, session):
+    def test_sets_modified(self, app):
         repo = Repo(self.p, **self.data)
-        session.commit()
+        commit()
         assert repo.modified.timetuple()
 
-    def test_update_changes_modified(self, session):
+    def test_update_changes_modified(self, app):
         repo = Repo(self.p, **self.data)
         initial_timestamp = repo.modified.time()
-        session.commit()
+        commit()
         repo.distro = "centos"
-        session.commit()
+        commit()
         assert initial_timestamp < repo.modified.time()
 
-    def test_can_create_with_arch(self, session):
+    def test_can_create_with_arch(self, app):
         repo = Repo(self.p, **self.data)
         arch = Arch(name="x86_64", repo=repo)
-        session.commit()
+        commit()
         repo = Repo.get(1)
         assert arch in repo.archs
 
-    def test_can_create_with_many_archs(self, session):
+    def test_can_create_with_many_archs(self, app):
         repo = Repo(self.p, **self.data)
         arch1 = Arch(name="x86_64", repo=repo)
         arch2 = Arch(name="arm64", repo=repo)
-        session.commit()
+        commit()
         repo = Repo.get(1)
         assert arch1 in repo.archs
         assert arch2 in repo.archs
 
-    def test_delete_will_delete_arch(self, session):
+    def test_delete_will_delete_arch(self, app):
         repo = Repo(self.p, **self.data)
         Arch(name="x86_64", repo=repo)
-        session.commit()
+        commit()
         repo = Repo.get(1)
         repo.delete()
-        session.commit()
+        commit()
         assert not Repo.query.first()
         assert not Arch.query.first()
