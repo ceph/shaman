@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 def last_seen(date_object):
     now = datetime.now(timezone.utc)
-    difference = now - date_object
+    difference = now - date_object.astimezone(timezone.utc)
     formatted = ReadableSeconds(difference.seconds, days=difference.days)
     return "%s ago" % formatted
 
