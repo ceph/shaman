@@ -1,33 +1,28 @@
-name: ci
+name: postgres
 
 on:
   pull_request:
     branches:
       - main
-      - test
   workflow_dispatch:
 
 jobs:
   test:
     name: CI on python${{ matrix.python }} via ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
-          - os: ubuntu-22.04
-            python: "3.10"
-          - os: ubuntu-22.04
-            python: "3.11"
-          - os: ubuntu-24.04
-            python: "3.12"
+          - python: "3.10"
+          - python: "3.13"
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - name: Install tox
-        run: pip install tox
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
       - name: Install postgresql
         run: |
           sudo apt-get install -y postgresql
@@ -41,3 +36,5 @@ jobs:
           pg_isready
       - name: Run unit tests
         run: tox -e py3
+      - name: Run tox
+        run: uv tool run tox -e postgresql
