@@ -39,14 +39,27 @@ class ProjectAPIController(object):
         # wouldn't match
         queued_build = models.Build.query.filter_by(
             project=self.project,
-            sha1=request.json['sha1'],
+            distro=request.json.get('distro'),
+            distro_version=request.json.get('distro_version'),
+            distro_arch=request.json.get('distro_arch'),
+            flavor=request.json.get("flavor", "default"),
             ref=request.json['ref'],
+            sha1=request.json['sha1'],
             status='queued',
         ).first()
         if queued_build:
             build = queued_build
         else:
-            build = models.Build.query.filter_by(url=url, sha1=request.json['sha1']).first()
+            build = models.Build.query.filter_by(
+                url=url,
+                project=self.project,
+                distro=request.json.get('distro'),
+                distro_version=request.json.get('distro_version'),
+                distro_arch=request.json.get('distro_arch'),
+                flavor=request.json.get("flavor", "default"),
+                ref=request.json['ref'],
+                sha1=request.json['sha1'],
+            ).first()
         data = dict(
             project=self.project,
             ref=request.json["ref"],
