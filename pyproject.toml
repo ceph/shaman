@@ -1,0 +1,48 @@
+[project]
+name = "shaman"
+authors = [
+  {name = "Alfredo Deza"},
+  {name = "Kyr Shatskyy", email = "kyrylo.shatskyy@clyso.com"},
+]
+version = "0.1"
+description = ""
+readme = "README.rst"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = [
+  "pecan",
+  "sqlalchemy==1.4.53",
+  "psycopg2-binary==2.9.10",
+  "pecan-notario",
+  "requests",
+  "jinja2",
+  "pika",
+]
+classifiers = [
+  'Development Status :: 4 - Beta',
+  'Intended Audience :: Developers',
+  'Topic :: Utilities',
+  'Operating System :: POSIX',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+]
+
+[project.entry-points."pecan.command"]
+populate = "shaman.commands.populate:PopulateCommand"
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "mock",
+  "webtest",
+]
+
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+    "setuptools>=45",
+    "wheel",
+]
+
+[tool.setuptools.packages.find]
