@@ -25,46 +25,46 @@ class TestProjectController(object):
     def setup_method(self):
         self.data = get_build_data()
 
-    def test_list_ref_by_id(self, session):
+    def test_list_ref_by_id(self, app):
         project = Project(name='ceph')
         Build(build_id=1, project=project, ref='master')
         Build(build_id=2, project=project, ref='master')
         Build(build_id=100, project=project, ref='master')
         commit()
-        result = session.app.get('/builds/ceph/master/')
+        result = app.get('/builds/ceph/master/')
         assert result.namespace['builds'][0].build_id == '100'
         assert result.namespace['builds'][1].build_id == '2'
         assert result.namespace['builds'][2].build_id == '1'
 
-    def test_list_builds_by_id(self, session):
+    def test_list_builds_by_id(self, app):
         project = Project(name='ceph')
         Build(build_id=1, project=project, ref='master')
         Build(build_id=2, project=project, ref='master')
         Build(build_id=100, project=project, ref='master')
         commit()
-        result = session.app.get('/builds/ceph/')
+        result = app.get('/builds/ceph/')
         assert result.namespace['builds'][0].build_id == '100'
         assert result.namespace['builds'][1].build_id == '2'
         assert result.namespace['builds'][2].build_id == '1'
 
-    def test_list_sha1s_by_id(self, session):
+    def test_list_sha1s_by_id(self, app):
         project = Project(name='ceph')
         Build(build_id=1, project=project, ref='master', sha1='1234')
         Build(build_id=2, project=project, ref='master', sha1='1234')
         Build(build_id=100, project=project, ref='master', sha1='1234')
         commit()
-        result = session.app.get('/builds/ceph/master/1234/')
+        result = app.get('/builds/ceph/master/1234/')
         assert result.namespace['builds'][0].build_id == '100'
         assert result.namespace['builds'][1].build_id == '2'
         assert result.namespace['builds'][2].build_id == '1'
 
-    def test_list_flavors_by_id(self, session):
+    def test_list_flavors_by_id(self, app):
         project = Project(name='ceph')
         Build(build_id=1, project=project, ref='master', sha1='1234', flavor='default')
         Build(build_id=2, project=project, ref='master', sha1='1234', flavor='default')
         Build(build_id=100, project=project, ref='master', sha1='1234', flavor='default')
         commit()
-        result = session.app.get('/builds/ceph/master/1234/default/')
+        result = app.get('/builds/ceph/master/1234/default/')
         assert result.namespace['builds'][0].build_id == '100'
         assert result.namespace['builds'][1].build_id == '2'
         assert result.namespace['builds'][2].build_id == '1'
@@ -75,8 +75,8 @@ class TestApiProjectController(object):
     def setup_method(self):
         self.data = get_build_data()
 
-    def test_create_a_build(self, session):
-        result = session.app.post_json('/api/builds/ceph/', params=self.data)
+    def test_create_a_build(self, app):
+        result = app.post_json('/api/builds/ceph/', params=self.data)
         assert result.status_int == 200
         build = Build.get(1)
         assert build.ref == "master"
@@ -88,68 +88,68 @@ class TestApiProjectController(object):
         assert build.extra["version"] == "10.2.2"
         assert not build.distro
 
-    def test_update_build(self, session):
-        session.app.post_json('/api/builds/ceph/', params=self.data)
+    def test_update_build(self, app):
+        app.post_json('/api/builds/ceph/', params=self.data)
         data = self.data.copy()
         data['status'] = "completed"
-        result = session.app.post_json('/api/builds/ceph/', params=data)
+        result = app.post_json('/api/builds/ceph/', params=data)
         assert result.status_int == 200
         build = Build.get(1)
         assert build.status == "completed"
 
-    def test_update_build_same_url_different_sha1(self, session):
+    def test_update_build_same_url_different_sha1(self, app):
         # this tests the situation where a new jenkins instance
         # is spun up at the same URL and the jenkins urls are
         # now duplicating
-        session.app.post_json('/api/builds/ceph/', params=self.data)
+        app.post_json('/api/builds/ceph/', params=self.data)
         data = self.data.copy()
         data['sha1'] = "new-sha1"
-        result = session.app.post_json('/api/builds/ceph/', params=data)
+        result = app.post_json('/api/builds/ceph/', params=data)
         assert result.status_int == 200
         assert len(Build.query.all()) == 2
 
-    def test_update_queued_build_creates_single_object(self, session):
+    def test_update_queued_build_creates_single_object(self, app):
         data = get_build_data(status='queued', url='jenkins.ceph.com/trigger')
-        session.app.post_json('/api/builds/ceph/', params=data)
+        app.post_json('/api/builds/ceph/', params=data)
         data = get_build_data(status='completed')
-        session.app.post_json('/api/builds/ceph/', params=data)
+        app.post_json('/api/builds/ceph/', params=data)
         assert len(Build.query.all()) == 1
 
-    def test_update_queued_build_is_completed(self, session):
+    def test_update_queued_build_is_completed(self, app):
         data = get_build_data(status='queued', url='jenkins.ceph.com/trigger')
-        session.app.post_json('/api/builds/ceph/', params=data)
+        app.post_json('/api/builds/ceph/', params=data)
         data = get_build_data(status='completed')
-        session.app.post_json('/api/builds/ceph/', params=data)
+        app.post_json('/api/builds/ceph/', params=data)
         assert Build.get(1).status == 'completed'
 
-    def test_lists_refs(self, session):
-        session.app.post_json('/api/builds/ceph/', params=self.data)
-        result = session.app.get('/api/builds/ceph/')
+    def test_lists_refs(self, app):
+        app.post_json('/api/builds/ceph/', params=self.data)
+        result = app.get('/api/builds/ceph/')
         assert "master" in result.json
 
 
 class TestProjectsAPIController(object):
 
-    def test_lists_projects_with_ref(self, session):
-        session.app.post_json('/api/builds/ceph/', params=get_build_data())
-        result = session.app.get('/api/builds/')
+    def test_lists_projects_with_ref(self, app):
+        app.post_json('/api/builds/ceph/', params=get_build_data())
+        result = app.get('/api/builds/')
         assert 'ceph' in result.json
         assert result.json['ceph'][0] == "master"
 
 
 class TestRefsAPIController(object):
 
-    def test_lists_sha1s(self, session):
-        session.app.post_json('/api/builds/ceph/', params=get_build_data())
-        result = session.app.get('/api/builds/ceph/master/')
+    def test_lists_sha1s(self, app):
+        app.post_json('/api/builds/ceph/', params=get_build_data())
+        result = app.get('/api/builds/ceph/master/')
         assert 'sha1' in result.json
 
 
 class TestSHA1APIController(object):
 
-    def test_lists_builds(self, session):
-        session.app.post_json('/api/builds/ceph/', params=get_build_data())
-        result = session.app.get('/api/builds/ceph/master/sha1/')
+    def test_lists_builds(self, app):
+        app.post_json('/api/builds/ceph/', params=get_build_data())
+        result = app.get('/api/builds/ceph/master/sha1/')
         assert len(result.json) == 1
         assert result.json[0]["ref"] == "master"
         assert result.json[0]["sha1"] == "sha1"

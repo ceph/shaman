@@ -3,6 +3,7 @@ import json
 from sqlalchemy import create_engine, MetaData, event
 from sqlalchemy.orm import scoped_session, sessionmaker, object_session, mapper
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.pool import Pool
 from pecan import conf
 
 
@@ -116,12 +117,20 @@ def init_model():
     """
     conf.sqlalchemy_w.engine = _engine_from_config(conf.sqlalchemy_w)
     conf.sqlalchemy_ro.engine = _engine_from_config(conf.sqlalchemy_ro)
+    if 'sqlite' in dict(conf)['sqlalchemy_w']['url']:
+        event.listen(Pool, 'connect', sqlite_connect, named=True)
 
 
 def _engine_from_config(configuration):
     configuration = dict(configuration)
     url = configuration.pop('url')
     return create_engine(url, **configuration)
+
+
+def sqlite_connect(**kw):
+    dbapi_con = kw['dbapi_connection']
+    dbapi_con.execute('PRAGMA journal_mode=MEMORY')
+    dbapi_con.execute('PRAGMA synchronous=OFF')
 
 
 def start():
