@@ -108,6 +108,46 @@ class TestApiProjectController(object):
         assert result.status_int == 200
         assert len(Build.query.all()) == 2
 
+    def test_update_build_same_url_different_distro(self, app):
+        data = self.data.copy()
+        data['distro'] = 'centos'
+        data['distro_version'] = '9'
+        result = app.post_json('/api/builds/ceph/', params=data)
+        assert result.status_int == 200
+        assert len(Build.query.all()) == 1
+        build1 = Build.query.all()[0]
+        build1_url = build1.url
+        assert build1.distro == 'centos'
+        assert build1.distro_version == '9'
+        data = self.data.copy()
+        data['distro'] = 'ubuntu'
+        data['distro_version'] = '24.04'
+        result = app.post_json('/api/builds/ceph/', params=data)
+        assert result.status_int == 200
+        assert len(Build.query.all()) == 2
+        build2 = Build.query.all()[1]
+        assert build2.distro == 'ubuntu'
+        assert build2.distro_version == '24.04'
+        assert build1_url == build2.url
+
+    def test_update_build_same_url_different_arch(self, app):
+        data = self.data.copy()
+        data['distro_arch'] = 'x86_64'
+        result = app.post_json('/api/builds/ceph/', params=data)
+        assert result.status_int == 200
+        assert len(Build.query.all()) == 1
+        build1 = Build.query.all()[0]
+        build1_url = build1.url
+        assert build1.distro_arch == 'x86_64'
+        data = self.data.copy()
+        data['distro_arch'] = 'arm64'
+        result = app.post_json('/api/builds/ceph/', params=data)
+        assert result.status_int == 200
+        assert len(Build.query.all()) == 2
+        build2 = Build.query.all()[1]
+        assert build2.distro_arch == 'arm64'
+        assert build1_url == build2.url
+
     def test_update_queued_build_creates_single_object(self, app):
         data = get_build_data(status='queued', url='jenkins.ceph.com/trigger')
         app.post_json('/api/builds/ceph/', params=data)
