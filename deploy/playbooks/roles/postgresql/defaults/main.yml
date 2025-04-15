@@ -1,6 +1,6 @@
 ---
 
-postgresql_version: 9.5
+postgresql_version: 16
 postgresql_superuser: postgres
 postgresql_cluster_name: main
 
