@@ -17,7 +17,7 @@
   register: generated_replication_user_password
   changed_when: false
 
-- include: configure.yml
+- import_tasks: configure.yml
 
 - name: "standby | write .pgpass for postgres user"
   become: true
