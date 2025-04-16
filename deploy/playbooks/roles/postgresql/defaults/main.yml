@@ -175,7 +175,9 @@ postgresql_cfg_ssl_key_file: '/etc/ssl/private/ssl-cert-snakeoil.key'
 #postgresql_cfg_ssl_renegotiation_limit:
 #postgresql_cfg_standard_conforming_strings:
 #postgresql_cfg_statement_timeout:
-postgresql_cfg_stats_temp_directory: '/var/run/postgresql/{{ postgresql_version }}-{{ postgresql_cluster_name }}.pg_stat_tmp'
+# XXX postgres stats collector is gone as as v14, no need for a temp_dir,
+# XXX and it's an error to specify one
+# postgresql_cfg_stats_temp_directory: '/var/run/postgresql/{{ postgresql_version }}-{{ postgresql_cluster_name }}.pg_stat_tmp'
 #postgresql_cfg_superuser_reserved_connections: 3
 #postgresql_cfg_synchronize_seqscans:
 #postgresql_cfg_synchronous_commit:
