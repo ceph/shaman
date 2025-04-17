@@ -22,6 +22,3 @@
   when: "'postgresql_master' in group_names"
   become_user: postgres
   become: true
-
-- import_tasks: standby.yml
-  when: "'postgresql_standby' in group_names"
