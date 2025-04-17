@@ -37,7 +37,7 @@
   notify:
     - restart nginx
 
-- include: ssl.yml
+- import_tasks: ssl.yml
   when: development_server == true
 
 - name: check to see if ssl cert needs created
@@ -46,7 +46,7 @@
   become: true
   register: ssl_cert
 
-- include: letsencrypt.yml
+- import_tasks: letsencrypt.yml
   when: development_server == false and not ssl_cert.stat.exists
 
 - name: link nginx config
