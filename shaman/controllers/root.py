@@ -24,7 +24,6 @@ class APIController(object):
     nodes = api.nodes.NodesController()
     search = _search.SearchController()
     builds = api.builds.ProjectsAPIController()
-    bus = api.bus.BusController()
 
 
 class RootController(object):

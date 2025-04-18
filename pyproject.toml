@@ -16,7 +16,6 @@ dependencies = [
   "pecan-notario",
   "requests",
   "jinja2",
-  "pika",
 ]
 classifiers = [
   'Development Status :: 4 - Beta',
