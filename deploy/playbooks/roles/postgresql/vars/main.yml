@@ -4,4 +4,4 @@ common_packages:
   - libpq-dev
   - postgresql-common
   - postgresql-contrib
-  - python-psycopg2
+  - python3-psycopg2

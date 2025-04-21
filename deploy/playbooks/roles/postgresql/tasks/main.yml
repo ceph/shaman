@@ -1,6 +1,6 @@
 ---
 
-- include: install.yml
+- import_tasks: install.yml
 
 - name: ensure database service is up
   service:
@@ -8,10 +8,10 @@
     state: started
   become: true
 
-- include: users.yml
+- import_tasks: users.yml
   when: "'postgresql_master' in group_names"
 
-- include: configure.yml
+- import_tasks: configure.yml
   when: "'postgresql_master' in group_names"
 
 - name: make {{ app_name }} database
@@ -22,6 +22,3 @@
   when: "'postgresql_master' in group_names"
   become_user: postgres
   become: true
-
-- include: standby.yml
-  when: "'postgresql_standby' in group_names"

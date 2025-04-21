@@ -6,7 +6,7 @@
   become: true
 
 - name: generate pseudo-random password for the postgres {{ app_name }} user
-  local_action: shell python -c "exec 'import os; print os.urandom(30).encode(\'base64\')[:${length}]'" | tee {{ playbook_dir }}/tmp/app_user_password
+  local_action: shell python3 -c "exec('import os,base64; print(base64.b64encode(os.urandom(30))[:${length}].decode())')" | tee {{ playbook_dir }}/tmp/app_user_password
   register: generated_app_user_password
   changed_when: false
   when: "'postgresql_master' in group_names"
