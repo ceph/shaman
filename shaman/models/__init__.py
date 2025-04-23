@@ -1,5 +1,4 @@
 import datetime
-import json
 from sqlalchemy import create_engine, MetaData, event
 from sqlalchemy.orm import scoped_session, sessionmaker, object_session, mapper
 from sqlalchemy.ext.declarative import declarative_base
@@ -69,23 +68,6 @@ def _date_json_converter(item):
     """
     if isinstance(item, datetime.datetime):
         return str(item)
-
-
-def publish_update_message(mapper, connection, target):
-    """
-    Send a message to RabbitMQ everytime a Repo
-    is updated
-    """
-    from shaman.util import publish_message
-
-    if isinstance(target, Build):
-        topic = "builds"
-    elif isinstance(target, Repo):
-        topic = "repos"
-    routing_key = "{}.{}".format(target.project.name, topic)
-    body = json.dumps(target.__json__(), default=_date_json_converter)
-    publish_message(routing_key, body)
-
 
 # Utilities:
 

@@ -43,24 +43,6 @@ def factory():
     return Factory
 
 
-@pytest.fixture(autouse=True)
-def no_pika_requests(monkeypatch, factory):
-    """
-    If you don't do anything to patch pika, this fxiture will automatically
-    patchn it and prevent outbound requests.
-    """
-    fake_connection = factory(
-        queue_bind=lambda: True,
-        close=lambda: True,
-        channel=lambda: factory(
-            exchange_declare=lambda *a, **kw: True,
-            queue_bind=lambda *a: True,
-            basic_publish=lambda *a, **kw: True,
-            queue_declare=lambda *a, **kw: True,),
-    )
-    monkeypatch.setattr("pika.BlockingConnection", lambda *a: fake_connection)
-
-
 def config_file():
     here = os.path.abspath(os.path.dirname(__file__))
     return os.path.join(here, 'config.py')
