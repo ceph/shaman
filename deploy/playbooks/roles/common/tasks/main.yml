@@ -59,6 +59,7 @@
     virtualenv: "{{ app_home }}"
     state: forcereinstall
     editable: yes
+    extra_args: "--no-use-pep517" # https://pip.pypa.io/en/stable/reference/pip/?highlight=no-use-pep517#pep-517-and-518-support
   notify: restart app
 
 - name: create the prod config file
