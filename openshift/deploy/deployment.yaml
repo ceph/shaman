@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shaman
+  namespace: shaman
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: shaman }
+  template:
+    metadata:
+      labels: { app: shaman }
+    spec:
+      volumes:
+        - name: run-config
+          configMap:
+            name: shaman-run-config
+            items:
+              - key: run.py
+                path: run.py
+      containers:
+        - name: shaman
+          image: image-registry.openshift-image-registry.svc:5000/shaman/shaman:latest
+          imagePullPolicy: Always
+          command: ["/bin/bash","-lc"]
+          args:
+            - |
+              set -euo pipefail
+              APP_HOME=/opt/app
+              cd "${APP_HOME}"
+              export PYTHONPATH="${APP_HOME}:${PYTHONPATH:-}"
+              mkdir -p config
+
+              # Write a proper Python config (no repr; import dev.py by absolute path)
+              cat > /opt/app/config/prod.py <<'PY'
+              import os, importlib.util
+
+              _spec = importlib.util.spec_from_file_location("dev_cfg", "/opt/app/config/dev.py")
+              base = importlib.util.module_from_spec(_spec)
+              _spec.loader.exec_module(base)
+
+              # Server: host/port belong in config
+              server = getattr(base, "server", {"host": "0.0.0.0", "port": "8080"})
+              if not isinstance(server, dict):
+                  server = {"host": "0.0.0.0", "port": "8080"}
+
+              # App: reuse base but force debug=False; keep hooks intact
+              app = dict(getattr(base, "app", {}))
+              app["debug"] = False
+
+              # Primary SQLAlchemy binding from env
+              sqlalchemy = {
+                  "url": os.getenv(
+                      "DATABASE_URL",
+                      "postgresql+psycopg2://shaman:shaman@postgres:5432/shaman",
+                  ),
+                  "echo": False,
+              }
+
+              # Shaman expects R/W and R/O aliases as well:
+              sqlalchemy_w  = sqlalchemy
+              sqlalchemy_ro = sqlalchemy
+
+              # Other secrets/urls
+              api_user = os.getenv("SHAMAN_API_USER", getattr(base, "api_user", ""))
+              api_key  = os.getenv("SHAMAN_API_KEY",  getattr(base, "api_key",  ""))
+              _gs = os.getenv("GITHUB_SECRET", "")
+              github_secret = _gs.encode("utf-8") if _gs else getattr(base, "github_secret", None)
+              bus_url      = os.getenv("RABBITMQ_URL", getattr(base, "bus_url", ""))
+              rabbitmq_url = os.getenv("RABBITMQ_URL", getattr(base, "rabbitmq_url", ""))
+
+              # Optional knobs
+              health_check_retries = int(os.getenv("HEALTH_CHECK_RETRIES", str(getattr(base, "health_check_retries", 3))))
+              chacra_verify_ssl    = os.getenv("CHACRA_VERIFY_SSL", str(getattr(base, "chacra_verify_ssl", "false"))).lower() == "true"
+              PY
+
+              echo "[command] Wrote /opt/app/config/prod.py"
+
+              # --- ADDED: prefer ConfigMap run.py if present; fallback to prod.py ---
+              if [ -f "config/run.py" ]; then
+                echo "[command] Found /opt/app/config/run.py (ConfigMap); using it"
+                exec pecan serve config/run.py
+              else
+                exec pecan serve config/prod.py
+              fi
+          envFrom:
+            - secretRef: { name: shaman-secrets }
+            - configMapRef: { name: shaman-config }
+          volumeMounts:
+            - name: run-config
+              mountPath: /opt/app/config/run.py
+              subPath: run.py
+          ports:
+            - { containerPort: 8080, name: http }
+          readinessProbe:
+            httpGet: { path: /api/, port: 8080 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /api/, port: 8080 }
+            initialDelaySeconds: 30
+            periodSeconds: 15
