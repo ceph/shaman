@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: shaman-seed-nodes-db
+  namespace: shaman
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: seed-db
+          image: quay.io/sclorg/postgresql-16-c9s
+          env:
+            # DB connection via your existing secret & service
+            - name: PGHOST
+              value: "postgres"
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: shaman-secrets
+                  key: SHAMAN_DB_USER
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: shaman-secrets
+                  key: SHAMAN_DB_PASS
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: shaman-secrets
+                  key: SHAMAN_DB_NAME
+            # The Chacra route to register in Shaman's nodes table
+            - name: NODE
+              value: "chacra-chacra.apps.pok.os.sepia.ceph.com"
+          command: ["/bin/sh","-c"]
+          args:
+            - |
+              set -euo pipefail
+              # Insert row iff missing (shell expands ${NODE} safely for hostnames)
+              psql -v ON_ERROR_STOP=1 -c "
+                INSERT INTO nodes (host, healthy, down_count, last_used, last_check)
+                SELECT '${NODE}', TRUE, 0, NOW(), NOW()
+                WHERE NOT EXISTS (SELECT 1 FROM nodes WHERE host = '${NODE}');
+              "
+              echo "[seed-db] Seeded node (if missing): ${NODE}"
