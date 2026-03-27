@@ -6,6 +6,10 @@ metadata:
 data:
   HEALTH_CHECK_RETRIES: "3"
   CHACRA_VERIFY_SSL: "false"
+  api_user: "admin"
+  api_key: "secret"
+  SHAMAN_API_USER: "admin"
+  SHAMAN_API_KEY: "secret"
 
 ---
 apiVersion: v1
