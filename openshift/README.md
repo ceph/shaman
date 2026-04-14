@@ -66,6 +66,10 @@ Wait for the Shaman API deployment to be ready
 ```
 oc -n shaman rollout status deploy/shaman
 ```
+8. Seed shaman with chacra nodes
+```
+oc -n shaman apply -f openshift/deploy/shaman-seed-nodes-db.yaml
+```
 Get the public host
 ```
 oc -n shaman get route shaman -o jsonpath='{.spec.host}{"\n"}'
