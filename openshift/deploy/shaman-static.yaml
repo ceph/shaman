@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shaman-static
+  namespace: shaman
+  labels:
+    app: shaman-static
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shaman-static
+  template:
+    metadata:
+      labels:
+        app: shaman-static
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      volumes:
+        - name: static-content
+          emptyDir: {}
+      initContainers:
+        - name: copy-static
+          image: image-registry.openshift-image-registry.svc:5000/shaman/shaman:latest
+          command: ["/bin/bash", "-lc"]
+          args:
+            - |
+              set -euo pipefail
+              mkdir -p /work/public
+              cp -a /opt/app/public/* /work/public/
+          volumeMounts:
+            - name: static-content
+              mountPath: /work
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ["ALL"] }
+            seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: static-server
+          image: registry.access.redhat.com/ubi9/python-311
+          command: ["/bin/bash","-lc"]
+          args:
+            - |
+              # Expose the same files under /static/* (symlink to /public/*)
+              ln -snf /srv/public /srv/static
+              # Serve /srv (docroot). Our assets are in /srv/public and /srv/static
+              exec python -m http.server 8080 --directory /srv
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: static-content
+              mountPath: /srv
+          readinessProbe:
+            httpGet:
+              path: /static/css/bootstrap.min.css
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 2
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ["ALL"] }
+            seccompProfile: { type: RuntimeDefault }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shaman-static
+  namespace: shaman
+  labels:
+    app: shaman-static
+spec:
+  selector:
+    app: shaman-static
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: shaman-static-public
+  namespace: shaman
+spec:
+  host: shaman-shaman.apps.pok.os.sepia.ceph.com  # ← same host as your Shaman route
+  path: /static
+  to:
+    kind: Service
+    name: shaman-static
+    weight: 100
+  tls:
+    termination: edge
+      

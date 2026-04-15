@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shaman-config
+  namespace: shaman
+data:
+  HEALTH_CHECK_RETRIES: "3"
+  CHACRA_VERIFY_SSL: "false"
+  api_user: "admin"
+  api_key: "secret"
+  SHAMAN_API_USER: "admin"
+  SHAMAN_API_KEY: "secret"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shaman-run-config
+  namespace: shaman
+data:
+  run.py: |
+    import os
+    from pecan import hooks
+
+    class DBSessionHook(hooks.PecanHook):
+        def before(self, state):
+            from shaman import models
+            models.start()
+        def after(self, state):
+            from shaman import models
+            models.clear()
+        def on_error(self, state, exc):
+            from shaman import models
+            try:
+                models.rollback()
+            finally:
+                models.clear()
+
+    # Pecan reads host/port from this module (used by `pecan serve`)
+    server = {'host': '0.0.0.0', 'port': 8080}
+
+    app = {
+        'root': 'shaman.controllers.root.RootController',
+        'modules': ['shaman'],
+        'debug': False,
+        'hooks': [DBSessionHook()],
+
+        # === UI wiring ===
+        # These paths match your image layout inside the Shaman container
+        'template_path': '/opt/app/shaman/templates',
+        'static_root':   '/opt/app/public',
+        # Note: Pecan's config supports 'static_root' and 'template_path'.
+        # It doesn't have a 'static_url' key; static is conventionally served under /public/*.
+    }
+
+    # DB bindings – Shaman expects both R/W and R/O; add 'sqlalchemy' too for safety
+    _url = os.environ['DATABASE_URL']
+    sqlalchemy    = {'url': _url}
+    sqlalchemy_w  = {'url': _url}
+    sqlalchemy_ro = {'url': _url}
+
+    # Shaman API auth for POST/DELETE
+    api_user = os.environ.get('SHAMAN_API_USER', 'admin')
+    api_key  = os.environ['SHAMAN_API_KEY']
+
+    # Optional settings
+    health_check_retries = int(os.environ.get('HEALTH_CHECK_RETRIES', '3'))
+    chacra_verify_ssl = os.environ.get('CHACRA_VERIFY_SSL', 'false').lower() == 'true'

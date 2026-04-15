@@ -1,0 +1,37 @@
+# Dockerfile.ocp
+# OpenShift-friendly image (arbitrary UID) for Shaman API
+
+FROM python:3.9-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    APP_HOME=/opt/app \
+    PATH="/opt/app/.local/bin:${PATH}"
+
+# Build deps (psycopg2, etc.)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      build-essential gcc libpq-dev curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR ${APP_HOME}
+
+# Layer cache for Python deps
+COPY requirements.txt ./
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt
+
+# App bits
+COPY shaman/ shaman/
+COPY public/ public/
+COPY alembic/ alembic/
+COPY alembic.ini alembic.ini
+COPY config/ config
+
+# Entrypoint that generates config/prod.py from config/dev.py at runtime
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh \
+ && chgrp -R 0 ${APP_HOME} && chmod -R g=u ${APP_HOME}
+
+EXPOSE 8080
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["pecan", "serve", "config/prod.py"]
