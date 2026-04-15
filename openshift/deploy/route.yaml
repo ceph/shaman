@@ -1,0 +1,11 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: shaman
+  namespace: shaman
+spec:
+  to:
+    kind: Service
+    name: shaman
+  tls:
+    termination: edge
