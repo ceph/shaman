@@ -1,0 +1,70 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: shaman-migrate
+  namespace: shaman
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: shaman-migrate
+    spec:
+      restartPolicy: OnFailure
+      workingDir: /opt/app
+      containers:
+        - name: migrate
+          image: image-registry.openshift-image-registry.svc:5000/shaman/shaman:latest
+          command: ["/bin/bash","-lc"]
+          args:
+            - |
+              set -euo pipefail
+              echo "[migrate] CWD=$(pwd)"
+              export PYTHONPATH=/opt/app:${PYTHONPATH:-}
+              echo "[migrate] PYTHONPATH=${PYTHONPATH}"
+
+              # 1) Wait for Postgres to be reachable using the same DATABASE_URL the app uses
+              python - <<'PY'
+              import os, time, sys
+              from sqlalchemy import create_engine
+              url = os.environ['DATABASE_URL']
+              last = None
+              for i in range(30):
+                  try:
+                      create_engine(url, pool_pre_ping=True).connect().close()
+                      print("[migrate] DB is reachable.")
+                      break
+                  except Exception as e:
+                      last = e
+                      print("[migrate] Waiting for DB...", i+1, "error:", e)
+                      time.sleep(5)
+              else:
+                  print("[migrate] ERROR: DB not reachable.", last); sys.exit(1)
+              PY
+
+              # 2) Bootstrap schema from models if 'repos' table doesn't exist yet
+              python - <<'PY'
+              import os
+              from sqlalchemy import create_engine, inspect
+              from shaman import models
+              eng = create_engine(os.environ['DATABASE_URL'])
+              insp = inspect(eng)
+              tables = set(insp.get_table_names())
+              if 'repos' not in tables:
+                  print("[migrate] Bootstrapping schema via SQLAlchemy create_all()...")
+                  models.Base.metadata.create_all(eng)
+                  print("[migrate] Schema created.")
+              else:
+                  print("[migrate] Base tables already present; skipping bootstrap.")
+              PY
+
+              # 3) Point Alembic to Postgres (repo default is sqlite:///dev.db)
+              sed -ri "s#^sqlalchemy.url = .*#sqlalchemy.url = ${DATABASE_URL//#/\\#}#" alembic.ini
+              echo "[migrate] alembic.ini updated"
+
+              # 4) Record current DB as up-to-date with code (no-op DDL)
+              alembic -c alembic.ini stamp head
+              echo "[migrate] Alembic stamped to head."
+          envFrom:
+            - secretRef: { name: shaman-secrets }
+            - configMapRef: { name: shaman-config }
