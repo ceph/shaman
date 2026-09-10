@@ -106,6 +106,12 @@ def init_model():
 def _engine_from_config(configuration):
     configuration = dict(configuration)
     url = configuration.pop('url')
+    # Test pooled connections on checkout and transparently replace dead
+    # ones, instead of raising OperationalError (-> HTTP 500) for the first
+    # requests after a database restart (e.g. unattended-upgrades bouncing
+    # postgres nightly). A config file can still opt out by setting
+    # pool_pre_ping: False.
+    configuration.setdefault('pool_pre_ping', True)
     return create_engine(url, **configuration)
 
 
