@@ -81,6 +81,29 @@ class TestProjectController(object):
         assert repo.flavor == "default"
         assert repo.extra["version"] == "10.2.2"
 
+    def test_create_a_repo_without_extra(self, app):
+        data = self.repo_data.copy()
+        del data["extra"]
+        app.post_json('/api/repos/ceph/', params=data)
+        assert Repo.get(1).extra == {}
+
+    def test_update_without_extra_keeps_extra(self, app):
+        app.post_json('/api/repos/ceph/', params=self.repo_data)
+        new_data = self.repo_data.copy()
+        new_data["status"] = "ready"
+        del new_data["extra"]
+        app.post_json('/api/repos/ceph/', params=new_data)
+        repo = Repo.get(1)
+        assert repo.status == "ready"
+        assert repo.extra["version"] == "10.2.2"
+
+    def test_update_with_extra_replaces_extra(self, app):
+        app.post_json('/api/repos/ceph/', params=self.repo_data)
+        new_data = self.repo_data.copy()
+        new_data["extra"] = dict(version="10.2.3")
+        app.post_json('/api/repos/ceph/', params=new_data)
+        assert Repo.get(1).extra == {"version": "10.2.3"}
+
     def test_update_a_repo_status(self, app):
         result = app.post_json('/api/repos/ceph/', params=self.repo_data)
         assert result.status_int == 200

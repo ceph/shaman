@@ -53,8 +53,12 @@ class ProjectController(object):
         update_data = dict(
             status=request.json["status"],
             url=request.json.get("url", ""),
-            extra=request.json.get("extra", dict()),
         )
+        # only replace 'extra' when the caller sends it, a POST without it
+        # (like a replayed callback) would otherwise wipe the version
+        # metadata that teuthology reads from it
+        if "extra" in request.json or not repo.extra:
+            update_data["extra"] = request.json.get("extra", dict())
         repo.update_from_json(update_data)
         archs = request.json.get("archs", [])
         for arch in archs:
