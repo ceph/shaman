@@ -321,3 +321,32 @@ class TestGetRepoUrl(object):
         query = Repo.query.filter_by(status='ready')
         result = util.get_repo_url(query, 'x86_64', path=["SRPMS", "repodata", "repomd.xml"], repo_file=False)
         assert result.endswith("/SRPMS/repodata/repomd.xml")
+
+
+class TestParseTimestamp(object):
+
+    def test_naive_is_utc(self):
+        result = util.parse_timestamp("2026-10-28 13:23:04.123456")
+        assert result == datetime.datetime(
+            2026, 10, 28, 13, 23, 4, 123456, tzinfo=datetime.timezone.utc)
+
+    def test_aware_offset(self):
+        result = util.parse_timestamp("2026-10-28 15:23:04+02:00")
+        assert result == datetime.datetime(
+            2026, 10, 28, 13, 23, 4, tzinfo=datetime.timezone.utc)
+
+    def test_zulu(self):
+        result = util.parse_timestamp("2026-10-28T13:23:04Z")
+        assert result == datetime.datetime(
+            2026, 10, 28, 13, 23, 4, tzinfo=datetime.timezone.utc)
+
+    def test_datetime_passthrough(self):
+        value = datetime.datetime(2026, 10, 28, 13, 23, 4)
+        assert util.parse_timestamp(value) == value.replace(tzinfo=datetime.timezone.utc)
+
+    def test_missing(self):
+        assert util.parse_timestamp(None) is None
+        assert util.parse_timestamp("") is None
+
+    def test_garbage(self):
+        assert util.parse_timestamp("yesterday") is None

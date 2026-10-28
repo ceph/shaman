@@ -13,6 +13,33 @@ from shaman import models
 logger = logging.getLogger(__name__)
 
 
+def parse_timestamp(value):
+    """
+    Parse a timestamp as serialized by pecan (``str(datetime)``), with or
+    without a UTC offset. Naive values are taken as UTC. Returns ``None`` if
+    the value is missing or can't be parsed.
+    """
+    if not value:
+        return None
+    if isinstance(value, datetime.datetime):
+        return as_utc(value)
+    try:
+        return as_utc(datetime.datetime.fromisoformat(str(value).replace('Z', '+00:00')))
+    except ValueError:
+        logger.warning("could not parse timestamp: %r", value)
+        return None
+
+
+def as_utc(timestamp):
+    """
+    Make a datetime timezone-aware (naive values are taken as UTC), so that
+    values coming from JSON and from the database can be compared.
+    """
+    if timestamp.tzinfo is None:
+        return timestamp.replace(tzinfo=datetime.timezone.utc)
+    return timestamp.astimezone(datetime.timezone.utc)
+
+
 def get_next_node():
     """
     Retrieves the next chacra node in
