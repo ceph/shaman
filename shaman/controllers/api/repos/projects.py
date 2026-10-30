@@ -1,10 +1,15 @@
+import logging
+
 from pecan import expose, abort, request
 from pecan.secure import secure
 
 from shaman.models import Project, Repo, Arch
 from shaman.controllers.api.repos import refs
 from shaman.auth import basic_auth
-from shaman import models
+from shaman import models, util
+
+
+logger = logging.getLogger(__name__)
 
 
 class ProjectController(object):
@@ -50,6 +55,18 @@ class ProjectController(object):
         if request.json["status"] == "deleted":
             repo.delete()
             return {}
+        # chacra sends its callbacks asynchronously and they can arrive out of
+        # order. Its 'modified' timestamp tells which one is the most recent
+        # state of the repo, an older one must not overwrite a newer one.
+        chacra_modified = util.parse_timestamp(request.json.get("modified"))
+        if chacra_modified and repo.chacra_modified:
+            if chacra_modified < util.as_utc(repo.chacra_modified):
+                logger.info(
+                    "ignoring stale update for %s: status '%s' modified %s is older than %s (status '%s')",
+                    repo, request.json["status"], chacra_modified,
+                    util.as_utc(repo.chacra_modified), repo.status,
+                )
+                return {}
         update_data = dict(
             status=request.json["status"],
             url=request.json.get("url", ""),
@@ -59,6 +76,8 @@ class ProjectController(object):
         # metadata that teuthology reads from it
         if "extra" in request.json or not repo.extra:
             update_data["extra"] = request.json.get("extra", dict())
+        if chacra_modified:
+            update_data["chacra_modified"] = chacra_modified
         repo.update_from_json(update_data)
         archs = request.json.get("archs", [])
         for arch in archs:

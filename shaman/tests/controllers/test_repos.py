@@ -1,3 +1,6 @@
+import datetime
+import logging
+
 from shaman.models import Project, Repo, commit
 
 
@@ -150,6 +153,112 @@ class TestProjectController(object):
         app.post_json('/api/repos/ceph/', params=data)
         repo = Repo.get(1)
         assert len(repo.archs) == 2
+
+
+class TestProjectControllerCallbackOrdering(object):
+    """
+    chacra posts one callback per status change from independent celery
+    tasks, so they can arrive out of order. The repo's chacra 'modified'
+    timestamp in the payload decides which update is the most recent.
+    """
+
+    def setup_method(self):
+        self.repo_data = dict(
+            ref="main",
+            sha1="45107e21c568dd033c2f0a3107dec8f0b0e58374",
+            flavor="default",
+            distro="centos",
+            distro_version="9",
+            chacra_url="chacra.ceph.com/repos/ceph/main/45107e21c568dd033c2f0a3107dec8f0b0e58374/centos/9/flavors/default/",
+            url="chacra.ceph.com/r/ceph/main/45107e21c568dd033c2f0a3107dec8f0b0e58374/centos/9/flavors/default/",
+            status="requested",
+            modified="2026-10-28 13:20:00.000000",
+        )
+
+    def post(self, app, **kw):
+        data = self.repo_data.copy()
+        data.update(kw)
+        result = app.post_json('/api/repos/ceph/', params=data)
+        assert result.status_int == 200
+        return result
+
+    def test_modified_is_stored(self, app):
+        self.post(app)
+        repo = Repo.get(1)
+        assert repo.chacra_modified.replace(tzinfo=None) == datetime.datetime(2026, 10, 28, 13, 20)
+
+    def test_stale_building_does_not_overwrite_ready(self, app):
+        self.post(app, status="building", modified="2026-10-28 13:20:00.000000")
+        self.post(app, status="ready", modified="2026-10-28 13:23:04.000000", archs=["x86_64"])
+        self.post(app, status="building", modified="2026-10-28 13:20:00.000000", archs=["noarch"])
+        repo = Repo.get(1)
+        assert repo.status == "ready"
+        assert [a.name for a in repo.archs] == ["x86_64"]
+        assert repo.chacra_modified.replace(tzinfo=None) == datetime.datetime(2026, 10, 28, 13, 23, 4)
+
+    def test_stale_queued_and_requested_are_ignored(self, app):
+        self.post(app, status="ready", modified="2026-10-28 13:23:04.000000")
+        self.post(app, status="queued", modified="2026-10-28 13:19:00.000000")
+        self.post(app, status="requested", modified="2026-10-28 13:18:00.000000")
+        assert Repo.get(1).status == "ready"
+
+    def test_newer_update_is_applied(self, app):
+        self.post(app, status="ready", modified="2026-10-28 13:23:04.000000")
+        self.post(app, status="requested", modified="2026-10-28 14:00:00.000000")
+        self.post(app, status="building", modified="2026-10-28 14:01:00.000000")
+        assert Repo.get(1).status == "building"
+
+    def test_same_modified_is_applied(self, app):
+        # a new build request carries the modified of the last commit, which
+        # is what the previous 'ready' reported
+        self.post(app, status="ready", modified="2026-10-28 13:23:04.000000")
+        self.post(app, status="requested", modified="2026-10-28 13:23:04.000000")
+        assert Repo.get(1).status == "requested"
+
+    def test_aware_and_naive_timestamps_compare(self, app):
+        self.post(app, status="ready", modified="2026-10-28 13:23:04.123456+00:00")
+        self.post(app, status="building", modified="2026-10-28 13:23:04.000000")
+        assert Repo.get(1).status == "ready"
+        self.post(app, status="requested", modified="2026-10-28 13:23:05.000000")
+        assert Repo.get(1).status == "requested"
+
+    def test_update_without_modified_is_applied(self, app):
+        self.post(app, status="ready", modified="2026-10-28 13:23:04.000000")
+        data = self.repo_data.copy()
+        del data["modified"]
+        data["status"] = "building"
+        app.post_json('/api/repos/ceph/', params=data)
+        repo = Repo.get(1)
+        assert repo.status == "building"
+        assert repo.chacra_modified.replace(tzinfo=None) == datetime.datetime(2026, 10, 28, 13, 23, 4)
+
+    def test_stored_without_modified_then_with(self, app):
+        data = self.repo_data.copy()
+        del data["modified"]
+        app.post_json('/api/repos/ceph/', params=data)
+        assert Repo.get(1).chacra_modified is None
+        self.post(app, status="ready", modified="2026-10-28 13:23:04.000000")
+        repo = Repo.get(1)
+        assert repo.status == "ready"
+        assert repo.chacra_modified is not None
+
+    def test_unparseable_modified_is_applied(self, app):
+        self.post(app, status="ready", modified="2026-10-28 13:23:04.000000")
+        self.post(app, status="building", modified="yesterday")
+        assert Repo.get(1).status == "building"
+
+    def test_stale_deleted_still_deletes(self, app):
+        self.post(app, status="ready", modified="2026-10-28 13:23:04.000000")
+        self.post(app, status="deleted", modified="2026-10-28 13:20:00.000000")
+        commit()
+        assert not Repo.get(1)
+
+    def test_ignored_update_is_logged(self, app, caplog):
+        self.post(app, status="ready", modified="2026-10-28 13:23:04.000000")
+        with caplog.at_level(logging.INFO, logger="shaman.controllers.api.repos.projects"):
+            self.post(app, status="building", modified="2026-10-28 13:20:00.000000")
+        assert "ignoring stale update" in caplog.text
+        assert "'building'" in caplog.text
 
 
 def base_repo_data(**kw):

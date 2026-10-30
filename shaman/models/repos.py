@@ -19,6 +19,8 @@ class Repo(Base):
     distro = Column(String(256), nullable=False, index=True)
     distro_version = Column(String(256), nullable=False, index=True)
     modified = Column(DateTime(timezone=True), index=True)
+    # the repo's 'modified' as reported by chacra, see ProjectController.index_post
+    chacra_modified = Column(DateTime(timezone=True))
     status = Column(String(256), index=True)
     extra = deferred(Column(JSONType()))
 
@@ -75,6 +77,7 @@ class Repo(Base):
             distro_version=version,
             distro_codename=codename,
             modified=self.modified,
+            chacra_modified=self.chacra_modified,
             status=self.status,
             flavor=self.flavor,
             project=self.project.name,
